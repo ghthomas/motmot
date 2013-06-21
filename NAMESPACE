@@ -1,0 +1,16 @@
+export(as.rateData)
+export(as.rateMatrix)
+export()
+
+
+# Export names
+exportPattern(".")
+
+# Import all packages listed as Imports or Depends
+import(
+  ape,
+  mvtnorm,
+  MASS,
+  caper,
+  parallel
+)
