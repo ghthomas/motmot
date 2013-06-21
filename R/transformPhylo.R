@@ -196,7 +196,7 @@ rateType = NULL, branchRates = NULL, cladeRates = NULL, cladeMembersObj = NULL, 
 		   }
 		   bdrates <- birthdeath(phy)
 		   mu <- bdrates$para["d/b"] * bdrates$para["b-d"]
-		   lambda <- bdrates$para["d/b"] + mu
+		   lambda <- bdrates$para["b-d"] + mu
 		   probNoDescendents <- mu * (exp((lambda - mu) * phy$edge.length) - 
 									  1)/((lambda * exp((lambda - mu) * phy$edge.length)) - 
 										  mu)
