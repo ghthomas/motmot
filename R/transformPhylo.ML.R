@@ -49,22 +49,24 @@ tol = NULL, n.cores=1)
 		   } else {
 		   UCI <- NA
 		   }
-		   out <- vector(mode = "list", length = 2)
-		   names(out) <- c("MaximumLikelihood", "Kappa")
+		   out <- vector(mode = "list", length = 3)
+		   names(out) <- c("MaximumLikelihood", "Kappa", "brownianVariance")
 		   out$Kappa <- matrix(NA, 1, 3, byrow = TRUE)
 		   colnames(out$Kappa) <- c("MLKappa", "LowerCI", "UpperCI")
 		   out$MaximumLikelihood <- vo$value
 		   out$Kappa[1, ] <- c(vo$par, LCI, UCI)
+		   out$brownianVariance <- transformPhylo.ll(y=y, phy=phy, model="kappa", kappa= vo$par)$brownianVariance 
 		   if (any(is.na(out$Kappa[1, 2:3]))) {
 		   warning("Confidence limits fall outside the current parameter bounds - consider changing lowerBound and/or upperBound")
 		   }
 		   } else {
-		   out <- vector(mode = "list", length = 2)
-		   names(out) <- c("MaximumLikelihood", "Kappa")
+		   out <- vector(mode = "list", length = 3)
+		   names(out) <- c("MaximumLikelihood", "Kappa", "brownianVariance")
 		   out$Kappa <- matrix(NA, 1, 1, byrow = TRUE)
 		   colnames(out$Kappa) <- c("MLKappa")
 		   out$MaximumLikelihood <- vo$value
 		   out$Kappa[1, ] <- c(vo$par)
+		   out$brownianVariance <- transformPhylo.ll(y=y, phy=phy, model="kappa", kappa= vo$par)$brownianVariance  
 		   }
 		   }, 
 		   
@@ -105,23 +107,25 @@ tol = NULL, n.cores=1)
 		   } else {
 		   UCI <- NA
 		   }
-		   out <- vector(mode = "list", length = 2)
-		   names(out) <- c("MaximumLikelihood", "Lambda")
+		   out <- vector(mode = "list", length = 3)
+		   names(out) <- c("MaximumLikelihood", "Lambda", "brownianVariance")
 		   out$Lambda <- matrix(NA, 1, 3, byrow = TRUE)
 		   colnames(out$Lambda) <- c("MLLambda", "LowerCI", 
 									 "UpperCI")
 		   out$MaximumLikelihood <- vo$value
 		   out$Lambda[1, ] <- c(vo$par, LCI, UCI)
+		   out$brownianVariance <- transformPhylo.ll(y=y, phy=phy, model="lambda", lambda= vo$par)$brownianVariance 
 		   if (any(is.na(out$Lambda[1, 2:3]))) {
 		   warning("Confidence limits fall outside the current parameter bounds - consider changing lowerBound and/or upperBound")
 		   }
 		   } else {
-		   out <- vector(mode = "list", length = 2)
+		   out <- vector(mode = "list", length = 3)
 		   names(out) <- c("MaximumLikelihood", "Lambda")
 		   out$Lambda <- matrix(NA, 1, 1, byrow = TRUE)
 		   colnames(out$Lambda) <- c("MLLambda")
 		   out$MaximumLikelihood <- vo$value
 		   out$Lambda[1, ] <- c(vo$par)
+		   out$brownianVariance <- transformPhylo.ll(y=y, phy=phy, model="lambda", lambda= vo$par)$brownianVariance 
 		   }
 		   }, 
 		   
@@ -156,24 +160,29 @@ tol = NULL, n.cores=1)
 		   } else {
 		   UCI <- NA
 		   }
-		   out <- vector(mode = "list", length = 2)
-		   names(out) <- c("MaximumLikelihood", "Delta")
+		   out <- vector(mode = "list", length = 3)
+		   names(out) <- c("MaximumLikelihood", "Delta", "brownianVariance")
 		   out$Delta <- matrix(NA, 1, 3, byrow = TRUE)
 		   colnames(out$Delta) <- c("MLDelta", "LowerCI", "UpperCI")
 		   out$MaximumLikelihood <- vo$value
 		   out$Delta[1, ] <- c(vo$par, LCI, UCI)
+		   out$brownianVariance <- transformPhylo.ll(y=y, phy=phy, model="delta", delta= vo$par)$brownianVariance 
 		   if (any(is.na(out$Delta[1, 2:3]))) {
 		   warning("Confidence limits fall outside the current parameter bounds - consider changing lowerBound and/or upperBound")
 		   }
 		   } else {
-		   out <- vector(mode = "list", length = 2)
-		   names(out) <- c("MaximumLikelihood", "Delta")
+		   out <- vector(mode = "list", length = 3)
+		   names(out) <- c("MaximumLikelihood", "Delta", "brownianVariance")
 		   out$Delta <- matrix(NA, 1, 1, byrow = TRUE)
 		   colnames(out$Delta) <- c("MLDelta")
 		   out$MaximumLikelihood <- vo$value
 		   out$Delta[1, ] <- c(vo$par)
+		   out$brownianVariance <- transformPhylo.ll(y=y, phy=phy, model="delta", delta= vo$par)$brownianVariance 
 		   }
-		   }, OU = {
+		   }, 
+		   
+		   
+		   OU = {
 		   alpha <- 0.01
 		   if (is.null(lowerBound)) {
 		   lowerBound <- bounds["alpha", 1]
@@ -202,24 +211,29 @@ tol = NULL, n.cores=1)
 		   } else {
 		   UCI <- NA
 		   }
-		   out <- vector(mode = "list", length = 2)
-		   names(out) <- c("MaximumLikelihood", "Alpha")
+		   out <- vector(mode = "list", length = 3)
+		   names(out) <- c("MaximumLikelihood", "Alpha", "brownianVariance")
 		   out$Alpha <- matrix(NA, 1, 3, byrow = TRUE)
 		   colnames(out$Alpha) <- c("MLAlpha", "LowerCI", "UpperCI")
 		   out$MaximumLikelihood <- vo$value
 		   out$Alpha[1, ] <- c(vo$par, LCI, UCI)
+		   out$brownianVariance <- transformPhylo.ll(y=y, phy=phy, model="OU", alpha= vo$par)$brownianVariance 
 		   if (any(is.na(out$Alpha[1, 2:3]))) {
 		   warning("Confidence limits fall outside the current parameter bounds - consider changing lowerBound and/or upperBound")
 		   }
 		   } else {
-		   out <- vector(mode = "list", length = 2)
-		   names(out) <- c("MaximumLikelihood", "Alpha")
+		   out <- vector(mode = "list", length = 3)
+		   names(out) <- c("MaximumLikelihood", "Alpha", "brownianVariance")
 		   out$Alpha <- matrix(NA, 1, 1, byrow = TRUE)
 		   colnames(out$Alpha) <- c("MLAlpha")
 		   out$MaximumLikelihood <- vo$value
 		   out$Alpha[1, ] <- c(vo$par)
+		   out$brownianVariance <- transformPhylo.ll(y=y, phy=phy, model="OU", alpha= vo$par)$brownianVariance 
 		   }
-		   }, psi = {
+		   }, 
+		   
+		   
+		   psi = {
 		   psi <- 1
 		   if (is.null(lowerBound)) {
 		   lowerBound <- bounds["psi", 1]
@@ -248,24 +262,29 @@ tol = NULL, n.cores=1)
 		   } else {
 		   UCI <- NA
 		   }
-		   out <- vector(mode = "list", length = 2)
-		   names(out) <- c("MaximumLikelihood", "psi")
+		   out <- vector(mode = "list", length = 3)
+		   names(out) <- c("MaximumLikelihood", "psi", "brownianVariance")
 		   out$psi <- matrix(NA, 1, 3, byrow = TRUE)
 		   colnames(out$psi) <- c("MLpsi", "LowerCI", "UpperCI")
 		   out$MaximumLikelihood <- vo$value
 		   out$psi[1, ] <- c(vo$par, LCI, UCI)
+		   out$brownianVariance <- transformPhylo.ll(y=y, phy=phy, model="psi", psi= vo$par)$brownianVariance 
 		   if (any(is.na(out$psi[1, 2:3]))) {
 		   warning("Confidence limits fall outside the current parameter bounds - consider changing lowerBound and/or upperBound")
 		   }
 		   } else {
-		   out <- vector(mode = "list", length = 2)
-		   names(out) <- c("MaximumLikelihood", "psi")
+		   out <- vector(mode = "list", length = 3)
+		   names(out) <- c("MaximumLikelihood", "psi", "brownianVariance")
 		   out$psi <- matrix(NA, 1, 1, byrow = TRUE)
 		   colnames(out$psi) <- c("MLpsi")
 		   out$MaximumLikelihood <- vo$value
 		   out$psi[1, ] <- c(vo$par)
+		   out$brownianVariance <- transformPhylo.ll(y=y, phy=phy, model="psi", psi= vo$par)$brownianVariance 
 		   }
-		   }, free = {
+		   }, 
+		   
+		   
+		   free = {
 		   if (is.null(lowerBound)) {
 		   lowerBound <- bounds["rate", 1]
 		   }
@@ -290,7 +309,10 @@ tol = NULL, n.cores=1)
 		   } else {
 		   out$Convergence <- "Failed"
 		   }
-		   }, clade = {
+		   }, 
+		   
+		   
+		   clade = {
 		   if (is.null(lowerBound)) {
 		   lowerBound <- bounds["rate", 1]
 		   }
@@ -343,15 +365,19 @@ tol = NULL, n.cores=1)
 		   warning("Confidence limits fall outside the current parameter bounds - consider changing lowerBound and/or upperBound")
 		   }
 		   } else {
-		   out <- vector(mode = "list", length = 2)
-		   names(out) <- c("MaximumLikelihood", "Rates")
+		   out <- vector(mode = "list", length = 3)
+		   names(out) <- c("MaximumLikelihood", "Rates", "brownianVariance")
 		   out$Rates <- matrix(NA, length(nodeIDs), 2, byrow = TRUE)
 		   colnames(out$Rates) <- c("node", "MLRate")
 		   out$MaximumLikelihood <- vo$value
 		   out$Rates[, 1] <- nodeIDs
 		   out$Rates[, 2] <- vo$par
+		   out$brownianVariance <- transformPhylo.ll(y=y, phy=phyClade, nodeIDs = SingleNode, rateType = whichRateType, model="clade", cladeRates= vo$par)$brownianVariance 
 		   }
-		   }, tm1 = {  
+		   }, 
+		   
+		   
+		   tm1 = {  
 		   if (is.null(lowerBound)) {
 		   lowerBound <- bounds["rate", 1]
 		   }
