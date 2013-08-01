@@ -1,0 +1,11 @@
+TO DO:
+
+Priority
+- Add option to fit lambda simulataneously with other trait evolution models.
+- Add ACDC (EB) and time slice models
+- Vectorize for loops in transformPhylo (OU, delta, time slice)
+- Function for simple profile plots for single parameter models, possibly contour plots for multiparameter models?
+ - Allow results to be reported even if CIs fail
+ 
+Extensions
+- MCMC estimation for ML.RatePhylo
