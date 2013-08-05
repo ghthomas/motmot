@@ -1,5 +1,5 @@
 as.rateData <-
-function(y, x, rateMatrix=NULL, phy=NULL, data, meserr.col=NULL, meserr.propn=NULL, log.y=FALSE) {
+function(y, x, rateMatrix=NULL, phy=NULL, data, meserr.col=NULL, meserr.propn=NULL, log.y=FALSE, report_prune=FALSE) {
 	
 		if (is.numeric(y)) { y <- colnames(data)[y] } else { y <- y }
 		if (is.numeric(x)) { x <- colnames(data)[x] } else { x <- x }
@@ -37,11 +37,13 @@ function(y, x, rateMatrix=NULL, phy=NULL, data, meserr.col=NULL, meserr.propn=NU
 		missing.dat <- rownames(dat)[which(!ccdat)]
 
 	
-		if(length(missing.dat > 0)) {cat("Dropping species due to missing data (x, y, or meserr):", "\n")
-		
-		cat("Dropped species: ", missing.dat, "\n")
-		}
-			
+		# Suppress dropped species list
+		if(report_prune==TRUE) {
+			if(length(missing.dat > 0)) {
+				cat("Dropping species due to missing data (x, y, or meserr):", "\n")
+				cat("Dropped species: ", missing.dat, "\n")
+			}
+			}
 			
 		# alphabetise and prune rate matrices to remove data with missing species
 		Vmat <- vector(mode="list", length = length(rateMatrix))
