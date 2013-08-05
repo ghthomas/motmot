@@ -8,4 +8,4 @@ Priority
  - Allow results to be reported even if CIs fail
  
 Extensions
-- MCMC estimation for ML.RatePhylo
+- MCMC estimation for ML.RatePhylo (may be useful for small trees?)
