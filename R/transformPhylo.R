@@ -194,6 +194,7 @@ rateType = NULL, branchRates = NULL, cladeRates = NULL, cladeMembersObj = NULL, 
 		   interns <- which(phy$edge[, 2] > n)
 		   externs <- which(phy$edge[, 2] <= n)
 		   }
+		    height <- max(branching.times(phy))
 		   bdrates <- birthdeath(phy)
 		   mu <- bdrates$para["d/b"] * bdrates$para["b-d"]
 		   lambda <- bdrates$para["b-d"] + mu
@@ -202,8 +203,7 @@ rateType = NULL, branchRates = NULL, cladeRates = NULL, cladeMembersObj = NULL, 
 										  mu)
 		   sh <- (lambda * probNoDescendents) * phy$edge.length
 		   phy2 <- phy
-		   phy2$edge.length <- (psi/lambda) * (phy$edge.length^0 + 
-											   sh) + (1 - psi) * phy$edge.length
+		   phy2$edge.length <- (psi/lambda) * (phy$edge.length^0 + sh) + (1 - psi) * phy$edge.length
 		   phy <- phy2
 		   if (is.null(meserr) == FALSE) {
 		   phy$edge.length[externs] <- phy$edge.length[externs] + 

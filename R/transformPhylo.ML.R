@@ -444,7 +444,7 @@ tol = NULL, n.cores=1)
 										currentCladeModel$par))
 		   currentModel <- currentCladeModel
 		   shiftPos = 1
-		   param <- k + 2
+		   param <- (k * 2) + 1
 		   currentModel <- list(currentModel, i, cladeMembers)
 		   currentML <- currentModel[[1]]$value
 		   AIC <- -2 * currentModel[[1]]$value + 2 * param
@@ -452,13 +452,12 @@ tol = NULL, n.cores=1)
 		   ((2 * param * (param + 1))/(n - param - 1))
 		   if (i == min(searchNode)) {
 		   BERateOut[k, 1:(6 + k)] <- c(currentModel[[2]], 
-										shiftPos, currentModel[[1]]$value, k + 2, 
+										shiftPos, currentModel[[1]]$value, param, 
 										AIC, AICc, currentModel[[1]]$par)
 		   } else {
 		   if (currentML > BERateOut[k, 3]) {
 		   BERateOut[k, 1:(6 + k)] <- c(currentModel[[2]], 
-										shiftPos, currentModel[[1]]$value, k + 
-										2, AIC, AICc, currentModel[[1]]$par)
+										shiftPos, currentModel[[1]]$value, param, AIC, AICc, currentModel[[1]]$par)
 		   }
 		   }
 		   }
@@ -488,6 +487,14 @@ tol = NULL, n.cores=1)
 		   out <- list(as.data.frame(BERateSummary), fullModelOut, 
 					   y, phy)
 		   }, 
+		   
+		   
+		   
+		   
+		   
+		   
+		   
+		   
 		   
 		   tm2 = {
 		   if (is.null(lowerBound)) {
@@ -595,7 +602,7 @@ tol = NULL, n.cores=1)
 		   }
 
 		   currentModel <- currentCladeModel
-		   param <- k + 2
+		   param <- k*2 + 1
 		   currentModel <- list(currentModel, x[2], cladeMembers)
 		   currentML <- currentModel[[1]]$value
 		   AIC <- -2 * currentModel[[1]]$value + 2 * param
@@ -604,7 +611,7 @@ tol = NULL, n.cores=1)
 		   
 		   
 		   out <- c(currentModel[[2]][,1], 
-                    shiftPos, currentModel[[1]]$value, k + 2, 
+                    shiftPos, currentModel[[1]]$value, param, 
                     AIC, AICc, currentModel[[1]]$par)
 		   
 		   return(out)}
