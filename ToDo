@@ -5,7 +5,7 @@ Priority
 - Add ACDC (EB) and time slice models
 - Vectorize for loops in transformPhylo (OU, delta, time slice)
 - Function for simple profile plots for single parameter models, possibly contour plots for multiparameter models?
- - Allow results to be reported even if CIs fail
+- Allow results to be reported even if CIs fail
  
 Extensions
 - MCMC estimation for ML.RatePhylo (may be useful for small trees?)
