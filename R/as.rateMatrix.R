@@ -46,8 +46,12 @@ function(phy, x, data) {
 			names(xanc) <- rownames(data)
 			anc <- ace(xanc, phy, type="discrete", CI=TRUE) 
 		
-			foo.anc <- function(x ) { which(x==max(x))}
-			ml_anc <- apply(anc$lik.anc, 1, foo.anc)
+            foo.anc <- function(x) {
+                out <- which(x == max(x))
+                if (length(out)>1) {out <- sample(out, 1)}
+                return(out)
+            }
+            ml_anc <- apply(anc$lik.anc, 1, foo.anc)
 			ml_anc <- colnames(anc$lik.anc)[ml_anc]
 			
 			phy$node.label <- ml_anc
