@@ -365,14 +365,15 @@ tol = NULL, n.cores=1)
 		   warning("Confidence limits fall outside the current parameter bounds - consider changing lowerBound and/or upperBound")
 		   }
 		   } else {
-		   out <- vector(mode = "list", length = 3)
+            phyClade <- transformPhylo(phy, model = "clade", nodeIDs = nodeIDs, rateType = rateType, cladeRates = vo$par, y = y)
+            out <- vector(mode = "list", length = 3)
 		   names(out) <- c("MaximumLikelihood", "Rates", "brownianVariance")
 		   out$Rates <- matrix(NA, length(nodeIDs), 2, byrow = TRUE)
 		   colnames(out$Rates) <- c("node", "MLRate")
 		   out$MaximumLikelihood <- vo$value
 		   out$Rates[, 1] <- nodeIDs
 		   out$Rates[, 2] <- vo$par
-		   out$brownianVariance <- transformPhylo.ll(y=y, phy=phyClade, nodeIDs = SingleNode, rateType = whichRateType, model="clade", cladeRates= vo$par)$brownianVariance 
+		   out$brownianVariance <- transformPhylo.ll(y=y, phy=phyClade, nodeIDs = nodeIDs, rateType = rateType, model="clade", cladeRates= vo$par)$brownianVariance
 		   }
 		   }, 
 		   
