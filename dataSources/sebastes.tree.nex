@@ -1,0 +1,203 @@
+#NEXUS
+[R-package APE, Tue Nov 26 16:25:41 2013]
+
+BEGIN TAXA;
+	DIMENSIONS NTAX = 95;
+	TAXLABELS
+		Sebastes_aleutianus
+		Sebastes_alutus
+		Sebastes_atrovirens
+		Sebastes_auriculatus
+		Sebastes_aurora
+		Sebastes_babcocki
+		Sebastes_baramenuke
+		Sebastes_borealis
+		Sebastes_brevispinis
+		Sebastes_carnatus
+		Sebastes_caurinus
+		Sebastes_cheni
+		Sebastes_chlorostictus
+		Sebastes_chrysomelas
+		Sebastes_ciliatus
+		Sebastes_constellatus
+		Sebastes_crameri
+		Sebastes_dallii
+		Sebastes_diploproa
+		Sebastes_elongatus
+		Sebastes_emphaeus
+		Sebastes_ensifer
+		Sebastes_entomelas
+		Sebastes_eos
+		Sebastes_flammeus
+		Sebastes_flavidus
+		Sebastes_gilli
+		Sebastes_glaucus
+		Sebastes_goodei
+		Sebastes_helvomaculatus
+		Sebastes_hopkinsi
+		Sebastes_hubbsi
+		Sebastes_inermis
+		Sebastes_iracundus
+		Sebastes_itinus
+		Sebastes_jordani
+		Sebastes_joyneri
+		Sebastes_kiyomatsui
+		Sebastes_koreanus
+		Sebastes_lentiginosus
+		Sebastes_levis
+		Sebastes_longispinis
+		Sebastes_macdonaldi
+		Sebastes_maliger
+		Sebastes_matsubarae
+		Sebastes_melanops
+		Sebastes_melanosema
+		Sebastes_melanostictus
+		Sebastes_melanostomus
+		Sebastes_miniatus1
+		Sebastes_minor
+		Sebastes_moseri
+		Sebastes_mystinus
+		Sebastes_nebulosus
+		Sebastes_nigrocinctus
+		Sebastes_nivosus
+		Sebastes_notius
+		Sebastes_nudus
+		Sebastes_oblongus
+		Sebastes_ovalis
+		Sebastes_owstoni
+		Sebastes_pachycephalus
+		Sebastes_paucispinis
+		Sebastes_phillipsi
+		Sebastes_pinniger
+		Sebastes_polyspinis
+		Sebastes_proriger
+		Sebastes_rastrelliger
+		Sebastes_reedi
+		Sebastes_rosaceus
+		Sebastes_rosenblatti
+		Sebastes_ruberrimus
+		Sebastes_rubrivinctus
+		Sebastes_rufinanus
+		Sebastes_rufus
+		Sebastes_saxicolaS
+		Sebastes_schlegelii
+		Sebastes_scythropus
+		Sebastes_semicinctus
+		Sebastes_serranoides
+		Sebastes_serriceps
+		Sebastes_simulator
+		Sebastes_steindachneri
+		Sebastes_taczanowskii
+		Sebastes_thompsoni
+		Sebastes_trivittatus
+		Sebastes_umbrosus
+		Sebastes_variabilis
+		Sebastes_variegatus
+		Sebastes_ventricosus
+		Sebastes_vulpes
+		Sebastes_wakiyai
+		Sebastes_wilsoni
+		Sebastes_zacentrus
+		Sebastes_zonatus
+	;
+END;
+BEGIN TREES;
+	TRANSLATE
+		1	Sebastes_aleutianus,
+		2	Sebastes_alutus,
+		3	Sebastes_atrovirens,
+		4	Sebastes_auriculatus,
+		5	Sebastes_aurora,
+		6	Sebastes_babcocki,
+		7	Sebastes_baramenuke,
+		8	Sebastes_borealis,
+		9	Sebastes_brevispinis,
+		10	Sebastes_carnatus,
+		11	Sebastes_caurinus,
+		12	Sebastes_cheni,
+		13	Sebastes_chlorostictus,
+		14	Sebastes_chrysomelas,
+		15	Sebastes_ciliatus,
+		16	Sebastes_constellatus,
+		17	Sebastes_crameri,
+		18	Sebastes_dallii,
+		19	Sebastes_diploproa,
+		20	Sebastes_elongatus,
+		21	Sebastes_emphaeus,
+		22	Sebastes_ensifer,
+		23	Sebastes_entomelas,
+		24	Sebastes_eos,
+		25	Sebastes_flammeus,
+		26	Sebastes_flavidus,
+		27	Sebastes_gilli,
+		28	Sebastes_glaucus,
+		29	Sebastes_goodei,
+		30	Sebastes_helvomaculatus,
+		31	Sebastes_hopkinsi,
+		32	Sebastes_hubbsi,
+		33	Sebastes_inermis,
+		34	Sebastes_iracundus,
+		35	Sebastes_itinus,
+		36	Sebastes_jordani,
+		37	Sebastes_joyneri,
+		38	Sebastes_kiyomatsui,
+		39	Sebastes_koreanus,
+		40	Sebastes_lentiginosus,
+		41	Sebastes_levis,
+		42	Sebastes_longispinis,
+		43	Sebastes_macdonaldi,
+		44	Sebastes_maliger,
+		45	Sebastes_matsubarae,
+		46	Sebastes_melanops,
+		47	Sebastes_melanosema,
+		48	Sebastes_melanostictus,
+		49	Sebastes_melanostomus,
+		50	Sebastes_miniatus1,
+		51	Sebastes_minor,
+		52	Sebastes_moseri,
+		53	Sebastes_mystinus,
+		54	Sebastes_nebulosus,
+		55	Sebastes_nigrocinctus,
+		56	Sebastes_nivosus,
+		57	Sebastes_notius,
+		58	Sebastes_nudus,
+		59	Sebastes_oblongus,
+		60	Sebastes_ovalis,
+		61	Sebastes_owstoni,
+		62	Sebastes_pachycephalus,
+		63	Sebastes_paucispinis,
+		64	Sebastes_phillipsi,
+		65	Sebastes_pinniger,
+		66	Sebastes_polyspinis,
+		67	Sebastes_proriger,
+		68	Sebastes_rastrelliger,
+		69	Sebastes_reedi,
+		70	Sebastes_rosaceus,
+		71	Sebastes_rosenblatti,
+		72	Sebastes_ruberrimus,
+		73	Sebastes_rubrivinctus,
+		74	Sebastes_rufinanus,
+		75	Sebastes_rufus,
+		76	Sebastes_saxicolaS,
+		77	Sebastes_schlegelii,
+		78	Sebastes_scythropus,
+		79	Sebastes_semicinctus,
+		80	Sebastes_serranoides,
+		81	Sebastes_serriceps,
+		82	Sebastes_simulator,
+		83	Sebastes_steindachneri,
+		84	Sebastes_taczanowskii,
+		85	Sebastes_thompsoni,
+		86	Sebastes_trivittatus,
+		87	Sebastes_umbrosus,
+		88	Sebastes_variabilis,
+		89	Sebastes_variegatus,
+		90	Sebastes_ventricosus,
+		91	Sebastes_vulpes,
+		92	Sebastes_wakiyai,
+		93	Sebastes_wilsoni,
+		94	Sebastes_zacentrus,
+		95	Sebastes_zonatus
+	;
+	TREE * UNTITLED = [&R] (((((((33:0.4478023565,12:0.4478023565):0.2041099611,90:0.6519123176):1.389047178,(85:1.05515122,37:1.05515122):0.9858082756):4.572206508,(((91:0.8158464662,95:0.8158464662):1.119775763,86:1.93562223):3.668454974,((84:3.813830447,77:3.813830447):1.541424317,((56:3.567085567,59:3.567085567):0.922162399,(((32:0.2270103934,42:0.2270103934):3.597586805,(62:1.016203914,58:1.016203914):2.808393284):0.4944802811,39:4.319077479):0.1701704869):0.8660067979):0.2488224398):1.0090888):0.8529662767,(78:6.016894202,38:6.016894202):1.449238078):0.511593107,(((((51:2.703935916,((83:0.9680686235,92:0.9680686235):1.24931127,61:2.217379894):0.4865560224):0.5696864077,(48:0.8894842138,1:0.8894842138):2.38413811):0.1902601495,28:3.463882473):1.032687276,((67:2.280352842,(((93:0.530710691,89:0.530710691):0.09742635938,21:0.6281370504):0.2105563327,94:0.8386933831):1.441659459):1.111958784,(45:3.067664887,(9:2.694623687,(8:0.9553294106,(34:0.5677921339,25:0.5677921339):0.3875372767):1.739294276):0.3730412002):0.324646739):1.104258123):0.5027687597,((((((15:0.3101116439,88:0.3101116439):0.2314771028,66:0.5415887468):0.4449378226,(69:0.3756767625,17:0.3756767625):0.6108498069):1.934121287,7:2.920647857):0.5608484034,2:3.48149626):0.2741129337,35:3.755609194):1.243729315):2.978386878):0.3675525952,(((((47:0.7592058846,19:0.7592058846):3.490983372,(27:2.957327814,(64:1.308114183,5:1.308114183):1.64921363):1.292861443):2.340406323,(((65:2.739635549,50:2.739635549):3.525416076,(((41:5.426906092,((26:1.188358827,(46:1.049181881,80:1.049181881):0.1391769459):2.551257347,(23:0.9053271567,53:0.9053271567):2.834289017):1.687289917):0.2236025874,(((((((57:1.081232549,16:1.081232549):0.1099837856,(40:0.5255296486,87:0.5255296486):0.6656866859):0.6964828005,70:1.887699135):0.3889186859,((((71:0.1621070384,13:0.1621070384):0.2881343845,24:0.4502414229):0.7567558215,(82:0.9432876319,30:0.9432876319):0.2637096124):0.1408684807,22:1.347865725):0.928752096):1.217119106,((55:2.649160199,(73:2.129809367,81:2.129809367):0.5193508318):0.263888158,6:2.913048357):0.5806885701):0.9724235377,75:4.466160465):0.549146754,((74:2.660596491,52:2.660596491):1.478253527,(31:1.205952576,60:1.205952576):2.932897442):0.8764572004):0.6352014605):0.18160713,((29:4.65883072,63:4.65883072):0.3698345091,36:5.028665229):0.8034505798):0.4329358153):0.1905211364,(20:5.336353451,((((68:1.741631184,4:1.741631184):0.4665967509,18:2.208227935):0.3845916555,(54:2.267467574,(44:1.623447668,(((14:0.5511415755,10:0.5511415755):0.7232882408,3:1.274429816):0.2301234393,11:1.504553256):0.1188944122):0.6440199064):0.3253520164):1.418841454,(76:3.155844978,79:3.155844978):0.855816067):1.324692406):1.11921931):0.1350228188):0.3137710717,49:6.904366651):0.6072042465,(72:4.573703286,43:4.573703286):2.937867611):0.8337070848);
+END;
