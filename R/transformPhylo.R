@@ -1,5 +1,3 @@
-
-
 transformPhylo<-function (phy, model = NULL, meserr = NULL, y = NULL, kappa = NULL,  lambda = NULL, delta = NULL, alpha = NULL, psi = NULL, la = NULL, nodeIDs = NULL, rateType = NULL, branchRates = NULL, cladeRates = NULL, branchLabels = NULL)
 {
     if (is.null(meserr) == FALSE) {
@@ -217,4 +215,3 @@ transformPhylo<-function (phy, model = NULL, meserr = NULL, y = NULL, kappa = NU
     })
     return(phy)
 }
-

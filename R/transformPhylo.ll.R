@@ -1,4 +1,4 @@
-transformPhylo.ll<-function (y = NULL, phy, model = NULL, meserr = NULL, 	kappa = NULL, lambda = NULL, delta = NULL, alpha = NULL, psi = NULL, la = NULL, nodeIDs = NULL, rateType = NULL, branchRates = NULL, cladeRates = NULL, branchLabels = NULL, twosigma = FALSE, covPIC = TRUE)
+transformPhylo.ll<-function (y = NULL, phy, model = NULL, meserr = NULL, 	kappa = NULL, lambda = NULL, delta = NULL, alpha = NULL, psi = NULL, la = NULL, nodeIDs = NULL, rateType = NULL, branchRates = NULL, cladeRates = NULL, branchLabels = NULL, covPIC = TRUE)
 {
     switch(model, bm = {
         transformPhy <- transformPhylo(phy = phy, model = "bm",
@@ -30,3 +30,4 @@ transformPhylo.ll<-function (y = NULL, phy, model = NULL, meserr = NULL, 	kappa 
     })
     return(likTraitPhylo(y = y, phy = transformPhy, covPIC = covPIC))
 }
+

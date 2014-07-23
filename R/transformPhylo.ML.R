@@ -1,4 +1,4 @@
-transformPhylo.ML<-function (y, phy, model = NULL, meserr = NULL, la = NULL, modelCIs = TRUE, branchLabels = NULL, twosigma = FALSE, nodeIDs = NULL, rateType = NULL, minCladeSize = 1, nSplits = 10, restrictNode = NULL, lowerBound = NULL, upperBound = NULL, tol = NULL, covPIC = TRUE)
+transformPhylo.ML<-function (y, phy, model = NULL, meserr = NULL, la = NULL, modelCIs = TRUE, branchLabels = NULL, nodeIDs = NULL, rateType = NULL, minCladeSize = 1, nSplits = 10, restrictNode = NULL, lowerBound = NULL, upperBound = NULL, tol = NULL, covPIC = TRUE)
 {
     bounds <- matrix(c(1e-08, 1, 1e-08, 1, 1e-08, 5, 1e-08, 20,
     0, 1, 1e-08, 1000), 6, 2, byrow = TRUE)
