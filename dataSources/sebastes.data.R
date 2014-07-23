@@ -1,1 +1,1 @@
-anolis.data <- read.csv("anolis.data.csv", header=TRUE)
+sebastes.data <- read.csv("sebastes.data.csv", header=TRUE)

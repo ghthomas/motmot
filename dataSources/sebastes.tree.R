@@ -1,2 +1,2 @@
 require(ape, quietly = TRUE, save = FALSE)
-anolis.tree <- read.nexus("anolis.tree.nex")
+sebastes.tree <- read.nexus("sebastes.tree.nex")
