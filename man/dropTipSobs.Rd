@@ -22,7 +22,7 @@ A vector of mode numeric or character specifying the tips to delete, to be passe
 %}
 
 \value{
-Phylogenetic tree in \code{phylo} format, with an added element \code{Shid}, a vector of numbers of observed but "missing" speciation events per branch, in the same order as the branches in the \code{phylo} object
+Phylogenetic tree in \code{phylo} format, with an added element \code{Shid}, a vector of numbers of observed but "missing" speciation events per branch, in the same order as the branches in the \code{phylo} object}
 \references{
 Ingram, T. 2011. Speciation along a depth gradient in a marine adaptive radiation. Proc. R. Soc. B 278: 613-618.
 }
