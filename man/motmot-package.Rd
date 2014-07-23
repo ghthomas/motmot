@@ -12,9 +12,9 @@ Models of trait macroevolution on trees
 }
 
 \author{
-  Gavin Thomas, Rob Freckleton
+  Gavin Thomas, Rob Freckleton, Travis Ingram
 
-  Maintainer: Gavin Thomas <gavin.thomas@bristol.ac.uk>
+  Maintainer: Gavin Thomas <gavin.thomas@sheffield.ac.uk>
 }
 \references{
   Thomas GH, Freckleton RP, & Szekely T. 2006. Comparative analyses of the influence of 

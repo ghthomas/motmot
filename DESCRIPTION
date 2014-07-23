@@ -4,7 +4,7 @@ Title: Models of Trait Macroevolution on Trees
 Version: 1.1.2
 Depends: R (>= 2.10.0), ape (>= 3.0-7), mvtnorm, MASS, caper, parallel
 Date: 2012-12-06
-Author: Gavin Thomas, Rob Freckleton
+Author: Gavin Thomas, Rob Freckleton, Travis Ingram
 Maintainer: Gavin Thomas <gavin.thomas@sheffield.ac.uk>
 Description: motmot provides functions for fitting models of trait evolution
         on phylogenies for continuous traits. The majority of functions
