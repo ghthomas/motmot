@@ -148,6 +148,7 @@ transformPhylo<-function (phy, model = NULL, meserr = NULL, y = NULL, kappa = NU
             (meserr^2)/(var(y)/height)[1]
         }
     }, OU = {
+        if (is.ultrametric(phy)==FALSE) {stop("This implementation of the OU model can only be applied to ultrametric trees. See Slater, 2014 DOI: 10.1111/2041-210X.12201")
         if (is.null(meserr) == FALSE) {
             height <- max(branching.times(phy))
             interns <- which(phy$edge[, 2] > n)
@@ -156,18 +157,13 @@ transformPhylo<-function (phy, model = NULL, meserr = NULL, y = NULL, kappa = NU
         times <- branching.times(phy)
         names(times) <- (Ntip(phy) + 1):(Ntip(phy) + Nnode(phy))
         Tmax <- times[1]
-        phy2 <- phy
-        for (i in 1:length(phy$edge.length)) {
-            bl <- phy$edge.length[i]
-            age <- times[which(names(times) == phy$edge[i, 1])]
-            t1 <- max(times) - age
-            t2 <- t1 + bl
-            phy2$edge.length[i] <- (1/(2 * alpha)) * exp(-2 *
-            alpha * (Tmax - t2)) * (1 - exp(-2 * alpha *
-            t2)) - (1/(2 * alpha)) * exp(-2 * alpha * (Tmax -
-            t1)) * (1 - exp(-2 * alpha * t1))
-        }
-        phy <- phy2
+        age <- times[match(phy$edge[,1], names(times))]
+        bl <- phy$edge.length
+        t1 <- max(times) - age
+        t2 <- t1 + bl
+        
+        phy$edge.length <- (1/(2 * alpha)) * exp(-2 * alpha * (Tmax - t2)) * (1 - exp(-2 * alpha * t2)) - (1/(2 * alpha)) * exp(-2 * alpha * (Tmax - t1)) * (1 - exp(-2 * alpha * t1))
+        
         if (is.null(meserr) == FALSE) {
             phy$edge.length[externs] <- phy$edge.length[externs] +
             (meserr^2)/(var(y)/height)[1]
