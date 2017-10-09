@@ -1,0 +1,1250 @@
+rm(list=ls(all=T))#
+library(motmot.2.0, quietly=T)#
+data(anolis.tree)#
+data(anolis.data)#
+#
+names(anolis.data)#
+attach(anolis.data)#
+anolis.tree#
+#
+male.length <- matrix(Male_SVL, dimnames=list(rownames(anolis.data)))#
+any(is.na(male.length[,1]))#
+#
+complete.male.length <- complete.cases(male.length)#
+missing.species <- rownames(male.length)[!complete.male.length]#
+male.length <- as.matrix(male.length[complete.male.length, ])#
+male.length <- log(male.length)#
+phy <- drop.tip(anolis.tree, missing.species)#
+#
+name.check(phy, male.length)#
+dev.new(height=2, width=2)#
+traitData.plot(y=male.length, phy)
+rm(list=ls(all=T))#
+library(motmot.2.0, quietly=T)#
+data(anolis.tree)#
+data(anolis.data)#
+#
+names(anolis.data)#
+attach(anolis.data)#
+anolis.tree#
+#
+male.length <- matrix(Male_SVL, dimnames=list(rownames(anolis.data)))#
+any(is.na(male.length[,1]))#
+#
+complete.male.length <- complete.cases(male.length)#
+missing.species <- rownames(male.length)[!complete.male.length]#
+male.length <- as.matrix(male.length[complete.male.length, ])#
+male.length <- log(male.length)#
+phy <- drop.tip(anolis.tree, missing.species)#
+#
+# name.check(phy, male.length)#
+# traitData.plot(y=male.length, phy)#
+#
+# bm.ml <- transformPhylo.ML(phy=phy, y=male.length, model="bm")#
+# bm.ml#
+#
+# lambda.ml <- transformPhylo.ML(phy, y=male.length, model="lambda")#
+# lambda.ml#
+#
+# lambda.ml <- transformPhylo.ML(phy, y=male.length, model="lambda", profilePlot=T)#
+#
+# p.value <- 1 - pchisq(lambda.ml$MaximumLikelihood - bm.ml$logLikelihood, 1)#
+# p.value#
+#
+# bm.ml$AICc- lambda.ml$AICc#
+# delta.ml <- transformPhylo.ML(phy, y=male.length, model="delta")#
+# kappa.ml <- transformPhylo.ML(phy, y=male.length, model="kappa")#
+# ou.ml <- transformPhylo.ML(y=y, phy, model="OU")#
+# # psi.ml <- transformPhylo.ML(y=y, phy, model="psi")#
+# acdc.ml <- transformPhylo.ML(y=male.length, phy, model="ACDC")#
+#
+# # acdc.ml#
+#
+# acdc.ml.lambda <- transformPhylo.ML(y=male.length, phy, model="ACDC", lambdaEst=T)#
+# 1 - pchisq(acdc.ml.lambda$MaximumLikelihood - acdc.ml$MaximumLikelihood , 1)#
+#
+# 1 - pchisq(acdc.ml.lambda$MaximumLikelihood - bm.ml$logLikelihood, 2)#
+# # #
+# p.value.2 <- 1 - pchisq(acdc.ml$MaximumLikelihood - bm.ml$logLikelihood , 1)#
+# p.value.2#
+#
+# # #
+# plot(phy, show.tip.label=F)#
+# nodelabels(c(183, 240), c(183, 240))#
+# # Test for different rates in different clades - here with 2 hypothesised unusual rates compared to the background#
+# # This fits the non-censored model of O'Meara et al. (2006)#
+# transformPhylo.ML(male.length, phy=phy, model="clade", nodeIDs=c(183, 240))#
+#
+# nodelabels()#
+phy.clade <- extract.clade(phy, 182)#
+male.length.clade <- as.matrix(male.length[match(phy.clade$tip.label, rownames(male.length)),])
+timeSlice.ml <- transformPhylo.ML(y=male.length.clade, phy=phy.clade, model="timeSlice", splitTime=c(66, 33))
+timeSlice.ml <- transformPhylo.ML(y=male.length.clade, phy=phy.clade, model="timeSlice", splitTime=c(66, 20))
+timeSlice.ml <- transformPhylo.ML(y=male.length.clade, phy=phy.clade, model="timeSlice", splitTime=c(66, 20))
+timeSliceObject <- timeSlice.ml
+cutoff=4
+AICc=TRUE
+lowerBound=1e-6
+upperBound=1000
+if(AICc) {#
+		diff.AICc <- diff(timeSliceObject$timeSlice[,"AICc"])#
+	} else {#
+		diff.AICc <- diff(timeSliceObject$timeSlice[,"AIC"])#
+	}#
+	best.model <- which(diff.AICc < -cutoff)#
+	phy <- timeSliceObject$phy#
+	y <- timeSliceObject$y
+length(best.model) == 0
+best.mod <- 1#
+		model.best <- "BM"#
+		} else {#
+		best.mod <- max(best.model) + 1#
+		model.best <- paste("split", best.mod - 1)#
+		}
+if(length(best.model) == 0) {#
+		best.mod <- 1#
+		model.best <- "BM"#
+		} else {#
+		best.mod <- max(best.model) + 1#
+		model.best <- paste("split", best.mod - 1)#
+		}
+return.top <- timeSliceObject$timeSlice[best.mod, ]#
+		na.test <- which(is.na(return.top))#
+		if(length(na.test) > 0) {#
+		model.param <- return.top[-which(is.na(return.top))]#
+		} else {#
+		model.param <- return.top#
+		}
+best.mod > 1
+rate.location <- which(unlist(gregexpr("rate", names(model.param))) != -1)#
+		rates <- model.param[rate.location]#
+		time.shift.location <- which(unlist(gregexpr("time", names(model.param))) != -1)#
+		shift.time <- model.param[time.shift.location]#
+		lnL <- model.param[1]#
+		phy.time.slice <- transformPhylo(phy, model="timeSlice", timeRates=rates, splitTime=shift.time)#
+		LCI <- NULL#
+		UCI <- NULL
+phy.time.slice <- transformPhylo(phy, model="timeSlice", timeRates=rates, splitTime=sort(shift.time))
+likTraitPhylo(y, phy.time.slice)
+timeSliceObject$timeSlice
+rates
+phy.time.slice <- transformPhylo(phy, model="timeSlice", timeRates=c(1, rates[-1]), splitTime=sort(shift.time))
+phy.time.slice
+shift.time
+foo <- function(param) {#
+				rates.int <- rates#
+				rates.int[i] <- param#
+				ll <- transformPhylo.ll(y=y, phy=phy.time.slice, model="timeSlice", timeRates=rates.int, splitTime=sort(shift.time))$logLikelihood#
+				return(as.numeric(ll - lnL + 1.92))#
+			}
+foo(lowerBound)
+i=1
+foo(lowerBound)
+foo <- function(param) {#
+				ll <- transformPhylo.ll(y=y, phy=phy.time.slice, model="timeSlice", timeRates=c(param, 1, 1), splitTime=sort(shift.time))$logLikelihood#
+				return(as.numeric(ll - lnL + 1.92))#
+			}
+oo(lowerBound)
+foo(lowerBound)
+phy.time.slice <- transformPhylo(phy, model="timeSlice", timeRates=c(rates[-1], 1, 1), splitTime=sort(shift.time))
+phy.time.slice <- transformPhylo(phy, model="timeSlice", timeRates=c(rates[-1], 1), splitTime=sort(shift.time))
+c(rates[-1], 1)
+phy.time.slice <- transformPhylo(phy, model="timeSlice", timeRates=c(rates[-1], 1), splitTime=sort(shift.time))
+foo <- function(param) {#
+				ll <- transformPhylo.ll(y=y, phy=phy.time.slice, model="timeSlice", timeRates=c(param, 1, 1), splitTime=sort(shift.time))$logLikelihood#
+				return(as.numeric(ll - lnL + 1.92))#
+			}
+foo(lowerBound)
+LCI[i] <- uniroot(foo, interval = c(1e-10, ratesSingle))$root
+ratesSingle <-	rates[i]
+ratesSingle
+LCI[i] <- uniroot(foo, interval = c(1e-10, ratesSingle))$root
+foo <- function(param) {#
+				ll <- transformPhylo.ll(y=y, phy=phy.time.slice, model="timeSlice", timeRates=c(1, 1, param), splitTime=sort(shift.time))$logLikelihood#
+				return(as.numeric(ll - lnL + 1.92))#
+			}
+foo(lowerBound)
+LCI[i] <- uniroot(foo, interval = c(1e-10, ratesSingle))$root
+sort(shift.time)
+c(rates[-1], 1)
+phy.time.slice <- transformPhylo(phy, model="timeSlice", timeRates=c(1, rates[-1]), splitTime=sort(shift.time))
+phy.time.slice
+foo <- function(param) {#
+				ll <- transformPhylo.ll(y=y, phy=phy, model="timeSlice", timeRates=c(param, 1, 1), splitTime=sort(shift.time))$logLikelihood#
+				return(as.numeric(ll - lnL + 1.92))#
+			}
+foo(lowerBound)
+LCI[i] <- uniroot(foo, interval = c(1e-10, ratesSingle))$root
+LCI[i] <- uniroot(foo, interval = c(1e-6, ratesSingle))$root
+LCI[i] <- uniroot(foo, interval = c(1e-1, ratesSingle))$root
+ratesSingle
+c(1e-6, ratesSingle)
+rates
+phy.time.slice <- transformPhylo(phy, model="timeSlice", timeRates=rates, splitTime=sort(shift.time))
+foo <- function(param) {#
+				ll <- transformPhylo.ll(y=y, phy=phy, model="timeSlice", timeRates=c(param, 1, 1), splitTime=sort(shift.time))$logLikelihood#
+				return(as.numeric(ll - lnL + 1.92))#
+			}
+foo(lowerBound)
+LCI[i] <- uniroot(foo, interval = c(1e-6, ratesSingle))$root
+param
+foo <- function(param) {#
+				ll <- transformPhylo.ll(y=y, phy=phy.time.slice, model="timeSlice", timeRates=c(param, 1, 1), splitTime=sort(shift.time))$logLikelihood#
+				return(as.numeric(ll - lnL + 1.92))#
+			}
+foo(lowerBound)
+uniroot(foo, interval = c(1e-6, ratesSingle))$root
+oo(lowerBound)
+foo(lowerBound)
+foo(ratesSingle)
+foo(lowerBound)
+foo(lowerBound) < 0
+foo(upperBound) < 0
+UCI[i] <- uniroot(foo, interval = c(ratesSingle, 1000))$root
+UCI
+lowerBound
+foo(1e-100)
+foo(1e-100000000000)
+curve(foo, from=ratesSingle,  to=1000)
+curve(foo, from=ratesSingle,  to=1000)
+uniroot(foo, interval = c(ratesSingle, 1000))$root
+curve(foo, from=ratesSingle,  to=1000)#
+			if(foo(lowerBound) < 0) { #
+				LCI[i] <- uniroot(foo, interval = c(1e-6, ratesSingle))$root 				#
+				} else {#
+				LCI[i] <- NA #
+				}#
+			if(foo(upperBound) < 0) {#
+				UCI[i] <- uniroot(foo, interval = c(ratesSingle, 1000))$root#
+				} else {#
+				UCI[i] <- NA#
+				}#
+			}
+cbind(rates, cbind(LCI, UCI))
+cbind(LCI, UCI)
+for(i in 1:length(rates)) {#
+			ratesSingle <-	rates[i]#
+			foo <- function(param) {#
+				ll <- transformPhylo.ll(y=y, phy=phy.time.slice, model="timeSlice", timeRates=c(param, 1, 1), splitTime=sort(shift.time))$logLikelihood#
+				return(as.numeric(ll - lnL + 1.92))#
+			}#
+			foo(lowerBound) #
+			foo(ratesSingle)#
+			curve(foo, from=ratesSingle,  to=1000)#
+			if(foo(lowerBound) < 0) { #
+				LCI[i] <- uniroot(foo, interval = c(1e-6, ratesSingle))$root 				#
+				} else {#
+				LCI[i] <- NA #
+				}#
+			if(foo(upperBound) < 0) {#
+				UCI[i] <- uniroot(foo, interval = c(ratesSingle, 1000))$root#
+				} else {#
+				UCI[i] <- NA#
+				}#
+			}
+for(i in 1:length(rates)) {#
+			ratesSingle <-	rates[i]#
+			foo <- function(param) {#
+				ll <- transformPhylo.ll(y=y, phy=phy.time.slice, model="timeSlice", timeRates=c(param, 1, 1), splitTime=sort(shift.time))$logLikelihood#
+				return(as.numeric(ll - lnL + 1.92))#
+			}#
+			if(foo(lowerBound) < 0) { #
+				LCI[i] <- uniroot(foo, interval = c(1e-6, ratesSingle))$root 				#
+				} else {#
+				LCI[i] <- NA #
+				}#
+			if(foo(upperBound) < 0) {#
+				UCI[i] <- uniroot(foo, interval = c(ratesSingle, 1000))$root#
+				} else {#
+				UCI[i] <- NA#
+				}#
+			}
+LCI
+UCI
+LCI <- NULL#
+		UCI <- NULL#
+		for(i in 1:length(rates)) {#
+			ratesSingle <-	rates[i]#
+			if(i == 1) {#
+				foo <- function(param) {#
+					ll <- transformPhylo.ll(y=y, phy=phy.time.slice, model="timeSlice", timeRates=c(param, 1, 1), splitTime=sort(shift.time))$logLikelihood#
+					return(as.numeric(ll - lnL + 1.92))#
+				}#
+			}	#
+			if(i == 2) {#
+				foo <- function(param) {#
+					ll <- transformPhylo.ll(y=y, phy=phy.time.slice, model="timeSlice", timeRates=c(1, param, 1), splitTime=sort(shift.time))$logLikelihood#
+					return(as.numeric(ll - lnL + 1.92))#
+				}#
+			}	#
+			if(i == 3) {#
+				foo <- function(param) {#
+					ll <- transformPhylo.ll(y=y, phy=phy.time.slice, model="timeSlice", timeRates=c(1, param, 1), splitTime=sort(shift.time))$logLikelihood#
+					return(as.numeric(ll - lnL + 1.92))#
+				}#
+			}	#
+			if(foo(lowerBound) < 0) { #
+				LCI[i] <- uniroot(foo, interval = c(1e-6, ratesSingle))$root 				#
+				} else {#
+				LCI[i] <- NA #
+				}#
+			if(foo(upperBound) < 0) {#
+				UCI[i] <- uniroot(foo, interval = c(ratesSingle, 1000))$root#
+				} else {#
+				UCI[i] <- NA#
+				}#
+			}
+LCI
+UCI
+rates.output <- cbind(rates, cbind(LCI, UCI))
+rates.output
+LCI <- NULL#
+		UCI <- NULL#
+		for(i in 1:length(rates)) {#
+			ratesSingle <-	rates[i]#
+			if(i == 1) {#
+				foo <- function(param) {#
+					ll <- transformPhylo.ll(y=y, phy=phy.time.slice, model="timeSlice", timeRates=c(param, 1, 1), splitTime=sort(shift.time))$logLikelihood#
+					return(as.numeric(ll - lnL + 1.92))#
+				}#
+			}	#
+			if(i == 2) {#
+				foo <- function(param) {#
+					ll <- transformPhylo.ll(y=y, phy=phy.time.slice, model="timeSlice", timeRates=c(1, param, 1), splitTime=sort(shift.time))$logLikelihood#
+					return(as.numeric(ll - lnL + 1.92))#
+				}#
+			}	#
+			if(i == 3) {#
+				foo <- function(param) {#
+					ll <- transformPhylo.ll(y=y, phy=phy.time.slice, model="timeSlice", timeRates=c(1, 1, param), splitTime=sort(shift.time))$logLikelihood#
+					return(as.numeric(ll - lnL + 1.92))#
+				}#
+			}	#
+			if(foo(lowerBound) < 0) { #
+				LCI[i] <- uniroot(foo, interval = c(1e-6, ratesSingle))$root 				#
+				} else {#
+				LCI[i] <- NA #
+				}#
+			if(foo(upperBound) < 0) {#
+				UCI[i] <- uniroot(foo, interval = c(ratesSingle, 1000))$root#
+				} else {#
+				UCI[i] <- NA#
+				}#
+			}
+cbind(rates, cbind(LCI, UCI))
+UCI[i] <- uniroot(foo, interval = c(ratesSingle, 100))$root
+phy.time.slice <- transformPhylo(phy, model="timeSlice", timeRates=rates, splitTime=sort(shift.time))#
+		LCI <- NULL#
+		UCI <- NULL#
+		for(i in 1:length(rates)) {#
+			ratesSingle <-	rates[i]#
+			if(i == 1) {#
+				foo <- function(param) {#
+					ll <- transformPhylo.ll(y=y, phy=phy.time.slice, model="timeSlice", timeRates=c(param, 1, 1), splitTime=sort(shift.time))$logLikelihood#
+					return(as.numeric(ll - lnL + 1.92))#
+				}#
+			}	#
+			if(i == 2) {#
+				foo <- function(param) {#
+					ll <- transformPhylo.ll(y=y, phy=phy.time.slice, model="timeSlice", timeRates=c(1, param, 1), splitTime=sort(shift.time))$logLikelihood#
+					return(as.numeric(ll - lnL + 1.92))#
+				}#
+			}	#
+			if(i == 3) {#
+				foo <- function(param) {#
+					ll <- transformPhylo.ll(y=y, phy=phy.time.slice, model="timeSlice", timeRates=c(1, 1, param), splitTime=sort(shift.time))$logLikelihood#
+					return(as.numeric(ll - lnL + 1.92))#
+				}#
+			}	#
+			if(foo(lowerBound) < 0) { #
+				LCI[i] <- uniroot(foo, interval = c(1e-6, ratesSingle))$root 				#
+				} else {#
+				LCI[i] <- NA #
+				}#
+			if(foo(10000) < 0) {#
+				UCI[i] <- uniroot(foo, interval = c(ratesSingle, 10000))$root#
+				} else {#
+				UCI[i] <- NA#
+				}#
+			}#
+		rates.output <- cbind(rates, cbind(LCI, UCI))
+rates.output
+curve(foo)
+curve(foo(1))
+curve(foo(x))
+curve(foo(x), from=1, to=2)
+LCI <- NULL#
+		UCI <- NULL#
+		for(i in 1:length(rates)) {#
+			ratesSingle <-	rates[i]#
+			if(i == 1) {#
+				phy.time.slice <- transformPhylo(phy, model="timeSlice", timeRates=c(1, param[-1]), splitTime=sort(shift.time))#
+				foo <- function(param) {#
+					ll <- transformPhylo.ll(y=y, phy=phy.time.slice, model="timeSlice", timeRates=c(param, 1, 1), splitTime=sort(shift.time))$logLikelihood#
+					return(as.numeric(ll - lnL + 1.92))#
+				}#
+			}	#
+			if(i == 2) {#
+				foo <- function(param) {#
+					ll <- transformPhylo.ll(y=y, phy=phy.time.slice, model="timeSlice", timeRates=c(1, param, 1), splitTime=sort(shift.time))$logLikelihood#
+					return(as.numeric(ll - lnL + 1.92))#
+				}#
+			}	#
+			if(i == 3) {#
+				foo <- function(param) {#
+					ll <- transformPhylo.ll(y=y, phy=phy.time.slice, model="timeSlice", timeRates=c(1, 1, param), splitTime=sort(shift.time))$logLikelihood#
+					return(as.numeric(ll - lnL + 1.92))#
+				}#
+			}	#
+			if(foo(lowerBound) < 0) { #
+				LCI[i] <- uniroot(foo, interval = c(1e-6, ratesSingle))$root 				#
+				} else {#
+				LCI[i] <- NA #
+				}#
+			if(foo(10000) < 0) {#
+				UCI[i] <- uniroot(foo, interval = c(ratesSingle, 10000))$root#
+				} else {#
+				UCI[i] <- NA#
+				}#
+			}
+LCI <- NULL#
+		UCI <- NULL#
+		for(i in 1:length(rates)) {#
+			ratesSingle <-	rates[i]#
+			if(i == 1) {#
+				phy.time.slice <- transformPhylo(phy, model="timeSlice", timeRates=c(1, rates[-1]), splitTime=sort(shift.time))#
+				foo <- function(param) {#
+					ll <- transformPhylo.ll(y=y, phy=phy.time.slice, model="timeSlice", timeRates=c(param, 1, 1), splitTime=sort(shift.time))$logLikelihood#
+					return(as.numeric(ll - lnL + 1.92))#
+				}#
+			}	#
+			if(i == 2) {#
+				foo <- function(param) {#
+					ll <- transformPhylo.ll(y=y, phy=phy.time.slice, model="timeSlice", timeRates=c(1, param, 1), splitTime=sort(shift.time))$logLikelihood#
+					return(as.numeric(ll - lnL + 1.92))#
+				}#
+			}	#
+			if(i == 3) {#
+				foo <- function(param) {#
+					ll <- transformPhylo.ll(y=y, phy=phy.time.slice, model="timeSlice", timeRates=c(1, 1, param), splitTime=sort(shift.time))$logLikelihood#
+					return(as.numeric(ll - lnL + 1.92))#
+				}#
+			}	#
+			if(foo(lowerBound) < 0) { #
+				LCI[i] <- uniroot(foo, interval = c(1e-6, ratesSingle))$root 				#
+				} else {#
+				LCI[i] <- NA #
+				}#
+			if(foo(10000) < 0) {#
+				UCI[i] <- uniroot(foo, interval = c(ratesSingle, 10000))$root#
+				} else {#
+				UCI[i] <- NA#
+				}#
+			}
+rates[-1]
+phy.time.slice <- transformPhylo(phy, model="timeSlice", timeRates=c(1, rates[-1]), splitTime=sort(shift.time))
+i
+if(i == 1) {#
+				phy.time.slice <- transformPhylo(phy, model="timeSlice", timeRates=c(1e-6, rates[-1]), splitTime=sort(shift.time))#
+				foo <- function(param) {#
+					ll <- transformPhylo.ll(y=y, phy=phy.time.slice, model="timeSlice", timeRates=c(param, 1, 1), splitTime=sort(shift.time))$logLikelihood#
+					return(as.numeric(ll - lnL + 1.92))#
+				}#
+			}
+LCI[i] <- uniroot(foo, interval = c(1e-6, ratesSingle))$root
+foo(lowerBound)
+if(i == 1) {#
+				phy.time.slice <- transformPhylo(phy, model="timeSlice", timeRates=c(2, rates[-1]), splitTime=sort(shift.time))#
+				foo <- function(param) {#
+					ll <- transformPhylo.ll(y=y, phy=phy.time.slice, model="timeSlice", timeRates=c(param, 1, 1), splitTime=sort(shift.time))$logLikelihood#
+					return(as.numeric(ll - lnL + 1.92))#
+				}#
+			}
+if(foo(lowerBound) < 0) { #
+				LCI[i] <- uniroot(foo, interval = c(1e-6, ratesSingle))$root 				#
+				} else {#
+				LCI[i] <- NA #
+				}#
+			if(foo(10000) < 0) {#
+				UCI[i] <- uniroot(foo, interval = c(ratesSingle, 10000))$root#
+				} else {#
+				UCI[i] <- NA#
+				}#
+			}
+c(1, rates[-1])
+ratesSingle <-	rates[i]#
+			if(i == 1) {#
+				phy.time.slice <- transformPhylo(phy, model="timeSlice", timeRates=c(rates[1], rates[-1]), splitTime=sort(shift.time))#
+				foo <- function(param) {#
+					ll <- transformPhylo.ll(y=y, phy=phy.time.slice, model="timeSlice", timeRates=c(param, 1, 1), splitTime=sort(shift.time))$logLikelihood#
+					return(as.numeric(ll - lnL + 1.92))#
+				}#
+			}
+if(foo(lowerBound) < 0) { #
+				LCI[i] <- uniroot(foo, interval = c(1e-6, ratesSingle))$root 				#
+				} else {#
+				LCI[i] <- NA #
+				}#
+			if(foo(10000) < 0) {#
+				UCI[i] <- uniroot(foo, interval = c(ratesSingle, 10000))$root#
+				} else {#
+				UCI[i] <- NA#
+				}#
+			}
+LCI
+UCI
+phy.time.slice <- transformPhylo(phy, model="timeSlice", timeRates=rates, splitTime=sort(shift.time))
+phy.time.slice
+for(i in 1:length(rates)) {#
+			ratesSingle <-	rates[i]#
+			if(i == 1) {#
+				foo <- function(param) {#
+					ll <- transformPhylo.ll(y=y, phy=phy.time.slice, model="timeSlice", timeRates=c(param, 1, 1), splitTime=sort(shift.time))$logLikelihood#
+					return(as.numeric(ll - lnL + 1.92))#
+				}#
+			}	#
+			if(i == 2) {#
+				foo <- function(param) {#
+					ll <- transformPhylo.ll(y=y, phy=phy.time.slice, model="timeSlice", timeRates=c(1, param, 1), splitTime=sort(shift.time))$logLikelihood#
+					return(as.numeric(ll - lnL + 1.92))#
+				}#
+			}	#
+			if(i == 3) {#
+				foo <- function(param) {#
+					ll <- transformPhylo.ll(y=y, phy=phy.time.slice, model="timeSlice", timeRates=c(1, 1, param), splitTime=sort(shift.time))$logLikelihood#
+					return(as.numeric(ll - lnL + 1.92))#
+				}#
+			}	#
+			if(foo(lowerBound) < 0) { #
+				LCI[i] <- uniroot(foo, interval = c(1e-6, ratesSingle))$root 				#
+				} else {#
+				LCI[i] <- NA #
+				}#
+			if(foo(10000) < 0) {#
+				UCI[i] <- uniroot(foo, interval = c(ratesSingle, 10000))$root#
+				} else {#
+				UCI[i] <- NA#
+				}#
+			}
+UCI
+LCI
+ratesSingle
+i
+i=1
+ratesSingle <-	rates[i]#
+			if(i == 1) {#
+				foo <- function(param) {#
+					ll <- transformPhylo.ll(y=y, phy=phy, model="timeSlice", timeRates=c(param, 1, 1), splitTime=sort(shift.time))$logLikelihood#
+					return(as.numeric(ll - lnL + 1.92))#
+				}#
+			}
+foo(lowerBound)
+LCI[i] <- uniroot(foo, interval = c(1e-6, ratesSingle))$root
+if(foo(lowerBound) < 0) { #
+				LCI[i] <- uniroot(foo, interval = c(1e-6, ratesSingle))$root 				#
+				} else {#
+				LCI[i] <- NA #
+				}#
+			if(foo(10000) < 0) {#
+				UCI[i] <- uniroot(foo, interval = c(ratesSingle, 10000))$root#
+				} else {#
+				UCI[i] <- NA#
+				}#
+			}
+if(i == 1) {#
+				phy.time.slice <- transformPhylo(phy, model="timeSlice", timeRates=c(1, rates[-1]), splitTime=sort(shift.time))#
+				foo <- function(param) {#
+					ll <- transformPhylo.ll(y=y, phy=phy.time.slice, model="timeSlice", timeRates=c(param, 1, 1), splitTime=sort(shift.time))$logLikelihood#
+					return(as.numeric(ll - lnL + 1.92))#
+				}#
+			}
+if(foo(lowerBound) < 0) { #
+				LCI[i] <- uniroot(foo, interval = c(1e-6, ratesSingle))$root 				#
+				} else {#
+				LCI[i] <- NA #
+				}#
+			if(foo(10000) < 0) {#
+				UCI[i] <- uniroot(foo, interval = c(ratesSingle, 10000))$root#
+				} else {#
+				UCI[i] <- NA#
+				}#
+			}
+c(1, rates[-1])
+timeSlice.ml <- transformPhylo.ML(y=male.length.clade, phy=phy.clade, model="timeSlice", splitTime=c(40, 20))
+timeSliceSummary(timeSlice.ml, cutoff=10)
+timeSliceObject <- timeSlice.ml
+if(AICc) {#
+		diff.AICc <- diff(timeSliceObject$timeSlice[,"AICc"])#
+	} else {#
+		diff.AICc <- diff(timeSliceObject$timeSlice[,"AIC"])#
+	}#
+	best.model <- which(diff.AICc < -cutoff)#
+	phy <- timeSliceObject$phy#
+	y <- timeSliceObject$y
+length(best.model)
+timeSlice.ml <- transformPhylo.ML(y=male.length.clade, phy=phy.clade, model="timeSlice", splitTime=c(20, 10))
+timeSlice.ml <- transformPhylo.ML(y=male.length.clade, phy=phy.clade, model="timeSlice", splitTime=c(60, 10))
+timeSlice.ml <- transformPhylo.ML(y=male.length.clade, phy=phy.clade, model="timeSlice", splitTime=c(60, 2))
+timeSlice.ml <- transformPhylo.ML(y=male.length.clade, phy=phy.clade, model="timeSlice", splitTime=c(20, 2))
+timeSlice.ml <- transformPhylo.ML(y=male.length.clade, phy=phy.clade, model="timeSlice", splitTime=c(55,10, 2))
+timeSlice.ml <- transformPhylo.ML(y=male.length.clade, phy=phy.clade, model="timeSlice", splitTime=c(40, , 2))
+timeSlice.ml <- transformPhylo.ML(y=male.length.clade, phy=phy.clade, model="timeSlice", splitTime=c(40, 2))
+timeSlice.ml <- transformPhylo.ML(y=male.length.clade, phy=phy.clade, model="timeSlice", splitTime=c(40))
+timeSliceObject <- timeSlice.ml
+timeSlice.ml <- transformPhylo.ML(y=male.length.clade, phy=phy.clade, model="timeSlice", splitTime=c(10))
+timeSlice.ml <- transformPhylo.ML(y=male.length.clade, phy=phy.clade, model="timeSlice", splitTime=c(40))
+timeSlice.ml <- transformPhylo.ML(y=male.length.clade, phy=phy.clade, model="timeSlice", splitTime=c(60))
+timeSliceObject <- timeSlice.ml
+cutoff=1
+if(AICc) {#
+		diff.AICc <- diff(timeSliceObject$timeSlice[,"AICc"])#
+	} else {#
+		diff.AICc <- diff(timeSliceObject$timeSlice[,"AIC"])#
+	}#
+	best.model <- which(diff.AICc < -cutoff)#
+	phy <- timeSliceObject$phy#
+	y <- timeSliceObject$y
+length(best.model)
+cutoff
+cutoff=0.1
+if(AICc) {#
+		diff.AICc <- diff(timeSliceObject$timeSlice[,"AICc"])#
+	} else {#
+		diff.AICc <- diff(timeSliceObject$timeSlice[,"AIC"])#
+	}#
+	best.model <- which(diff.AICc < -cutoff)#
+	phy <- timeSliceObject$phy#
+	y <- timeSliceObject$y
+if(length(best.model) == 0) {#
+		best.mod <- 1#
+		model.best <- "BM"#
+		} else {#
+		best.mod <- max(best.model) + 1#
+		model.best <- paste("split", best.mod - 1)#
+		}
+return.top <- timeSliceObject$timeSlice[best.mod, ]#
+		na.test <- which(is.na(return.top))#
+		if(length(na.test) > 0) {#
+		model.param <- return.top[-which(is.na(return.top))]#
+		} else {#
+		model.param <- return.top#
+		}
+best.mod > 1
+rate.location <- which(unlist(gregexpr("rate", names(model.param))) != -1)#
+		rates <- model.param[rate.location]#
+		time.shift.location <- which(unlist(gregexpr("time", names(model.param))) != -1)#
+		shift.time <- model.param[time.shift.location]#
+		lnL <- model.param[1]#
+		phy.time.slice <- transformPhylo(phy, model="timeSlice", timeRates=rates, splitTime=sort(shift.time))#
+		LCI <- NULL#
+		UCI <- NULL
+length(rates)
+i
+ratesSingle <-	rates[i]#
+			if(i == 1) {#
+					foo <- function(param) {#
+					ll <- transformPhylo.ll(y=y, phy=phy.time.slice, model="timeSlice", timeRates=c(param, 1, 1), splitTime=sort(shift.time))$logLikelihood#
+					return(as.numeric(ll - lnL + 1.92))#
+				}#
+			}
+if(foo(lowerBound) < 0) { #
+				LCI[i] <- uniroot(foo, interval = c(1e-6, ratesSingle))$root 				#
+				} else {#
+				LCI[i] <- NA #
+				}#
+			if(foo(10000) < 0) {#
+				UCI[i] <- uniroot(foo, interval = c(ratesSingle, 10000))$root#
+				} else {#
+				UCI[i] <- NA#
+				}#
+			}
+foo(lowerBound)
+foo(1)
+ratesSingle <-	rates[i]#
+			if(i == 1) {#
+					foo <- function(param) {#
+					ll <- transformPhylo.ll(y=y, phy=phy.time.slice, model="timeSlice", timeRates=c(param, 1), splitTime=sort(shift.time))$logLikelihood#
+					return(as.numeric(ll - lnL + 1.92))#
+				}#
+			}	#
+			if(i == 2) {#
+				foo <- function(param) {#
+					phy.time.slice <- transformPhylo(phy, model="timeSlice", timeRates=c(rates[1], rates[-1]), splitTime=sort(shift.time))#
+					ll <- transformPhylo.ll(y=y, phy=phy.time.slice, model="timeSlice", timeRates=c(1, param), splitTime=sort(shift.time))$logLikelihood#
+					return(as.numeric(ll - lnL + 1.92))#
+				}#
+			}	#
+			if(i == 3) {#
+				foo <- function(param) {#
+					ll <- transformPhylo.ll(y=y, phy=phy.time.slice, model="timeSlice", timeRates=c(1, 1, param), splitTime=sort(shift.time))$logLikelihood#
+					return(as.numeric(ll - lnL + 1.92))#
+				}#
+			}	#
+			if(foo(lowerBound) < 0) { #
+				LCI[i] <- uniroot(foo, interval = c(1e-6, ratesSingle))$root 				#
+				} else {#
+				LCI[i] <- NA #
+				}#
+			if(foo(10000) < 0) {#
+				UCI[i] <- uniroot(foo, interval = c(ratesSingle, 10000))$root#
+				} else {#
+				UCI[i] <- NA#
+				}#
+			}
+LCI
+UCI
+LCI <- NULL#
+		UCI <- NULL#
+		for(i in 1:length(rates)) {#
+			ratesSingle <-	rates[i]#
+			if(i == 1) {#
+					foo <- function(param) {#
+					ll <- transformPhylo.ll(y=y, phy=phy.time.slice, model="timeSlice", timeRates=c(param, 1), splitTime=sort(shift.time))$logLikelihood#
+					return(as.numeric(ll - lnL + 1.92))#
+				}#
+			}	#
+			if(i == 2) {#
+				foo <- function(param) {#
+					phy.time.slice <- transformPhylo(phy, model="timeSlice", timeRates=c(rates[1], rates[-1]), splitTime=sort(shift.time))#
+					ll <- transformPhylo.ll(y=y, phy=phy.time.slice, model="timeSlice", timeRates=c(1, param), splitTime=sort(shift.time))$logLikelihood#
+					return(as.numeric(ll - lnL + 1.92))#
+				}#
+			}	#
+			if(i == 3) {#
+				foo <- function(param) {#
+					ll <- transformPhylo.ll(y=y, phy=phy.time.slice, model="timeSlice", timeRates=c(1, 1, param), splitTime=sort(shift.time))$logLikelihood#
+					return(as.numeric(ll - lnL + 1.92))#
+				}#
+			}	#
+			if(foo(lowerBound) < 0) { #
+				LCI[i] <- uniroot(foo, interval = c(1e-6, ratesSingle))$root 				#
+				} else {#
+				LCI[i] <- NA #
+				}#
+			if(foo(10000) < 0) {#
+				UCI[i] <- uniroot(foo, interval = c(ratesSingle, 10000))$root#
+				} else {#
+				UCI[i] <- NA#
+				}#
+			}
+cbind(rates, cbind(LCI, UCI))
+timeSlice.ml <- transformPhylo.ML(y=male.length.clade, phy=phy.clade, model="timeSlice", splitTime=c(30))
+timeSlice.ml <- transformPhylo.ML(y=male.length.clade, phy=phy.clade, model="timeSlice", splitTime=c(30, 25))
+timeSliceSummary(timeSlice.ml, cutoff=10)
+timeSliceObject <- timeSlice.ml
+if(AICc) {#
+		diff.AICc <- diff(timeSliceObject$timeSlice[,"AICc"])#
+	} else {#
+		diff.AICc <- diff(timeSliceObject$timeSlice[,"AIC"])#
+	}#
+	best.model <- which(diff.AICc < -cutoff)#
+	phy <- timeSliceObject$phy#
+	y <- timeSliceObject$y
+best.mod <- max(best.model) + 1#
+		model.best <- paste("split", best.mod - 1)
+best.model
+best.model =1
+best.mod <- max(best.model) + 1
+model.best <- paste("split", best.mod - 1)
+return.top <- timeSliceObject$timeSlice[best.mod, ]#
+		na.test <- which(is.na(return.top))#
+		if(length(na.test) > 0) {#
+		model.param <- return.top[-which(is.na(return.top))]#
+		} else {#
+		model.param <- return.top#
+		}
+best.mod > 1
+rate.location <- which(unlist(gregexpr("rate", names(model.param))) != -1)#
+		rates <- model.param[rate.location]#
+		time.shift.location <- which(unlist(gregexpr("time", names(model.param))) != -1)#
+		shift.time <- model.param[time.shift.location]#
+		lnL <- model.param[1]#
+		phy.time.slice <- transformPhylo(phy, model="timeSlice", timeRates=rates, splitTime=sort(shift.time))#
+		LCI <- NULL#
+		UCI <- NULL
+phy.time.slice
+length(rates)
+model.param
+rate.location <- which(unlist(gregexpr("rate", names(model.param))) != -1)#
+		rates <- model.param[rate.location]#
+		time.shift.location <- which(unlist(gregexpr("time", names(model.param))) != -1)#
+		shift.time <- model.param[time.shift.location]#
+		lnL <- model.param[1]#
+		phy.time.slice <- transformPhylo(phy, model="timeSlice", timeRates=rates, splitTime=sort(shift.time))#
+		LCI <- NULL#
+		UCI <- NULL
+for(i in 1:length(rates)) {#
+			ratesSingle <-	rates[i]#
+			if(i == 1) {#
+					foo <- function(param) {#
+					ll <- transformPhylo.ll(y=y, phy=phy.time.slice, model="timeSlice", timeRates=c(param, 1), splitTime=sort(shift.time))$logLikelihood#
+					return(as.numeric(ll - lnL + 1.92))#
+				}#
+			}	#
+			if(i == 2) {#
+				foo <- function(param) {#
+					phy.time.slice <- transformPhylo(phy, model="timeSlice", timeRates=c(rates[1], rates[-1]), splitTime=sort(shift.time))#
+					ll <- transformPhylo.ll(y=y, phy=phy.time.slice, model="timeSlice", timeRates=c(1, param), splitTime=sort(shift.time))$logLikelihood#
+					return(as.numeric(ll - lnL + 1.92))#
+				}#
+			}	#
+			if(i == 3) {#
+				foo <- function(param) {#
+					ll <- transformPhylo.ll(y=y, phy=phy.time.slice, model="timeSlice", timeRates=c(1, 1, param), splitTime=sort(shift.time))$logLikelihood#
+					return(as.numeric(ll - lnL + 1.92))#
+				}#
+			}	#
+			if(foo(lowerBound) < 0) { #
+				LCI[i] <- uniroot(foo, interval = c(1e-6, ratesSingle))$root 				#
+				} else {#
+				LCI[i] <- NA #
+				}#
+			if(foo(10000) < 0) {#
+				UCI[i] <- uniroot(foo, interval = c(ratesSingle, 10000))$root#
+				} else {#
+				UCI[i] <- NA#
+				}#
+			}
+LCI <- NULL#
+		UCI <- NULL#
+		for(i in 1:length(rates)) {#
+			ratesSingle <-	rates[i]#
+			if(i == 1) {#
+					foo <- function(param) {#
+					ll <- transformPhylo.ll(y=y, phy=phy.time.slice, model="timeSlice", timeRates=c(param, 1, 1), splitTime=sort(shift.time))$logLikelihood#
+					return(as.numeric(ll - lnL + 1.92))#
+				}#
+			}	#
+			if(i == 2) {#
+				foo <- function(param) {#
+					phy.time.slice <- transformPhylo(phy, model="timeSlice", timeRates=c(rates[1], rates[-1]), splitTime=sort(shift.time))#
+					ll <- transformPhylo.ll(y=y, phy=phy.time.slice, model="timeSlice", timeRates=c(1, param, 1), splitTime=sort(shift.time))$logLikelihood#
+					return(as.numeric(ll - lnL + 1.92))#
+				}#
+			}	#
+			if(i == 3) {#
+				foo <- function(param) {#
+					ll <- transformPhylo.ll(y=y, phy=phy.time.slice, model="timeSlice", timeRates=c(1, 1, param), splitTime=sort(shift.time))$logLikelihood#
+					return(as.numeric(ll - lnL + 1.92))#
+				}#
+			}	#
+			if(foo(lowerBound) < 0) { #
+				LCI[i] <- uniroot(foo, interval = c(1e-6, ratesSingle))$root 				#
+				} else {#
+				LCI[i] <- NA #
+				}#
+			if(foo(10000) < 0) {#
+				UCI[i] <- uniroot(foo, interval = c(ratesSingle, 10000))$root#
+				} else {#
+				UCI[i] <- NA#
+				}#
+			}
+i
+foo(lowerBound) < 0
+uniroot(foo, interval = c(1e-6, ratesSingle))$root
+uniroot(foo, interval = c(1e-6, ratesSingle))
+i=2
+ratesSingle <-	rates[i]#
+			if(i == 1) {#
+					foo <- function(param) {#
+					ll <- transformPhylo.ll(y=y, phy=phy.time.slice, model="timeSlice", timeRates=c(param, 1, 1), splitTime=sort(shift.time))$logLikelihood#
+					return(as.numeric(ll - lnL + 1.92))#
+				}#
+			}	#
+			if(i == 2) {#
+				foo <- function(param) {#
+					phy.time.slice <- transformPhylo(phy, model="timeSlice", timeRates=c(rates[1], rates[-1]), splitTime=sort(shift.time))#
+					ll <- transformPhylo.ll(y=y, phy=phy.time.slice, model="timeSlice", timeRates=c(1, param, 1), splitTime=sort(shift.time))$logLikelihood#
+					return(as.numeric(ll - lnL + 1.92))#
+				}#
+			}	#
+			if(i == 3) {#
+				foo <- function(param) {#
+					ll <- transformPhylo.ll(y=y, phy=phy.time.slice, model="timeSlice", timeRates=c(1, 1, param), splitTime=sort(shift.time))$logLikelihood#
+					return(as.numeric(ll - lnL + 1.92))#
+				}#
+			}	#
+			if(foo(lowerBound) < 0) { #
+				LCI[i] <- uniroot(foo, interval = c(1e-6, ratesSingle))$root 				#
+				} else {#
+				LCI[i] <- NA #
+				}#
+			if(foo(10000) < 0) {#
+				UCI[i] <- uniroot(foo, interval = c(ratesSingle, 10000))$root#
+				} else {#
+				UCI[i] <- NA#
+				}#
+			}
+cbind(LCI, UCI)
+rates
+i=3
+ratesSingle <-	rates[i]#
+			if(i == 1) {#
+					foo <- function(param) {#
+					ll <- transformPhylo.ll(y=y, phy=phy.time.slice, model="timeSlice", timeRates=c(param, 1, 1), splitTime=sort(shift.time))$logLikelihood#
+					return(as.numeric(ll - lnL + 1.92))#
+				}#
+			}	#
+			if(i == 2) {#
+				foo <- function(param) {#
+					phy.time.slice <- transformPhylo(phy, model="timeSlice", timeRates=c(rates[1], rates[-1]), splitTime=sort(shift.time))#
+					ll <- transformPhylo.ll(y=y, phy=phy.time.slice, model="timeSlice", timeRates=c(1, param, 1), splitTime=sort(shift.time))$logLikelihood#
+					return(as.numeric(ll - lnL + 1.92))#
+				}#
+			}	#
+			if(i == 3) {#
+				foo <- function(param) {#
+					ll <- transformPhylo.ll(y=y, phy=phy.time.slice, model="timeSlice", timeRates=c(1, 1, param), splitTime=sort(shift.time))$logLikelihood#
+					return(as.numeric(ll - lnL + 1.92))#
+				}#
+			}	#
+			if(foo(lowerBound) < 0) { #
+				LCI[i] <- uniroot(foo, interval = c(1e-6, ratesSingle))$root 				#
+				} else {#
+				LCI[i] <- NA #
+				}#
+			if(foo(10000) < 0) {#
+				UCI[i] <- uniroot(foo, interval = c(ratesSingle, 10000))$root#
+				} else {#
+				UCI[i] <- NA#
+				}#
+			}#
+		rates.output <- cbind(rates, cbind(LCI, UCI))
+rates.output
+lowerBound = 1e-8
+ratesSingle == lowerBound
+ratesSingle
+i=1
+ratesSingle <-	rates[i]
+ratesSingle == lowerBound
+any(ratesSingle == lowerBound, ratesSingle == upperBound)
+phy.time.slice <- transformPhylo(phy, model="timeSlice", timeRates=rates, splitTime=sort(shift.time))#
+		LCI <- NULL#
+		UCI <- NULL#
+		for(i in 1:length(rates)) {#
+			ratesSingle <-	rates[i]#
+			if(i == 1) {#
+					foo <- function(param) {#
+					ll <- transformPhylo.ll(y=y, phy=phy.time.slice, model="timeSlice", timeRates=c(param, 1, 1), splitTime=sort(shift.time))$logLikelihood#
+					return(as.numeric(ll - lnL + 1.92))#
+				}#
+			}	#
+			if(i == 2) {#
+				foo <- function(param) {#
+					phy.time.slice <- transformPhylo(phy, model="timeSlice", timeRates=c(rates[1], rates[-1]), splitTime=sort(shift.time))#
+					ll <- transformPhylo.ll(y=y, phy=phy.time.slice, model="timeSlice", timeRates=c(1, param, 1), splitTime=sort(shift.time))$logLikelihood#
+					return(as.numeric(ll - lnL + 1.92))#
+				}#
+			}	#
+			if(i == 3) {#
+				foo <- function(param) {#
+					ll <- transformPhylo.ll(y=y, phy=phy.time.slice, model="timeSlice", timeRates=c(1, 1, param), splitTime=sort(shift.time))$logLikelihood#
+					return(as.numeric(ll - lnL + 1.92))#
+				}#
+			}	#
+		if(!any(ratesSingle == lowerBound, ratesSingle == upperBound)) {#
+			if(foo(lowerBound) < 0) { #
+				LCI[i] <- uniroot(foo, interval = c(lowerBound, ratesSingle))$root 				#
+				} else {#
+				LCI[i] <- NA #
+				}#
+			if(foo(10000) < 0) {#
+				UCI[i] <- uniroot(foo, interval = c(ratesSingle, upperBound))$root#
+				} else {#
+				UCI[i] <- NA#
+				}#
+			}#
+		}	#
+		rates.output <- cbind(rates, cbind(LCI, UCI))
+rates.output
+timeSlice.ml <- transformPhylo.ML(y=male.length.clade, phy=phy.clade, model="timeSlice", splitTime=c(60, 25))
+timeSlice.ml <- transformPhylo.ML(y=male.length.clade, phy=phy.clade, model="timeSlice", splitTime=c(60, 25, 5))
+timeSlice.ml <- transformPhylo.ML(y=male.length.clade, phy=phy.clade, model="timeSlice", splitTime=c(60, 25, 5))#
+#
+timeSliceSummary(timeSlice.ml, cutoff=10)
+timeSliceObject <- timeSlice.ml
+cutoff
+if(AICc) {#
+		diff.AICc <- diff(timeSliceObject$timeSlice[,"AICc"])#
+	} else {#
+		diff.AICc <- diff(timeSliceObject$timeSlice[,"AIC"])#
+	}#
+	best.model <- which(diff.AICc < -cutoff)#
+	phy <- timeSliceObject$phy#
+	y <- timeSliceObject$y#
+#
+	if(length(best.model) == 0) {#
+		best.mod <- 1#
+		model.best <- "BM"#
+		} else {#
+		best.mod <- max(best.model) + 1#
+		model.best <- paste("split", best.mod - 1)#
+		}#
+#
+		return.top <- timeSliceObject$timeSlice[best.mod, ]#
+		na.test <- which(is.na(return.top))#
+		if(length(na.test) > 0) {#
+		model.param <- return.top[-which(is.na(return.top))]#
+		} else {#
+		model.param <- return.top#
+		}
+rates
+rate.location <- which(unlist(gregexpr("rate", names(model.param))) != -1)#
+		rates <- model.param[rate.location]#
+		time.shift.location <- which(unlist(gregexpr("time", names(model.param))) != -1)#
+		shift.time <- model.param[time.shift.location]#
+		lnL <- model.param[1]#
+		phy.time.slice <- transformPhylo(phy, model="timeSlice", timeRates=rates, splitTime=sort(shift.time))#
+		LCI <- NULL#
+		UCI <- NULL#
+		for(i in 1:length(rates)) {#
+			ratesSingle <-	rates[i]#
+			if(i == 1) {#
+					foo <- function(param) {#
+					ll <- transformPhylo.ll(y=y, phy=phy.time.slice, model="timeSlice", timeRates=c(param, 1, 1), splitTime=sort(shift.time))$logLikelihood#
+					return(as.numeric(ll - lnL + 1.92))#
+				}#
+			}	#
+			if(i == 2) {#
+				foo <- function(param) {#
+					phy.time.slice <- transformPhylo(phy, model="timeSlice", timeRates=c(rates[1], rates[-1]), splitTime=sort(shift.time))#
+					ll <- transformPhylo.ll(y=y, phy=phy.time.slice, model="timeSlice", timeRates=c(1, param, 1), splitTime=sort(shift.time))$logLikelihood#
+					return(as.numeric(ll - lnL + 1.92))#
+				}#
+			}	#
+			if(i == 3) {#
+				foo <- function(param) {#
+					ll <- transformPhylo.ll(y=y, phy=phy.time.slice, model="timeSlice", timeRates=c(1, 1, param), splitTime=sort(shift.time))$logLikelihood#
+					return(as.numeric(ll - lnL + 1.92))#
+				}#
+			}	#
+		if(!any(ratesSingle == lowerBound, ratesSingle == upperBound)) {#
+			if(foo(lowerBound) < 0) { #
+				LCI[i] <- uniroot(foo, interval = c(lowerBound, ratesSingle))$root 				#
+				} else {#
+				LCI[i] <- NA #
+				}#
+			if(foo(10000) < 0) {#
+				UCI[i] <- uniroot(foo, interval = c(ratesSingle, upperBound))$root#
+				} else {#
+				UCI[i] <- NA#
+				}#
+			}#
+		}	#
+		rates.output <- cbind(rates, cbind(LCI, UCI))
+lowerBound
+any(ratesSingle == lowerBound, ratesSingle == upperBound)
+ratesSingle == lowerBound
+ratesSingle
+i
+ratesSingle <-	rates[i]
+rates
+which(unlist(gregexpr("rate", names(model.param))) != -1)
+model.param
+if(AICc) {#
+		diff.AICc <- diff(timeSliceObject$timeSlice[,"AICc"])#
+	} else {#
+		diff.AICc <- diff(timeSliceObject$timeSlice[,"AIC"])#
+	}#
+	best.model <- which(diff.AICc < -cutoff)#
+	phy <- timeSliceObject$phy#
+	y <- timeSliceObject$y
+best.model
+diff.AICc
+timeSliceObject
+timeSliceObject[[1]]
+AICc=F
+if(AICc) {#
+		diff.AICc <- diff(timeSliceObject$timeSlice[,"AICc"])#
+	} else {#
+		diff.AICc <- diff(timeSliceObject$timeSlice[,"AIC"])#
+	}#
+	best.model <- which(diff.AICc < -cutoff)#
+	phy <- timeSliceObject$phy#
+	y <- timeSliceObject$y
+diff.AICc
+best.model
+if(length(best.model) == 0) {#
+		best.mod <- 1#
+		model.best <- "BM"#
+		} else {#
+		best.mod <- max(best.model) + 1#
+		model.best <- paste("split", best.mod - 1)#
+		}#
+#
+		return.top <- timeSliceObject$timeSlice[best.mod, ]#
+		na.test <- which(is.na(return.top))#
+		if(length(na.test) > 0) {#
+		model.param <- return.top[-which(is.na(return.top))]#
+		} else {#
+		model.param <- return.top#
+		}
+rate.location <- which(unlist(gregexpr("rate", names(model.param))) != -1)#
+		rates <- model.param[rate.location]#
+		time.shift.location <- which(unlist(gregexpr("time", names(model.param))) != -1)#
+		shift.time <- model.param[time.shift.location]#
+		lnL <- model.param[1]#
+		phy.time.slice <- transformPhylo(phy, model="timeSlice", timeRates=rates, splitTime=sort(shift.time))#
+		LCI <- NULL#
+		UCI <- NULL
+rates
+LCI <- NULL#
+		UCI <- NULL#
+		for(i in 1:length(rates)) {#
+			ratesSingle <-	rates[i]#
+			if(i == 1) {#
+					foo <- function(param) {#
+					ll <- transformPhylo.ll(y=y, phy=phy.time.slice, model="timeSlice", timeRates=c(param, 1, 1, 1), splitTime=sort(shift.time))$logLikelihood#
+					return(as.numeric(ll - lnL + 1.92))#
+				}#
+			}	#
+			if(i == 2) {#
+				foo <- function(param) {#
+					phy.time.slice <- transformPhylo(phy, model="timeSlice", timeRates=c(rates[1], rates[-1]), splitTime=sort(shift.time))#
+					ll <- transformPhylo.ll(y=y, phy=phy.time.slice, model="timeSlice", timeRates=c(1, param, 1, 1), splitTime=sort(shift.time))$logLikelihood#
+					return(as.numeric(ll - lnL + 1.92))#
+				}#
+			}	#
+			if(i == 3) {#
+				foo <- function(param) {#
+					ll <- transformPhylo.ll(y=y, phy=phy.time.slice, model="timeSlice", timeRates=c(1, 1, param, 1), splitTime=sort(shift.time))$logLikelihood#
+					return(as.numeric(ll - lnL + 1.92))#
+				}#
+			}	#
+			if(i == 4) {#
+				foo <- function(param) {#
+					ll <- transformPhylo.ll(y=y, phy=phy.time.slice, model="timeSlice", timeRates=c(1, 1, 1, param), splitTime=sort(shift.time))$logLikelihood#
+					return(as.numeric(ll - lnL + 1.92))#
+				}#
+			}	#
+		if(!any(ratesSingle == lowerBound, ratesSingle == upperBound)) {#
+			if(foo(lowerBound) < 0) { #
+				LCI[i] <- uniroot(foo, interval = c(lowerBound, ratesSingle))$root 				#
+				} else {#
+				LCI[i] <- NA #
+				}#
+			if(foo(10000) < 0) {#
+				UCI[i] <- uniroot(foo, interval = c(ratesSingle, upperBound))$root#
+				} else {#
+				UCI[i] <- NA#
+				}#
+			}#
+		}	#
+		rates.output <- cbind(rates, cbind(LCI, UCI))
+cbind(rates, cbind(LCI, UCI))
+timeSlice.ml <- transformPhylo.ML(y=male.length.clade, phy=phy.clade, model="timeSlice", splitTime=c(60, 33))
+timeSliceSummary(timeSlice.ml, cutoff=10)
+timeSliceObject <- timeSlice.ml
+if(AICc) {#
+		diff.AICc <- diff(timeSliceObject$timeSlice[,"AICc"])#
+	} else {#
+		diff.AICc <- diff(timeSliceObject$timeSlice[,"AIC"])#
+	}#
+	best.model <- which(diff.AICc < -cutoff)#
+	phy <- timeSliceObject$phy#
+	y <- timeSliceObject$y
+if(length(best.model) == 0) {#
+		best.mod <- 1#
+		model.best <- "BM"#
+		} else {#
+		best.mod <- max(best.model) + 1#
+		model.best <- paste("split", best.mod - 1)#
+		}
+return.top <- timeSliceObject$timeSlice[best.mod, ]#
+		na.test <- which(is.na(return.top))#
+		if(length(na.test) > 0) {#
+		model.param <- return.top[-which(is.na(return.top))]#
+		} else {#
+		model.param <- return.top#
+		}
+best.mod > 1
+rate.location <- which(unlist(gregexpr("rate", names(model.param))) != -1)#
+		rates <- model.param[rate.location]#
+		time.shift.location <- which(unlist(gregexpr("time", names(model.param))) != -1)#
+		shift.time <- model.param[time.shift.location]#
+		lnL <- model.param[1]#
+		phy.time.slice <- transformPhylo(phy, model="timeSlice", timeRates=rates, splitTime=sort(shift.time))#
+		LCI <- NULL#
+		UCI <- NULL
+for(i in 1:length(rates)) {#
+			ratesSingle <-	rates[i]#
+			if(i == 1) {#
+					foo <- function(param) {#
+					ll <- transformPhylo.ll(y=y, phy=phy.time.slice, model="timeSlice", timeRates=c(param, 1, 1, 1), splitTime=sort(shift.time))$logLikelihood#
+					return(as.numeric(ll - lnL + 1.92))#
+				}#
+			}	#
+			if(i == 2) {#
+				foo <- function(param) {#
+					phy.time.slice <- transformPhylo(phy, model="timeSlice", timeRates=c(rates[1], rates[-1]), splitTime=sort(shift.time))#
+					ll <- transformPhylo.ll(y=y, phy=phy.time.slice, model="timeSlice", timeRates=c(1, param, 1, 1), splitTime=sort(shift.time))$logLikelihood#
+					return(as.numeric(ll - lnL + 1.92))#
+				}#
+			}	#
+			if(i == 3) {#
+				foo <- function(param) {#
+					ll <- transformPhylo.ll(y=y, phy=phy.time.slice, model="timeSlice", timeRates=c(1, 1, param, 1), splitTime=sort(shift.time))$logLikelihood#
+					return(as.numeric(ll - lnL + 1.92))#
+				}#
+			}	#
+			if(i == 4) {#
+				foo <- function(param) {#
+					ll <- transformPhylo.ll(y=y, phy=phy.time.slice, model="timeSlice", timeRates=c(1, 1, 1, param), splitTime=sort(shift.time))$logLikelihood#
+					return(as.numeric(ll - lnL + 1.92))#
+				}#
+			}	#
+		if(!any(ratesSingle == lowerBound, ratesSingle == upperBound)) {#
+			if(foo(lowerBound) < 0) { #
+				LCI[i] <- uniroot(foo, interval = c(lowerBound, ratesSingle))$root 				#
+				} else {#
+				LCI[i] <- NA #
+				}#
+			if(foo(10000) < 0) {#
+				UCI[i] <- uniroot(foo, interval = c(ratesSingle, upperBound))$root#
+				} else {#
+				UCI[i] <- NA#
+				}#
+			}#
+		}
+rates
+for(i in 1:length(rates)) {#
+			ratesSingle <-	rates[i]#
+			if(i == 1) {#
+					foo <- function(param) {#
+					ll <- transformPhylo.ll(y=y, phy=phy.time.slice, model="timeSlice", timeRates=c(param, 1, 1), splitTime=sort(shift.time))$logLikelihood#
+					return(as.numeric(ll - lnL + 1.92))#
+				}#
+			}	#
+			if(i == 2) {#
+				foo <- function(param) {#
+					phy.time.slice <- transformPhylo(phy, model="timeSlice", timeRates=c(rates[1], rates[-1]), splitTime=sort(shift.time))#
+					ll <- transformPhylo.ll(y=y, phy=phy.time.slice, model="timeSlice", timeRates=c(1, param, 1), splitTime=sort(shift.time))$logLikelihood#
+					return(as.numeric(ll - lnL + 1.92))#
+				}#
+			}	#
+			if(i == 3) {#
+				foo <- function(param) {#
+					ll <- transformPhylo.ll(y=y, phy=phy.time.slice, model="timeSlice", timeRates=c(1, 1, param), splitTime=sort(shift.time))$logLikelihood#
+					return(as.numeric(ll - lnL + 1.92))#
+				}#
+			}	#
+			if(i == 4) {#
+				foo <- function(param) {#
+					ll <- transformPhylo.ll(y=y, phy=phy.time.slice, model="timeSlice", timeRates=c(1, 1, 1, param), splitTime=sort(shift.time))$logLikelihood#
+					return(as.numeric(ll - lnL + 1.92))#
+				}#
+			}	#
+		if(!any(ratesSingle == lowerBound, ratesSingle == upperBound)) {#
+			if(foo(lowerBound) < 0) { #
+				LCI[i] <- uniroot(foo, interval = c(lowerBound, ratesSingle))$root 				#
+				} else {#
+				LCI[i] <- NA #
+				}#
+			if(foo(10000) < 0) {#
+				UCI[i] <- uniroot(foo, interval = c(ratesSingle, upperBound))$root#
+				} else {#
+				UCI[i] <- NA#
+				}#
+			}#
+		}
+cbind(rates, cbind(LCI, UCI))

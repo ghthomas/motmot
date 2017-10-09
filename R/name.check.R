@@ -1,3 +1,5 @@
+#' @export
+
 name.check <- function (phy, data) 
 {
     if (is.vector(data)) {

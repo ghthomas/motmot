@@ -1,3 +1,14 @@
+#' @title Internal function
+#' @description Internal function. Constructor to allow fixing of rate parameters.
+#' @param rateData an object of class "rateData"
+#' @param fixed A vector stating whether each parameter should be allowed to vary (either \code{FALSE} which results in a start value of 1, or a numeric start value) or should be fixed (\code{TRUE}).
+#' @param common.mean a logical specififying whether each rate category should have its own mean (\code{common.mean=FALSE}) or all categories should have the same mean (\code{common.mean=FALSE}). See Thomas et al. (2009) for a discussion on the impact of assumptions about mean on rate estimates..
+#' @param lambda.est Logical - Logical. Fit Pagel's lambda.
+#' @param meserr an object of class "rateData"
+#' @return Returns a function to be passed to \code{optim.likRatePhylo}
+#' @author Gavin Thomas
+#' @export
+
 make.likRatePhylo <-
 function(rateData, fixed, common.mean=FALSE, lambda.est, meserr) {
 	

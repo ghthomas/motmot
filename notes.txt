@@ -1,0 +1,6 @@
+Gavin notes a problem in transformPhylo.ML 'tm2' - what exactly?
+covPIC = covariance for multi-variant traits? Independent evolution
+
+likTraitPhylo: meserr does not appear to be used in the code - remove?
+Also is this true?
+"#' Note that \code{as.rateMatrix} calls the CAIC function \code{vcv.array} multiple times and this can be slow for large phylogenies (though faster than using the "ape" equivalent \code{vcv.phylo})." - is this used in the code?

@@ -1,3 +1,20 @@
+#' Calculate fair proportions phylogenetic diversity metric
+#'
+#' Calculate fair proportions phylogenetic diversity metric
+#' Note that \code{as.rateMatrix} calls the CAIC function \code{vcv.array} multiple times and this can be slow for large phylogenies (though faster than using the "ape" equivalent \code{vcv.phylo}).
+#' @param phy An object of class "phylo" (see ape package).
+#' @param nodeCount Logical - should root to tip node counts be returned (default is FALSE)
+#' @return Returns a matrix of fair proportion for all tips in phylogeny and node counts if selected.
+#' @references Redding, D.W. and Mooers, A.O. (2006). Incorporating evolutionary measures into conservation prioritisation. Conservation Biology, 20, 1670-1678.
+#' @references Isaac, N.J.B., Turvey, S.T., Collen, B., Waterman, C. and Baillie, J.E.M. (2007). Mammals on the EDGE: conservation priorities based on threat and phylogeny. PLoS ONE, 2, e296.
+#' @author Gavin Thomas
+#' @examples
+#' data(anolis.tree)
+#' 
+#' fp <- fairProportions(anolis.tree)
+#' fpNodes <- fairProportions(anolis.tree, nodeCount=TRUE)
+#' @export
+
 fairProportions <- function (phy, nodeCount=FALSE) {
 	
 	treeMatrix <- clade.matrix(phy)

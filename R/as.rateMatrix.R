@@ -1,3 +1,24 @@
+#' Conversion among data and phylogeny objects
+#'
+#' Function to generate a "rateMatrix" object containing a set of variance covariance matrices. 
+#' Note that \code{as.rateMatrix} calls the CAIC function \code{vcv.array} multiple times and this can be slow for large phylogenies (though faster than using the "ape" equivalent \code{vcv.phylo}).
+#' @param phy An object of class "phylo" (see ape package).
+#' @param x The explanatory (discrete) variable used to define the hypothesised rate categories. Can be specified as a column number or column name
+#' @param data The explanatory (discrete) variable used to define the hypothesised rate categories. Can be specified as a column number or column name
+#' @return rateMatrix An object of class "rateMatrix" - a list of matrices describing the expected variances and covariances of between species. Each matrix refers to the variances and covariances for a given state of x (see Thomas et al. 2006).
+#' @references Thomas GH, Freckleton RP, & Szekely T. 2006. Comparative analyses of the influence of developmental mode on phenotypic diversification rates in shorebirds. Proceedings of the Royal Society B 273, 1619-1624.
+#' @author Gavin Thomas
+#' @export
+#' @examples
+#' ## Read in phylogeny and data from Thomas et al. (2009)
+#' data(anolis.tree)
+#' data(anolis.data)
+#'
+#' ## Convert data to class rateMatrix
+#' # Not run
+#' # anolis.rateMatrix <- as.rateMatrix(phy=anolis.tree, x="geo_ecomorph", data=anolis.data)
+#' @export
+
 as.rateMatrix <-
 function(phy, x, data) {
 	
@@ -76,7 +97,10 @@ function(phy, x, data) {
 		ancState <- data.frame(node = c((length(phy$tip.label)+2):max(phy$edge)), ancState = as.numeric(phy$node.label[c(2:length(phy$node.label))]))
 
 		# Put together node and tip indices and ancestral states then reorder
-		state<- data.frame(edge.index = c(ancState$node, speState$tip.index), state = c(ancState$ancState, speState$tipState))
+		
+		takeCol <- which(regexpr("tipState", colnames(speState)) != -1)[1]
+		
+		state<- data.frame(edge.index = c(ancState$node, speState$tip.index), state = c(ancState$ancState, speState[,takeCol]))
 		state <- state[sort(state$edge.index, index.return = TRUE)$ix, ]
 	
 		

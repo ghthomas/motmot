@@ -1,51 +1,40 @@
-likTraitPhylo <- function (y, phy, meserr = NULL) 
+#' Log-likelihood rate estimation for traits and phylogenies
+#'
+#' This function calculates the log-likelihood and Brownian (co)variance for a trait(s) and a phylogeny using phylogenetically independent contrasts
+#' Note that \code{as.rateMatrix} calls the CAIC function \code{vcv.array} multiple times and this can be slow for large phylogenies (though faster than using the "ape" equivalent \code{vcv.phylo}).
+#' @param y A matrix of trait data. Rownames must be included and match the taxon names in the phylogeny. Can accept single traits (calculates variance) or multiple traits (calculates variance-covariance matrix).
+#' @param phy An object of class "phylo" (see ape package).
+#' @param covPIC Logical - allow for covariance between multivariate traits (TRUE), or assume not covariance (FALSE). Only applicable to multivariate traits
+#' @details The "phylo" object must be rooted and fully dichotomous.
+#' @return brownianVariance Brownian variance (or covariance for multiple traits) given the data and phylogeny
+#' @return logLikelihood The log-likelihood of the model and data
+#' @references Felsenstein J. 1973. Maximum-likelihood estimation of evolutionary trees from continuous characters. Am. J. Hum. Genet. 25, 471-492.
+#' Felsenstein J. 1985. Phylogenies and the comparative method. American Naturalist 125, 1-15.
+#' Freckleton RP & Jetz W. 2009. Space versus phylogeny: disentangling phylogenetic and spatial signals in comparative data. Proc. Roy. Soc. B 276, 21-30. 
+#' @author Gavin Thomas, Rob Freckleton
+#' @export
+
+likTraitPhylo<-function (y, phy, covPIC = TRUE)
 {
     if (is.matrix(y) == FALSE) {
         stop("Trait data must be a matrix with taxon names as row names")
     }
     n <- length(phy$tip.label)
     k <- ncol(y)
-#phy <- reorder(phy, order = "pruningwise")
+    phy <- reorder(phy, order = "pruningwise")
     y <- as.matrix(y[phy$tip.label, ])
     contrasts <- apply(y, 2, pic.motmot, phy = phy)
-    rawVariances <- c(contrasts[[1]]$contr[, 2], contrasts[[1]]$V)
-    rawContrasts <- matrix(NA, nrow = n, ncol = ncol(y))
-    
-    for (i in 1:k) {
-        rawContrasts[, i] <- c(contrasts[[i]]$contr[, 1], 0)
-    }
-    brCov <- matrix(NA, nrow = ncol(y), ncol = ncol(y))
-    for (i in 1:k) {
-        for (j in 1:k) {
-            brCov[j, i] <- brCov[i, j] <- crossprod(rawContrasts[, 
-													j]/sqrt(rawVariances), rawContrasts[, i]/sqrt(rawVariances))/(n - 
-																												  1)
-        }
+    rawVariances <- c(contrasts[[1]]$contr[, 2], contrasts[[1]]$V)   
+    rawContrasts <- sapply(contrasts, function(k) c(k$contr[, 1], 0))
+  	t.mat <- apply(rawContrasts, 2, function(x) x / sqrt(rawVariances))
+    brCov <- crossprod(t.mat, t.mat) / (n - 1)
+    if(covPIC == FALSE) {
+    	brCov[upper.tri(brCov)] <- 0
+    	brCov[lower.tri(brCov)] <- 0
     }
     iW <- solve(brCov)
-	addCons <- 0
-    
-    for (i in 1:n) {
-        ui <-rawContrasts[i, ]
-        cpUI <- iW %*% ui
-        addCons <- addCons  + ( ui %*% cpUI ) / rawVariances[i]
-	}	
-	
-#	allConstrasts <- cbind(rawContrasts, rawVariances)
-#   allConstrasts <- matrix(allConstrasts, nrow=length(rawVariances))
-#	allConstrastsList <- list()
-#	for (i in 1:length(allConstrasts[,1])) {allConstrastsList[[i]] <- allConstrasts[i,]}
-	
-#	foo <- function(x, iW, k) {
-#		ui <- x[1:length(x)-1]
-#		cpUI <- iW %*% ui
-#		return(( ui %*% cpUI ) / x[length(x)])
-#		}
-	
-#	addCons <- sum(unlist(mclapply(allConstrastsList, FUN=foo, iW=iW, k=k, mc.cores=n.cores)))
-	
-	
-    logLikelihood <- -0.5 * (n * k * log(2 * pi) + n * log(det(brCov)) + 
-							 k * sum(log(rawVariances)) + addCons)
+    addCon.mat <- apply(rawContrasts, 1, function(con) crossprod(con, iW %*% con)) / rawVariances
+    addCons <- sum(addCon.mat)
+	logLikelihood <- -0.5 * (n * k * log(2 * pi) + n * log(det(brCov)) + k * sum(log(rawVariances)) + addCons)
     return(list(brownianVariance = brCov, logLikelihood = logLikelihood))
 }

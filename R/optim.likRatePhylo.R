@@ -1,3 +1,24 @@
+#' @title Maximum likelihood rate estimation for traits and phylogenies 
+#' @description Function for the maximum likelihood estimation of rate parameters on a trait and phylogeny.
+#' @param rateData an object of class "rateData"
+#' @param rate a vector of relative rate parameters. The length of the vector is equal to the number of rates being estimated. If \code{rate=NULL} then rates are equal.
+#' @param fixed A vector stating whether each parameter should be allowed to vary (either \code{FALSE} which results in a start value of 1, or a numeric start value) or should be fixed (\code{TRUE}).
+#' @param rateMIN Minimum value for the rate parameters
+#' @param rateMAX Maximum value for the rate parameters
+#' @param common.mean a logical specififying whether each rate category should have its own mean (\code{common.mean=FALSE}) or all categories should have the same mean (\code{common.mean=FALSE}). See Thomas et al. (2009) for a discussion on the impact of assumptions about mean on rate estimates.
+#' @param lambda.est Logical. Fit Pagel's lambda.
+#' @param meserr Logical. Include measurement error.
+#' @return MLRate Maximum likelihood estimates of the rate parameters
+#' @return Max.lik  Maximum (log) likeihood
+#' @return AIC AIC for maximum likelihood model
+#' @return AICc  AICc for maximum likelihood model
+#' @return convergence convergence value from \code{optim}
+#' @return n.parameters Number of parameters in the model (how many means and rate categories)
+#' @references Thomas GH, Freckleton RP, & Szekely T. 2006. Comparative analyses of the influence of developmental mode on phenotypic diversification rates in shorebirds. Proceedings of the Royal Society B 273, 1619-1624.
+#' Thomas GH, Meiri S, & Phillimore AB. 2009. Body size diversification in Anolis: novel environments and island effects. Evolution 63, 2017-2030.
+#' @author Gavin Thomas
+#' @export
+
 optim.likRatePhylo <-
 function(rateData, rate=NULL, fixed = NULL, rateMIN = 0.001, rateMAX = 50, common.mean=FALSE, lambda.est=TRUE, meserr=FALSE) {
 		
