@@ -9,7 +9,6 @@
 #' @param delta Value of delta transform.
 #' @param alpha Value of alpha (OU) transform.
 #' @param psi Value of psi transform.
-#' @param include.stem Logical.  For nested EB rate model, include the stem branch in the nested EB process. Default=TRUE.
 #' @param splitTime A split time (measured from the present, or most recent species) at which a shift in the rate occurs for the "timeSlice" model
 #' @param timeRates The rates (from ancient to recent) for the timeSlice model
 #' @param nodeIDs Integer - ancestral nodes of clades.
@@ -35,7 +34,7 @@
 #' sim.dat2 <- transformPhylo.sim(phy=anolis.tree, n=10, x=x, model="mixedRate", rate=c(1,1,2,4), group.means=c(0,5,0,0))
 #' @export
 
-transformPhylo.sim <- function(phy, n=1, x=NULL, model=NULL, kappa=NULL, lambda=NULL, delta=NULL, alpha=NULL, psi=NULL, acdcRate=NULL, la = NULL, nodeIDs=NULL, rateType=NULL, cladeRates=NULL, branchRates=NULL, rate=NULL, group.means=NULL, include.stem=TRUE, splitTime=NULL, timeRates=NULL, branchLabels = NULL) {
+transformPhylo.sim <- function(phy, n=1, x=NULL, model=NULL, kappa=NULL, lambda=NULL, delta=NULL, alpha=NULL, psi=NULL, acdcRate=NULL, la = NULL, nodeIDs=NULL, rateType=NULL, cladeRates=NULL, branchRates=NULL, rate=NULL, group.means=NULL, splitTime=NULL, timeRates=NULL, branchLabels = NULL) {
 	
 	switch(model,		  
 		   
@@ -95,7 +94,7 @@ transformPhylo.sim <- function(phy, n=1, x=NULL, model=NULL, kappa=NULL, lambda=
 					rownames(ydum) <- rownames(phyMat)
 					},
 			"ACDC" = {
-					transformPhy <- transformPhylo(phy=phy, model="ACDC", acdcRate=acdcRate, nodeIDs=nodeIDs, include.stem=include.stem, cladeRates=cladeRates)
+					transformPhy <- transformPhylo(phy=phy, model="ACDC", acdcRate=acdcRate, nodeIDs=nodeIDs, cladeRates=cladeRates)
 					phyMat <- VCV.array(transformPhy)
 					attr(phyMat, "class") <- "matrix"
 					ydum <- as.matrix(t(rmvnorm(n, sigma = phyMat)))

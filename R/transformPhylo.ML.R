@@ -14,7 +14,6 @@
 #' @param restrictNode List defining monophyletic groups within which no further rate shifts are searched.
 #' @param lambdaEst Logical.  Estimate lambda alongside parameter estimates to reduce data noise. Only applicable for models "kappa", "delta", "OU", "psi", and "ACDC". Default=FALSE.
 #' @param acdcScalar Logical.  For nested EB rate model, simultaneously estimated a rate scalar alongside EB model. Default=FALSE.
-#' @param include.stem Logical.  For nested EB rate model, include the stem branch in the nested EB process. Default=TRUE.
 #' @param la Speciation rate estimate for the tree
 #' @param branchLabels Necessary for multiPsi....TO ADD
 #' @param profilePlot Logical.  For the single parameter models "kappa", "lambda", "delta", "OU", "psi", and "ACDC", plot the profile of the likelihood.
@@ -32,7 +31,7 @@
 #' \item {model="lambda"} {fits Pagel's lambda to estimate phylogenetic signal by multiplying all internal branches of the tree by lambda, leaving tip branches as their original length (root to tip distances are unchanged). Default bounds from ~0 - 1.}
 #' \item {model="delta"} {fits Pagel's delta by raising all node depths to the power delta. If delta <1, trait evolution is concentrated early in the tree whereas if delta >1 trait evolution is concentrated towards the tips. Values of delta above one can be difficult to fit reliably. If a nodeIDs is supplied, the model will fit a delta model nested within a clade, with a BM fit to the rest of the tree. Default bounds from ~0 - 5.}
 #' \item {model="OU"} {fits an Ornstein-Uhlenbeck model - a random walk with a central tendency proportional to alpha. High values of alpha can be interpreted as evidence of evolutionary constraints, stabilising selection or weak phylogenetic signal. It is often difficult to distinguish among these possibilities. If a nodeIDs is supplied, the model will fit a OU model nested within a clade, with a BM fit to the rest of the tree. Default bounds from ~0 - 10.}
-#' \item {model="ACDC"} {fits a model to in which rates can exponentially increased or decrease through time (Blomberg et al. 2003). If the upper bound is < 0, the model is equivalent to the 'Early Burst' model of Harmon et al. 2010. If a nodeIDs is supplied, the model will fit a ACDC model nested within a clade, with a BM fit to the rest of the tree. Default rate parameter bounds from ln(1e-10) ~ ln(20) divided by the root age.}
+#' \item {model="ACDC"} {fits a model to in which rates can exponentially increased or decrease through time (Blomberg et al. 2003). If the upper bound is < 0, the model is equivalent to the 'Early Burst' model of Harmon et al. 2010. If a nodeIDs is supplied, the model will fit a ACDC model nested within a clade, with a BM fit to the rest of the tree. Default rate parameter bounds from ln(1e-10) ~ ln(20) divided by the root age. Note this process starts on the stem branch leading to the MRCA of the common node, unlike the other methods that start at the common node.}
 #' \item {model="psi"} {fits a acceleration-deacceleration model to assess to the relative contributions of speciation and gradual evolution to a trait's evolutionary rate (Ingram 2010).}
 #' \item {model="multiPsi"} {SOMETHING}
 #' \item {model="free"} {fits Mooers et al's free model where each branch has its own rate of trait evolution. This can be a useful exploratory analysis but it is slow due to the number of parameters, particularly for large trees. Default rate parameter bounds from ~0 - 200.}
@@ -102,7 +101,7 @@
 #' #colours <- plotPhylo.motmot(phy=tree, traitMedusaObject=anolisSVL_MEDUSA_out,  #reconType = "rates", type = "fan", cex=0.6, edge.width=3)
 #' @export
 
-transformPhylo.ML <- function (y, phy, model = NULL, modelCIs = TRUE, nodeIDs = NULL, rateType = NULL, minCladeSize = 1, nSplits = 2, splitTime = NULL, boundaryAge = 10, testAge = 1, restrictNode = NULL, lambdaEst = FALSE, acdcScalar = FALSE, include.stem = TRUE, la = NULL, branchLabels = NULL, profilePlot = FALSE, lowerBound = NULL, upperBound = NULL, covPIC = TRUE, n.cores = 1, tol = NULL, meserr=NULL, controlList = c(fnscale = -1, maxit = 100, factr = 1e-7, pgtol = 0, type = 2, lmm = 5),returnPhy = FALSE) {
+transformPhylo.ML <- function (y, phy, model = NULL, modelCIs = TRUE, nodeIDs = NULL, rateType = NULL, minCladeSize = 1, nSplits = 2, splitTime = NULL, boundaryAge = 10, testAge = 1, restrictNode = NULL, lambdaEst = FALSE, acdcScalar = FALSE, la = NULL, branchLabels = NULL, profilePlot = FALSE, lowerBound = NULL, upperBound = NULL, covPIC = TRUE, n.cores = 1, tol = NULL, meserr=NULL, controlList = c(fnscale = -1, maxit = 100, factr = 1e-7, pgtol = 0, type = 2, lmm = 5),returnPhy = FALSE) {
    
     bounds <- matrix(c(1e-08, 1, 1e-08, 1, 1e-08, 5, 1e-08, 20, 0, 1, 1e-08, 1000, 1e-10, 20), 7, 2, byrow = TRUE)
     rownames(bounds) <-
@@ -381,13 +380,11 @@ transformPhylo.ML <- function (y, phy, model = NULL, modelCIs = TRUE, nodeIDs = 
           alpha[7] <- 1
         if (is.null(lowerBound)) {
           lowerBound <- bounds["alpha", 1]
-          if (lambdaEst)
-            lowerBound[2] <- bounds["lambda", 1]
+          if (lambdaEst) lowerBound[2] <- bounds["lambda", 1]
         }
         if (is.null(upperBound)) {
           upperBound <- bounds["alpha", 2]
-          if (lambdaEst)
-            lowerBound[2] <- bounds["lambda", 2]
+          if (lambdaEst) lowerBound[2] <- bounds["lambda", 2]
         }
         
         var.funOU <- function(param) {
@@ -500,14 +497,14 @@ transformPhylo.ML <- function (y, phy, model = NULL, modelCIs = TRUE, nodeIDs = 
             acdc.est <- param[1]
             scalarRate <- param[2]
             lambdaPhy <- transformPhylo(y = y, phy = phy, lambda = lambda, model = "lambda", meserr = meserr)
-            return(transformPhylo.ll(lambdaPhy, acdcRate = acdc.est, nodeIDs = node, model = "ACDC", y = y, cladeRates = scalarRate, include.stem = include.stem, meserr = meserr, covPIC = covPIC)[[2]])
+            return(transformPhylo.ll(lambdaPhy, acdcRate = acdc.est, nodeIDs = node, model = "ACDC", y = y, cladeRates = scalarRate, imeserr = meserr, covPIC = covPIC)[[2]])
           }
         } else {
           var.funACDC <- function(param) {
             if (lambdaEst) lambda <- param[2] else lambda <- 1
             acdc.est <- param[1]
             lambdaPhy <- transformPhylo(y = y, phy = phy, lambda = lambda, model = "lambda", meserr = meserr)
-            return(transformPhylo.ll(lambdaPhy, acdcRate = acdc.est, nodeIDs = node, model = "ACDC", y = y, cladeRates = 1, include.stem = include.stem, meserr = meserr, covPIC = covPIC)[[2]])
+            return(transformPhylo.ll(lambdaPhy, acdcRate = acdc.est, nodeIDs = node, model = "ACDC", y = y, cladeRates = 1, meserr = meserr, covPIC = covPIC)[[2]])
           }
         }
         vo <- optim(acdcRate, var.funACDC, method = "L-BFGS-B", lower = lowerBound, upper = upperBound, control = controlList)
@@ -517,7 +514,7 @@ transformPhylo.ML <- function (y, phy, model = NULL, modelCIs = TRUE, nodeIDs = 
         if (acdcScalar) cladeRateEst = vo$par[2] else cladeRateEst <- 1
         if (modelCIs) {
           ACDC.fun <- function(param, chiSq = TRUE) {
-            ll <- transformPhylo.ll(y, lambdaPhy, acdcRate = param, nodeIDs = node, model = "ACDC", cladeRates = cladeRateEst, include.stem = include.stem, meserr = meserr, covPIC = covPIC)$logLikelihood
+            ll <- transformPhylo.ll(y, lambdaPhy, acdcRate = param, nodeIDs = node, model = "ACDC", cladeRates = cladeRateEst, meserr = meserr, covPIC = covPIC)$logLikelihood
             if (chiSq) return(ll - vo$value + 1.92) else return(ll)
           }
           if (ACDC.fun(lowerBound[1]) < 0)
@@ -552,7 +549,7 @@ transformPhylo.ML <- function (y, phy, model = NULL, modelCIs = TRUE, nodeIDs = 
         }
         if (acdcScalar) out$scalar <- scaleClade <- vo$par[2] else scaleClade <- 1
           
-        acdcPhy <- transformPhylo( y = y, phy = lambdaPhy, model = "ACDC", acdcRate = vo$par[1], nodeIDs = node, cladeRates = scaleClade, include.stem = include.stem, meserr = meserr)  
+        acdcPhy <- transformPhylo( y = y, phy = lambdaPhy, model = "ACDC", acdcRate = vo$par[1], nodeIDs = node, cladeRates = scaleClade, meserr = meserr)  
         out$brownianVariance <- likTraitPhylo(phy=acdcPhy, y=y, covPIC = covPIC)$brownianVariance
         out$root.state <- ancState(phy=acdcPhy, y=y)
         param <- length(vo$par) + 2
@@ -987,8 +984,8 @@ transformPhylo.ML <- function (y, phy, model = NULL, modelCIs = TRUE, nodeIDs = 
           output.mat <- matrix(NA, nrow = nSplits + 1, ncol = 6 +  (2 * nSplits))
           bm.model <- likTraitPhylo(y, phy, covPIC = covPIC)
           log.lik <- as.numeric(bm.model[[2]])
-          aic <- aic.fun(log.lik, param)
-          aicc <- aicc.fun(log.lik, param, Ntip(phy))
+          aic <- aic.fun(log.lik, 2)
+          aicc <- aicc.fun(log.lik, 2, Ntip(phy))
           anc.state <- ancState(phy, y)
           
           colnames(output.mat) <- 1:dim(output.mat)[2]

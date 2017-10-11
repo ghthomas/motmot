@@ -13,7 +13,6 @@
 #' @param splitTime A split time (measured from the present, or most recent species) at which a shift in the rate occurs for the "timeSlice" model
 #' @param timeRates The rates (from ancient to recent) for the timeSlice model
 #' @param acdcScalar Logical.  For nested EB rate model, simultaneously estimated a rate scalar alongside EB model. Not  Default=FALSE.
-#' @param include.stem Logical.  For nested EB rate model, include the stem branch in the nested EB process. Default=TRUE.
 #' @param rateType If model="clade", a vector specifying if rate shift occurs in a clade ("clade") or on the single branch leading to a clade ("branch").
 #' @param branchRates Numeric vector specifying relative rates for individual branches
 #' @param cladeRates Numeric vector specifying telative rates for clades.
@@ -47,7 +46,7 @@
 #' anolis.treeDelta <- transformPhylo(phy=anolis.tree, model="delta", delta=0.5)
 #' @export
 
-transformPhylo <- function (phy, model = NULL, y = NULL, meserr=NULL, kappa = NULL, lambda = NULL, delta = NULL, alpha = NULL, psi = NULL, la = NULL, nodeIDs = NULL, rateType = NULL, branchRates = NULL, cladeRates = NULL,  splitTime = NULL, timeRates = NULL, acdcRate=NULL, include.stem=TRUE, branchLabels = NULL) 
+transformPhylo <- function (phy, model = NULL, y = NULL, meserr=NULL, kappa = NULL, lambda = NULL, delta = NULL, alpha = NULL, psi = NULL, la = NULL, nodeIDs = NULL, rateType = NULL, branchRates = NULL, cladeRates = NULL,  splitTime = NULL, timeRates = NULL, acdcRate=NULL,  branchLabels = NULL) 
  {
 
     n <- length(phy$tip.label)
@@ -364,11 +363,7 @@ transformPhylo <- function (phy, model = NULL, y = NULL, meserr=NULL, kappa = NU
 			
 			names(times) <- phy$edge[,1]
 
-			if(node == (Ntip(phy) + 1)) {
-		   		relations_num <- 1:(Nnode(phy) + Ntip(phy))
-		   	} else {
-		   		if(include.stem) relations_num <- c(node, node.descendents(node, phy)) else relations_num <- c(node.descendents(node, phy))
-		   	}
+			if(node == (Ntip(phy) + 1)) relations_num <- c(node, node.descendents(node, phy))
 
 			originTime <- times[which(names(times) == node)][1]
 			branches <- match(relations_num, phy$edge[,2])
@@ -388,8 +383,8 @@ transformPhylo <- function (phy, model = NULL, y = NULL, meserr=NULL, kappa = NU
 			phy$edge.length[branches] <- edgeACDC	
 			if (is.null(meserr) == FALSE)	 {
 				phy$edge.length[externs] <- phy$edge.length[externs] + (meserr^2)/(var(y)/height)[1]
+					}
 				}
-			})
-			
-    return(phy)
+		)
+		return(phy)
 }

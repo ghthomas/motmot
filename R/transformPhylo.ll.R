@@ -72,7 +72,7 @@
 #' transformPhylo.ll(anolisSVL, phy=tree, model="psi", psi=1)
 #' @export
 
-transformPhylo.ll <- function(y=NULL, phy, model=NULL, meserr=NULL, kappa=NULL, lambda=NULL, delta=NULL, alpha=NULL, psi=NULL, a = NULL, nodeIDs=NULL, rateType=NULL, branchRates=NULL, cladeRates=NULL, timeRates=NULL, splitTime=NULL, branchLabels = NULL, acdcRate=NULL, include.stem=TRUE, covPIC = TRUE) {
+transformPhylo.ll <- function(y=NULL, phy, model=NULL, meserr=NULL, kappa=NULL, lambda=NULL, delta=NULL, alpha=NULL, psi=NULL, a = NULL, nodeIDs=NULL, rateType=NULL, branchRates=NULL, cladeRates=NULL, timeRates=NULL, splitTime=NULL, branchLabels = NULL, acdcRate=NULL,  covPIC = TRUE) {
 	
 	switch(model,		  
 		   
@@ -117,7 +117,7 @@ transformPhylo.ll <- function(y=NULL, phy, model=NULL, meserr=NULL, kappa=NULL, 
 		   },
 		   
 		   	"ACDC" = {
-		   transformPhy <- transformPhylo(phy=phy, model="ACDC", acdcRate=acdcRate, nodeIDs=nodeIDs, cladeRates=cladeRates, y=y, meserr = meserr, include.stem=include.stem)
+		   transformPhy <- transformPhylo(phy=phy, model="ACDC", acdcRate=acdcRate, nodeIDs=nodeIDs, cladeRates=cladeRates, y=y, meserr = meserr)
 		   }
 		   
 		  )
