@@ -8,8 +8,7 @@ transformPhylo.ll(y = NULL, phy, model = NULL, meserr = NULL,
   kappa = NULL, lambda = NULL, delta = NULL, alpha = NULL, psi = NULL,
   a = NULL, nodeIDs = NULL, rateType = NULL, branchRates = NULL,
   cladeRates = NULL, timeRates = NULL, splitTime = NULL,
-  branchLabels = NULL, acdcRate = NULL, include.stem = TRUE,
-  covPIC = TRUE)
+  branchLabels = NULL, acdcRate = NULL, covPIC = TRUE)
 }
 \arguments{
 \item{y}{A matrix of trait values.}

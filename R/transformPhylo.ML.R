@@ -767,10 +767,10 @@ transformPhylo.ML <- function (y, phy, model = NULL, modelCIs = TRUE, nodeIDs = 
         } else {
           out$Rates <- matrix(NA, length(nodeIDs), 2, byrow = TRUE)
           colnames(out$Rates) <- c("node", "MLRate")
-          out$MaximumLikelihood <- vo$value
           out$Rates[, 1] <- nodeIDs
           out$Rates[, 2] <- vo$par
          }
+        out$MaximumLikelihood <- vo$value
         out$brownianVariance <- likTraitPhylo(y = y, phy = phyCladeFull, covPIC = covPIC)$brownianVariance
         out$root.state <- ancState(phyCladeFull, y)
         param <- 2 + length(vo$par)

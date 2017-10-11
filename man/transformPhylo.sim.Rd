@@ -8,8 +8,8 @@ transformPhylo.sim(phy, n = 1, x = NULL, model = NULL, kappa = NULL,
   lambda = NULL, delta = NULL, alpha = NULL, psi = NULL,
   acdcRate = NULL, la = NULL, nodeIDs = NULL, rateType = NULL,
   cladeRates = NULL, branchRates = NULL, rate = NULL,
-  group.means = NULL, include.stem = TRUE, splitTime = NULL,
-  timeRates = NULL, branchLabels = NULL)
+  group.means = NULL, splitTime = NULL, timeRates = NULL,
+  branchLabels = NULL)
 }
 \arguments{
 \item{phy}{An object of class "phylo" (see ape package).}
@@ -41,8 +41,6 @@ transformPhylo.sim(phy, n = 1, x = NULL, model = NULL, kappa = NULL,
 \item{rate}{a vector of relative rate parameters. The length of the vector is equal to the number of rates being estimated.}
 
 \item{group.means}{a vector of the relative difference in means between rate categories, expressed as a scalar applied to the expected standard deviation (see Ricklefs 2006)}
-
-\item{include.stem}{Logical.  For nested EB rate model, include the stem branch in the nested EB process. Default=TRUE.}
 
 \item{splitTime}{A split time (measured from the present, or most recent species) at which a shift in the rate occurs for the "timeSlice" model}
 

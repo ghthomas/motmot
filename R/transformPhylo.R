@@ -363,7 +363,11 @@ transformPhylo <- function (phy, model = NULL, y = NULL, meserr=NULL, kappa = NU
 			
 			names(times) <- phy$edge[,1]
 
-			if(node == (Ntip(phy) + 1)) relations_num <- c(node, node.descendents(node, phy))
+			if(node == (Ntip(phy) + 1)) {
+				relations_num <- 1:(Nnode(phy) + Ntip(phy))
+				} else {
+				relations_num <- c(node, node.descendents(node, phy))
+				}
 
 			originTime <- times[which(names(times) == node)][1]
 			branches <- match(relations_num, phy$edge[,2])

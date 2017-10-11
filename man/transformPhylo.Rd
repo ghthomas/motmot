@@ -8,7 +8,7 @@ transformPhylo(phy, model = NULL, y = NULL, meserr = NULL, kappa = NULL,
   lambda = NULL, delta = NULL, alpha = NULL, psi = NULL, la = NULL,
   nodeIDs = NULL, rateType = NULL, branchRates = NULL,
   cladeRates = NULL, splitTime = NULL, timeRates = NULL,
-  acdcRate = NULL, include.stem = TRUE, branchLabels = NULL)
+  acdcRate = NULL, branchLabels = NULL)
 }
 \arguments{
 \item{phy}{An object of class "phylo" (see ape package).}
@@ -42,8 +42,6 @@ transformPhylo(phy, model = NULL, y = NULL, meserr = NULL, kappa = NULL,
 \item{timeRates}{The rates (from ancient to recent) for the timeSlice model}
 
 \item{acdcRate}{Value of ACDC transform.}
-
-\item{include.stem}{Logical.  For nested EB rate model, include the stem branch in the nested EB process. Default=TRUE.}
 
 \item{acdcScalar}{Logical.  For nested EB rate model, simultaneously estimated a rate scalar alongside EB model. Not  Default=FALSE.}
 
