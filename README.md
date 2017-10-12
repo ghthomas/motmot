@@ -8,27 +8,21 @@
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta name="generator" content="pandoc" />
 
-<meta name="viewport" content="width=device-width, initial-scale=1">
-
-<meta name="author" content="Mark Puttick" />
-
-<meta name="date" content="2017-10-11" />
-
-
-
-
-
 </head>
 
 <body>
 
+<meta name="viewport" content="width=device-width, initial-scale=1">
 
+<meta name="author" content="Mark Puttick" />
 
+<meta name="date" content="2017-10-12" />
+
+<title>motmot</title>
 
 <h1 class="title toc-ignore">motmot</h1>
 <h4 class="author"><em>Mark Puttick</em></h4>
-<h4 class="date"><em>2017-10-11</em></h4>
-
+<h4 class="date"><em>2017-10-12</em></h4>
 
 
 <p>Models Of Trait Macroevolution On Trees (MOTMOT) is an R package that allows for testing of models of trait evolution <span class="citation">(Thomas and Freckleton 2012)</span>.</p>
@@ -45,14 +39,8 @@
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="cf">if</span>(<span class="op">!</span><span class="kw">any</span>(<span class="st">&quot;devtools&quot;</span> <span class="op">%in%</span><span class="st"> </span><span class="kw">rownames</span>(<span class="kw">installed.packages</span>()))) <span class="kw">install.packages</span>(<span class="st">&quot;devtools&quot;</span>)
 <span class="kw">library</span>(devtools)
 <span class="kw">install_github</span>(<span class="st">&quot;ghthomas/motmot&quot;</span>, <span class="dt">ref=</span><span class="st">&quot;motmot.2.0&quot;</span>)</code></pre></div>
-<pre><code>## Downloading GitHub repo ghthomas/motmot@motmot.2.0
-## from URL https://api.github.com/repos/ghthomas/motmot/zipball/motmot.2.0</code></pre>
-<pre><code>## Installing motmot.2.0</code></pre>
-<pre><code>## '/Library/Frameworks/R.framework/Resources/bin/R' --no-site-file  \
-##   --no-environ --no-save --no-restore --quiet CMD INSTALL  \
-##   '/private/var/folders/lb/grtql71j7d1d8wyln9l7x8prddz3_y/T/Rtmp3tKOGS/devtools2ed85aa4229/ghthomas-motmot-7ad80f7'  \
-##   --library='/Users/mp1728/Library/R/3.4/library' --install-tests</code></pre>
-<pre><code>## </code></pre>
+<pre><code>## Skipping install of 'motmot.2.0' from a github remote, the SHA1 (82787801) has not changed since last install.
+##   Use `force = TRUE` to force installation</code></pre>
 <p>For these examples we will use anolis data available from motmot. A time-calibrated phylogeny of anolis species (“anolis.tree”), and various trait and biogeographical trait data (“anolis.data”)</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(motmot.<span class="fl">2.0</span>, <span class="dt">quietly=</span>T)
 <span class="kw">data</span>(anolis.tree)
@@ -76,21 +64,20 @@ anolis.tree</code></pre></div>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">male.length &lt;-<span class="st"> </span><span class="kw">matrix</span>(Male_SVL, <span class="dt">dimnames=</span><span class="kw">list</span>(<span class="kw">rownames</span>(anolis.data)))
 <span class="kw">any</span>(<span class="kw">is.na</span>(male.length[,<span class="dv">1</span>]))</code></pre></div>
 <pre><code>## [1] TRUE</code></pre>
-<p>We do. So we will remove these data from the male.length data, and log the trait data</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">complete.male.length &lt;-<span class="st"> </span><span class="kw">complete.cases</span>(male.length)
-missing.species &lt;-<span class="st"> </span><span class="kw">rownames</span>(male.length)[<span class="op">!</span>complete.male.length]
-male.length &lt;-<span class="st"> </span><span class="kw">as.matrix</span>(male.length[complete.male.length, ])
-male.length &lt;-<span class="st"> </span><span class="kw">log</span>(male.length)</code></pre></div>
+<p>We do. So we will remove these data from the male.length data, and log the trait data. This can de done using the function ‘sortTraitData’</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">sortedData &lt;-<span class="st"> </span><span class="kw">sortTraitData</span>(anolis.tree, male.length)
+phy &lt;-<span class="st"> </span>sortedData<span class="op">$</span>phy
+male.length &lt;-<span class="st"> </span>sortedData<span class="op">$</span>trait</code></pre></div>
 <p>Finally, we will ‘prune’ the species from the tree using ‘drop.tip’ from APE. Do our species from the data and tree now match?</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">phy &lt;-<span class="st"> </span><span class="kw">drop.tip</span>(anolis.tree, missing.species)
-<span class="kw">name.check</span>(phy, male.length)</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">name.check</span>(phy, male.length)</code></pre></div>
 <pre><code>## [1] &quot;OK&quot;</code></pre>
-</div>
 <p>They do. We can now plot our tree and data using the “traitData.plot” function</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">traitData.plot</span>(<span class="dt">y=</span>male.length, phy)</code></pre></div>
-<p>They do. We can now plot our tree and data using the “traitData.plot” function</p>
-<img atl=" " src="https://github.com/ghthomas/motmot/blob/motmot.2.0/vignettes/figures/plot1-1.png"/>
+<div class="figure">
+<img atl="" src="https://github.com/ghthomas/motmot/blob/motmot.2.0/vignettes/figures/plot1-1.png"/>
 <p class="caption">traitData showing the realtive male snout ventral length at the tips</p>
+</div>
+</div>
 <div id="models-of-trait-evolution" class="section level1">
 <h1>Models of trait evolution</h1>
 <p>We can now test various models of evolution using our trait data.</p>
@@ -107,7 +94,7 @@ bm.ml</code></pre></div>
 ## [1] -17.35662
 ## 
 ## $root.state
-## [1] 4.120935
+## [1] 4.194649
 ## 
 ## $AIC
 ## [1] 38.71324
@@ -132,7 +119,7 @@ lambda.ml</code></pre></div>
 ## [1,] 0.001675265
 ## 
 ## $root.state
-## [1] 4.122186
+## [1] 4.195981
 ## 
 ## $AIC
 ## [1] 33.91218
@@ -176,7 +163,7 @@ p.value</code></pre></div>
 ## [1,] 0.0004598011
 ## 
 ## $root.state
-## [1] 4.127836
+## [1] 4.189514
 ## 
 ## $AIC
 ## [1] 40.11064
@@ -205,7 +192,7 @@ p.value</code></pre></div>
 ## profilePlot = T): Confidence limits fall outside parameter bounds -
 ## consider changing lowerBound and/or upperBound</code></pre>
 <div class="figure">
-<img src="https://github.com/ghthomas/motmot/blob/motmot.2.0/vignettes/figures/plot5-1.png" alt="profile plot to estimate alpha" />
+<img src="https://github.com/ghthomas/motmot/blob/motmot.2.0/vignettes/figures/plot5-1.png" alt="" />
 <p class="caption">profile plot to estimate alpha</p>
 </div>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">ou.ml</code></pre></div>
@@ -221,7 +208,7 @@ p.value</code></pre></div>
 ## [1,] 0.002206995
 ## 
 ## $root.state
-## [1] 4.124566
+## [1] 4.192673
 ## 
 ## $AIC
 ## [1] 39.69557
@@ -250,7 +237,7 @@ p.value</code></pre></div>
 ## [1,] 0.001117947
 ## 
 ## $root.state
-## [1] 4.124568
+## [1] 4.192672
 ## 
 ## $AIC
 ## [1] 39.69557
@@ -280,7 +267,7 @@ acdc.ml</code></pre></div>
 ## [1,] 0.001117947
 ## 
 ## $root.state
-## [1] 4.124568
+## [1] 4.192672
 ## 
 ## $AIC
 ## [1] 39.69557
@@ -301,7 +288,7 @@ acdc.ml.lambda</code></pre></div>
 ## [1,] 0.002101792
 ## 
 ## $root.state
-## [1] 4.121082
+## [1] 4.196839
 ## 
 ## $lambda
 ## [1] 0.9583652
@@ -347,7 +334,7 @@ cladeRate.ml</code></pre></div>
 ## [1,] 0.001969926
 ## 
 ## $root.state
-## [1] 4.123463
+## [1] 4.191162
 ## 
 ## $AIC
 ## [1] 42.28819
@@ -416,7 +403,7 @@ trait.medusa.tm2.summary</code></pre></div>
 ## Rooted; includes branch lengths.</code></pre>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">colour_motmot &lt;-<span class="st"> </span><span class="kw">plotPhylo.motmot</span>(<span class="dt">phy=</span>phy.clade, <span class="dt">traitMedusaObject=</span>trait.medusa.tm2.summary, <span class="dt">reconType =</span> <span class="st">&quot;rates&quot;</span>, <span class="dt">type =</span> <span class="st">&quot;fan&quot;</span>, <span class="dt">cex=</span><span class="fl">0.5</span>, <span class="dt">edge.width=</span><span class="dv">2</span>)</code></pre></div>
 <div class="figure">
-<img src="https://github.com/ghthomas/motmot/blob/motmot.2.0/vignettes/figures/plot9-1.png" alt="the subset of the tree" />
+<img src="https://github.com/ghthomas/motmot/blob/motmot.2.0/vignettes/figures/plot9-1.png" alt="" />
 <p class="caption">the subset of the tree</p>
 </div>
 <p>Thomas and Freckleton (2012) showed the tm2 algortihm has a high type-one error rate. One way to ameriolate this is to estimate the level a one shift is supported when we know BM is the true model. For example, we could simulate 1000 BM datasets on the tree, estimate a single shift using the tm2 algortihm, and calculating the difference between the AICcs for each BM and one shift model. We can these use this difference to estimate the AICc ‘penalty’ the is needed to reduce the tm2 type-one error rate to 0.05. We could use this penalty in the ‘cutoff’ argument of the traitMedusaSummary argument.</p>
@@ -516,7 +503,7 @@ lambda.mcmc &lt;-<span class="st"> </span><span class="kw">transformPhylo.MCMC</
  acceptance attempt 0.463 best acceptance 0 best SD 0.448
 ##  finished fine.tune
 ##   
- MCMC progress: 100.0000 %
+  MCMC progress: 100.0000 %
 ## $median
 ##    Lambda 
 ## 0.7731313 
