@@ -19,6 +19,7 @@ Models Of Trait Macroevolution On Trees (MOTMOT) is an R package that allows for
 
 # Introduction
 
+
 First we will install motmot.2.0 from github
 
 ```{r}
@@ -46,25 +47,23 @@ male.length <- matrix(Male_SVL, dimnames=list(rownames(anolis.data)))
 any(is.na(male.length[,1]))
 ```
 
-We do. So we will remove these data from the male.length data, and log the trait data
+We do. So we will remove these data from the male.length data, and log the trait data. This can de done using the function 'sortTraitData'
 
 ```{r}
-complete.male.length <- complete.cases(male.length)
-missing.species <- rownames(male.length)[!complete.male.length]
-male.length <- as.matrix(male.length[complete.male.length, ])
-male.length <- log(male.length)
+sortedData <- sortTraitData(anolis.tree, male.length)
+phy <- sortedData$phy
+male.length <- sortedData$trait
 ```
 
 Finally, we will 'prune' the species from the tree using 'drop.tip' from APE. Do our species from the data and tree now match?
 
 ```{r}
-phy <- drop.tip(anolis.tree, missing.species)
 name.check(phy, male.length)
 ```
 
 They do. We can now plot our tree and data using the "traitData.plot" function 
 
-```{r plot1, fig.cap = "traitData showing the realtive male snout ventral length at the tips", echo = T, fig.height = 5, fig.width = 5}
+```{r plot1, fig.cap = "traitData showing the realtive male snout ventral length at the tips", echo = T, fig.height = 5, fig.width = 5, fig.path='figures/', dev=c('png', 'pdf')}
 traitData.plot(y=male.length, phy)
 ```
 
@@ -94,7 +93,7 @@ We can see from these results the CI of lambda is < 1, but there is still a larg
 
 A new feature in motmot allows for plotting of the likelihood profile for the branch-transformation parameter, in this case Pagel's lambda
 
-```{r plot2, fig.cap = "profile plot of ML estimation for Pagel's lambda", echo = T, fig.height = 5, fig.width = 5}
+```{r plot2, fig.cap = "profile plot of ML estimation for Pagel's lambda", echo = T, fig.height = 5, fig.width = 5, , fig.path='figures/', dev=c('png', 'pdf')}
 lambda.ml <- transformPhylo.ML(phy, y=male.length, model="lambda", profilePlot=T)
 ```
 
@@ -117,7 +116,7 @@ The parameters, brownian variance, root state, Maximum likelihoods, AIC, and AIC
 
 Delta indicates a slow or increase in the rate of trait evolution through time; a value of 1 is equivalent to Brownian motion, < 1 indicates a slow-down, and > 1 is difficult to interpret (greater change near the present). Here we find a MLE of 1.27 but the CI spans < 1
 
-```{r plot3, fig.cap = "profile plot to estimate delta", echo = T, fig.height = 5, fig.width = 5}
+```{r plot3, fig.cap = "profile plot to estimate delta", echo = T, fig.height = 5, fig.width = 5, , fig.path='figures/', dev=c('png', 'pdf')}
 delta.ml <- transformPhylo.ML(phy, y=male.length, model="delta", profilePlot=T)
 delta.ml
 ```
@@ -126,7 +125,7 @@ delta.ml
 
 Kappa is used as a measure of punctuated evolution and spans values of 0-1. 1 is equivalent to BM, and 0 indicates trait change occurs at events of speciation. Here the is some evidence of punctuated evolution, but the CI spans a value greater than one (as seen in the warning message)
 
-```{r plot4, fig.cap = "profile plot to estimate kappa", echo = T, fig.height = 5, fig.width = 5}
+```{r plot4, fig.cap = "profile plot to estimate kappa", echo = T, fig.height = 5, fig.width = 5, , fig.path='figures/', dev=c('png', 'pdf')}
 kappa.ml <- transformPhylo.ML(phy, y=male.length, model="kappa", profilePlot=T)
 ```
 
@@ -134,7 +133,7 @@ kappa.ml <- transformPhylo.ML(phy, y=male.length, model="kappa", profilePlot=T)
 
 The OU model allows for modelling of attraction to a optimum value (alpha), and psi fits a acceleration-deacceleration model to assess to the relative contributions of speciation and gradual evolution to a trait's evolutionary rate
 
-```{r plot5, fig.cap = "profile plot to estimate alpha", echo = T, fig.height = 5, fig.width = 5}
+```{r plot5, fig.cap = "profile plot to estimate alpha", echo = T, fig.height = 5, fig.width = 5, , fig.path='figures/', dev=c('png', 'pdf')}
 ou.ml <- transformPhylo.ML(phy, y=male.length, model="OU", profilePlot=T)
 ou.ml
 ```
@@ -143,7 +142,7 @@ ou.ml
 
 A new addition to MOTMOT is the ACDC model [@Harmon2010; @Blomberg2003]. This model allows for exponential changes in the rate of evolution in the history of a clade. If the upperBound value is < 0, this is equivalent to the 'Early Burst' model fit in geiger
 
-```{r plot6, fig.cap = "profile plot to estimate the ACDC parameter", echo = T, fig.height = 5, fig.width = 5}
+```{r plot6, fig.cap = "profile plot to estimate the ACDC parameter", echo = T, fig.height = 5, fig.width = 5, fig.path='figures/', dev=c('png', 'pdf')}
 acdc.ml <- transformPhylo.ML(phy, y=male.length, model="ACDC", profilePlot=T)
 acdc.ml
 ```
@@ -182,7 +181,7 @@ We can see lambda is > 1, and this has affected the parameter estimation (slight
 
 MOTMOT can test models of evolution in which pre-defined clades can vary in the rate of evolution. Here we fit a model in which the nodes descending from nodes 183 and 240 have a seperate rate of evolution. We can visualise these nodes on the phylogeny
 
-```{r plot7, fig.cap = "lineages with different rates of evolution", echo = T, fig.height = 5, fig.width = 5}
+```{r plot7, fig.cap = "lineages with different rates of evolution", echo = T, fig.height = 5, fig.width = 5, , fig.path='figures/', dev=c('png', 'pdf')}
 plot(phy, show.tip.label=F, no.margin=T, edge.col="grey20")
 nodelabels(c(183, 240), c(183, 240), bg="black", col="white")
 ```
@@ -202,7 +201,7 @@ We can also fit rate heterogeneous models without specifying where we expect shi
 
 We will fit the "tm2" model that allows for clade- and branch-specific changes in rate. This uses the familiar function 'transformPhylo.ML'. As the 'traitMedusa' is computationally-intensive (fitting models to all nodes, optimising increasing numbers of rates) we will fit the 'tm2' to a subset of the phylogeny and data using the APE function 'extract.clade'
 
-```{r plot8, fig.cap = "the subset of the tree", echo = T, fig.height = 7, fig.width = 7}
+```{r plot8, fig.cap = "the subset of the tree", echo = T, fig.height = 7, fig.width = 7, fig.path='figures/', dev=c('png', 'pdf')}
 plot(phy, show.tip.label=F, no.margin=T, edge.col="grey20")
 nodelabels(182, 182, bg="black", col="white")
 phy.clade <- extract.clade(phy, 182)
@@ -220,7 +219,7 @@ tm2.ml <- transformPhylo.ML(y=male.length.clade, phy=phy.clade, model="tm2", min
 
 We can now summarise the results of these data using 'traitMedusaSummary' and plotting the shifts on the phylogeny using 'plotPhylo.motmot'. These results show an increase at node 45 that we can visualise on the phylogeny. 
 
-```{r plot9, fig.cap = "the subset of the tree", echo = T, fig.height = 5, fig.width = 5}
+```{r plot9, fig.cap = "the subset of the tree", echo = T, fig.height = 5, fig.width = 5, fig.path='figures/', dev=c('png', 'pdf')}
 trait.medusa.tm2.summary <- traitMedusaSummary(tm2.ml, cutoff=2, AICc=T)
 trait.medusa.tm2.summary
 colour_motmot <- plotPhylo.motmot(phy=phy.clade, traitMedusaObject=trait.medusa.tm2.summary, reconType = "rates", type = "fan", cex=0.5, edge.width=2)
@@ -255,7 +254,7 @@ timeSlice.10.ml <- transformPhylo.ML(y=male.length.clade, phy=phy.clade, model="
 
 We can use the function 'timeSliceSummary' to plot and summarise the results. The output summarises the best model according to AICc values. This function automatically plots the original tree showing the location of shift(s), and the colours show the relative rates in each time slice. The second plot below shows the same tree and colours, but with the branch lengths scaled to the ML optimised rates
 
-```{r plot10, fig.cap = "timeSlice plot", echo = T, fig.height = 5, fig.width = 5}
+```{r plot10, fig.cap = "timeSlice plot", echo = T, fig.height = 5, fig.width = 5, fig.path='figures/', dev=c('png', 'pdf')}
 outputSummary <- timeSliceSummary(timeSlice.10.ml, cutoff=0.001, cex.tip=0.5, phylo.width=2, colour.ramp=c("blue", "red"))
 ```
 
@@ -275,7 +274,7 @@ timeSlice.ml <- transformPhylo.ML(y=male.length.clade, phy=phy.clade, model="tim
 
 And summarise the results. We can selected the cutoff AICc improvement needed to justify selecting the next model. Here we use the arbitary cut-off value of 1. We could test this formally by estimating the correct AICc value needed to reduced type-error > 5% by using BM simulated data (an example using the tm2 is shown above)
 
-```{r plot11, fig.cap = "timeSlice plot", echo = T, fig.height = 5, fig.width = 5}
+```{r plot11, fig.cap = "timeSlice plot", echo = T, fig.height = 5, fig.width = 5, fig.path='figures/', dev=c('png', 'pdf')}
 outputSummary <- timeSliceSummary(timeSlice.ml, cutoff=1, cex.tip=0.5, phylo.width=2, colour.ramp=c("blue", "red"))
 ```
 
@@ -318,7 +317,7 @@ lambda.mcmc[1:4]
 
 Our lambda median value is 0.77 but there is a large 95% HPD (0.48-0.95). The ESS and acceptance rate look ok. We can also plot the trace from the MCMC chain 
 
-```{r plot12, fig.cap = "MCMC trace for Pagel's lambda", echo = T, fig.height = 5, fig.width = 5}
+```{r plot12, fig.cap = "MCMC trace for Pagel's lambda", echo = T, fig.height = 5, fig.width = 5, fig.path='figures/', dev=c('png', 'pdf')}
 plot(lambda.mcmc$mcmc.chain, type="l", ylim=c(0, 1), xlab="generations", ylab="lambda", las=1)
 ```
 

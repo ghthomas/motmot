@@ -1,0 +1,70 @@
+---
+title: "motmot"
+author: "Mark Puttick"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+bibliography: myref_small.bib
+vignette: >
+  %\VignetteIndexEntry{Vignette Title}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+Models Of Trait Macroevolution On Trees (MOTMOT) is an R package that allows for testing of models of trait evolution [@Thomas2012]. 
+
+- [Tree transformation](#models-of-trait-evolution) models estimated using Maximum likelihood: [Brownian motion](#brownian-motion), [Pagel's Lambda](pagels-lambda), [Delta](#delta), [Kappa](#kappa), [Ornstein-Uhlenbeck (OU)](#ornstein-uhlenbeck), [Acceleration-Deaceleration (ACDC)](#acdc), and [estimating lambda alongside other models](#estimate-lambda-alongside-models)
+- [Rate heterogeneous models of evolution](#rate-heterogeneous-models-of-evolution). Fit models in which the rate of evolution differs in clades selected [*a priori*](#rate-heterogeneity-selected-a-priori) [@Thomas2006, @OMeara2006], and models with [no *a-priori* shift locations](#rate-heterogeneity-with-no-a-priori-information) [@Thomas2012]
+- [TimeSlice](#time-slice-model) fit models in which all rates change at a specific time(s) by tested all times or those selected by the user
+- [Nested Shift mode](#nested-models-of-evolution) Fit models models in which the ancestral BM rate switches to a 'nested' rate within a monophyletic clade in the phylogeny
+- [Bayesian estimation](#bayesian-estimation-of-tree-transformation-models) of tree transformation models
+
+# Introduction
+
+
+First we will install motmot.2.0 from github
+
+```{r}
+if(!any("devtools" %in% rownames(installed.packages()))) install.packages("devtools")
+library(devtools)
+install_github("ghthomas/motmot", ref="motmot.2.0")
+```
+
+For these examples we will use anolis data available from motmot. A time-calibrated phylogeny of anolis species ("anolis.tree"), and various trait and biogeographical trait data ("anolis.data")
+
+```{r}
+library(motmot.2.0, quietly=T)
+data(anolis.tree)
+data(anolis.data)
+
+names(anolis.data)
+attach(anolis.data)
+anolis.tree
+```
+
+For the first part of the tutorial we will use the continuous trait data: male snout-ventral length 'Male_SVL'. We will construct a matrix of just these data, and check if we have missing data
+
+```{r}
+male.length <- matrix(Male_SVL, dimnames=list(rownames(anolis.data)))
+any(is.na(male.length[,1]))
+```
+
+We do. So we will remove these data from the male.length data, and log the trait data
+
+```{r}
+complete.male.length <- complete.cases(male.length)
+missing.species <- rownames(male.length)[!complete.male.length]
+male.length <- as.matrix(male.length[complete.male.length, ])
+male.length <- log(male.length)
+```
+
+Finally, we will 'prune' the species from the tree using 'drop.tip' from APE. Do our species from the data and tree now match?
+
+```{r}
+phy <- drop.tip(anolis.tree, missing.species)
+name.check(phy, male.length)
+```
+
+They do. We can now plot our tree and data using the "traitData.plot" function 
+
+```{r plot1, fig.cap = "traitData showing the realtive male snout ventral length at the tips", echo = T, fig.height = 5, fig.width = 5,  fig.path='figures/', dev=c('png', 'pdf')}
+traitData.plot(y=male.length, phy)
+```
