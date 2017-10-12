@@ -26,7 +26,7 @@
 <p>Models Of Trait Macroevolution On Trees (MOTMOT) is an R package that allows for testing of models of trait evolution <span class="citation">(Thomas and Freckleton 2012)</span>.</p>
 <ul>
 <li><a href="#models-of-trait-evolution">Tree transformation</a> models estimated using Maximum likelihood: <a href="#brownian-motion">Brownian motion</a>, <a href="pagels-lambda">Pagel’s Lambda</a>, <a href="#delta">Delta</a>, <a href="#kappa">Kappa</a>, <a href="#ornstein-uhlenbeck">Ornstein-Uhlenbeck (OU)</a>, <a href="#acdc">Acceleration-Deaceleration (ACDC)</a>, and <a href="#estimate-lambda-alongside-models">estimating lambda alongside other models</a></li>
-<li><a href="#rate-heterogeneous-models-of-evolution">Rate heterogeneous models of evolution</a>. Fit models in which the rate of evolution differs in clades selected <a href="#rate-heterogeneity-selected-a-priori"><em>a priori</em></a> <span class="citation">(Thomas, Freckleton, and Székely 2006, <span class="citation">O’Meara et al. (2006)</span>)</span>, and models with <a href="#rate-heterogeneity-with-no-a-priori-information">no <em>a-priori</em> shift locations</a> <span class="citation">(Thomas and Freckleton 2012)</span></li>
+<li><a href="#rate-heterogeneous-models-of-evolution">Rate heterogeneous models of evolution</a>. Fit models in which the rate of evolution differs in clades selected <a href="#rate-heterogeneity-selected-a-priori"><em>a priori</em></a> <span class="citation">(Thomas, Freckleton, and Székely 2006, <span class="citation">O’Meara et al. 2006</span>)</span>, and models with <a href="#rate-heterogeneity-with-no-a-priori-information">no <em>a-priori</em> shift locations</a> <span class="citation">(Thomas and Freckleton 2012)</span></li>
 <li><a href="#time-slice-model">TimeSlice</a> fit models in which all rates change at a specific time(s) by tested all times or those selected by the user</li>
 <li><a href="#nested-models-of-evolution">Nested Shift mode</a> Fit models models in which the ancestral BM rate switches to a ‘nested’ rate within a monophyletic clade in the phylogeny</li>
 <li><a href="#bayesian-estimation-of-tree-transformation-models">Bayesian estimation</a> of tree transformation models</li>
@@ -37,8 +37,6 @@
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="cf">if</span>(<span class="op">!</span><span class="kw">any</span>(<span class="st">&quot;devtools&quot;</span> <span class="op">%in%</span><span class="st"> </span><span class="kw">rownames</span>(<span class="kw">installed.packages</span>()))) <span class="kw">install.packages</span>(<span class="st">&quot;devtools&quot;</span>)
 <span class="kw">library</span>(devtools)
 <span class="kw">install_github</span>(<span class="st">&quot;ghthomas/motmot&quot;</span>, <span class="dt">ref=</span><span class="st">&quot;motmot.2.0&quot;</span>)</code></pre></div>
-<pre><code>## Skipping install of 'motmot.2.0' from a github remote, the SHA1 (82787801) has not changed since last install.
-##   Use `force = TRUE` to force installation</code></pre>
 <p>For these examples we will use anolis data available from motmot. A time-calibrated phylogeny of anolis species (“anolis.tree”), and various trait and biogeographical trait data (“anolis.data”)</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(motmot.<span class="fl">2.0</span>, <span class="dt">quietly=</span>T)
 <span class="kw">data</span>(anolis.tree)
