@@ -18,8 +18,6 @@
 
 <meta name="date" content="2017-10-12" />
 
-<title>motmot</title>
-
 <h1 class="title toc-ignore">motmot</h1>
 <h4 class="author"><em>Mark Puttick</em></h4>
 <h4 class="date"><em>2017-10-12</em></h4>
