@@ -250,17 +250,17 @@ rtnorm <- function(n, mean, sd, a = -Inf, b = Inf){
 			for (i in 1:iterations) {
 				proposed.move <- propose.mcmc(mcmc.chain[i,])
 				chain.prob <- exp(model.posterior(proposed.move) - model.posterior(mcmc.chain[i,]))
-					if (runif(1) < chain.prob) {
-        					mcmc.chain <- rbind(mcmc.chain, proposed.move)
-        				} else {
-        					mcmc.chain <- rbind(mcmc.chain, mcmc.chain[i,])
-        					}
+				if (runif(1) < chain.prob) {
+					mcmc.chain <- rbind(mcmc.chain, proposed.move)
+				} else {
+					mcmc.chain <- rbind(mcmc.chain, mcmc.chain[i,])
+				}
 					if(!silent) {
 						cat("\r", "MCMC progress:", sprintf("%.4f", i/iterations * 100), "%")
 						}
-    					}
-    				return(mcmc.chain)
-				}
+			}
+			return(mcmc.chain)
+		}
 				
 		if(opt.accept.rate) {
 			cat("optimising acceptance ratio fine-tune")
