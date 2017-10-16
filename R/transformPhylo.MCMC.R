@@ -154,7 +154,7 @@ rtnorm <- function(n, mean, sd, a = -Inf, b = Inf){
 				return(likTraitPhylo(y, alpha.phy)[[2]])
 			}
 			
-			prior.uniform <- function(pram) {
+			prior.uniform <- function(pram){
 				alpha.prior <- dunif(pram, lowerBound, upperBound)
 				return(sum(alpha.prior))
 				}
@@ -188,7 +188,7 @@ rtnorm <- function(n, mean, sd, a = -Inf, b = Inf){
 				return(likTraitPhylo(y, acdc.phy)[[2]])
 			}
 			
-			prior.uniform <- function(pram) {
+			prior.uniform <- function(pram){
 				acdc.prior <- dunif(pram, lowerBound, upperBound)
 				return(sum(acdc.prior))
 				}
@@ -221,7 +221,7 @@ rtnorm <- function(n, mean, sd, a = -Inf, b = Inf){
 				return(likTraitPhylo(y, psi.phy)[[2]])
 			}
 			
-			prior.uniform <- function(pram) {
+			prior.uniform <- function(pram){
 				psi.prior <- dunif(pram, lowerBound, upperBound)
 				return(sum(psi.prior))
 				}
