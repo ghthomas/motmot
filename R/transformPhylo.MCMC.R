@@ -55,7 +55,7 @@ rtnorm <- function(n, mean, sd, a = -Inf, b = Inf){
 				return(likTraitPhylo(y, lambda.phy)[[2]])
 			}
 			
-			prior.uniform <- function(pram) {
+			prior.uniform <- function(pram){
 				lambda.prior <- dunif(pram, lowerBound, upperBound)
 				return(sum(lambda.prior))
 				}
