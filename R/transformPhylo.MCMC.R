@@ -121,7 +121,7 @@ rtnorm <- function(n, mean, sd, a = -Inf, b = Inf){
 				return(likTraitPhylo(y, kappa.phy)[[2]])
 			}
 			
-			prior.uniform <- function(pram){
+			prior.uniform <-function(pram){
 				kappa.prior <- dunif(pram, lowerBound, upperBound)
 				return(sum(kappa.prior))
 				}
