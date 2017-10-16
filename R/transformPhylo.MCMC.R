@@ -247,7 +247,7 @@ rtnorm <- function(n, mean, sd, a = -Inf, b = Inf){
 				}
 					
 			mcmc.chain <- matrix(input.value, nrow=1)
-    				for (i in 1:iterations) {
+				for (i in 1:iterations) {
         				proposed.move <- propose.mcmc(mcmc.chain[i,])
         				chain.prob <- exp(model.posterior(proposed.move) - model.posterior(mcmc.chain[i,]))
         				if (runif(1) < chain.prob) {
