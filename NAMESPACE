@@ -2,6 +2,7 @@
 
 export(RatePhylo.CI)
 export(RatePhylo.allCI)
+export(addFossilToPhy)
 export(allCladeMembers)
 export(ancState)
 export(as.rateData)
