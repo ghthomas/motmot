@@ -55,7 +55,7 @@ rtnorm <- function(n, mean, sd, a = -Inf, b = Inf){
 				return(likTraitPhylo(y, lambda.phy)[[2]])
 			}
 			
-			prior.uniform <- function(pram){
+			prior.uniform <- function(pram) {
 				lambda.prior <- dunif(pram, lowerBound, upperBound)
 				return(sum(lambda.prior))
 				}
@@ -88,7 +88,7 @@ rtnorm <- function(n, mean, sd, a = -Inf, b = Inf){
 				return(likTraitPhylo(y, delta.phy)[[2]])
 			}
 			
-			prior.uniform <- function(pram){
+			prior.uniform <- function(pram) {
 				delta.prior <- dunif(pram, lowerBound, upperBound)
 				return(sum(delta.prior))
 				}
@@ -121,7 +121,7 @@ rtnorm <- function(n, mean, sd, a = -Inf, b = Inf){
 				return(likTraitPhylo(y, kappa.phy)[[2]])
 			}
 			
-			prior.uniform <-function(pram){
+			prior.uniform <- function(pram) {
 				kappa.prior <- dunif(pram, lowerBound, upperBound)
 				return(sum(kappa.prior))
 				}
@@ -154,7 +154,7 @@ rtnorm <- function(n, mean, sd, a = -Inf, b = Inf){
 				return(likTraitPhylo(y, alpha.phy)[[2]])
 			}
 			
-			prior.uniform <-function(pram){
+			prior.uniform <- function(pram) {
 				alpha.prior <- dunif(pram, lowerBound, upperBound)
 				return(sum(alpha.prior))
 				}
@@ -188,7 +188,7 @@ rtnorm <- function(n, mean, sd, a = -Inf, b = Inf){
 				return(likTraitPhylo(y, acdc.phy)[[2]])
 			}
 			
-			prior.uniform <- function(pram){
+			prior.uniform <- function(pram) {
 				acdc.prior <- dunif(pram, lowerBound, upperBound)
 				return(sum(acdc.prior))
 				}
@@ -221,7 +221,7 @@ rtnorm <- function(n, mean, sd, a = -Inf, b = Inf){
 				return(likTraitPhylo(y, psi.phy)[[2]])
 			}
 			
-			prior.uniform <- function(pram){
+			prior.uniform <- function(pram) {
 				psi.prior <- dunif(pram, lowerBound, upperBound)
 				return(sum(psi.prior))
 				}
@@ -245,22 +245,22 @@ rtnorm <- function(n, mean, sd, a = -Inf, b = Inf){
 				propose.mcmc <- function(pram) {
 					return(rtnorm(1, pram, sd=stn.dev, lowerBound, upperBound))
 				}
-		
+					
 			mcmc.chain <- matrix(input.value, nrow=1)
-			for (i in 1:iterations) {
-				proposed.move <- propose.mcmc(mcmc.chain[i,])
-				chain.prob <- exp(model.posterior(proposed.move) - model.posterior(mcmc.chain[i,]))
-				if (runif(1) < chain.prob) {
-					mcmc.chain <- rbind(mcmc.chain, proposed.move)
-				} else {
-					mcmc.chain <- rbind(mcmc.chain, mcmc.chain[i,])
-				}
+    				for (i in 1:iterations) {
+        				proposed.move <- propose.mcmc(mcmc.chain[i,])
+        				chain.prob <- exp(model.posterior(proposed.move) - model.posterior(mcmc.chain[i,]))
+        				if (runif(1) < chain.prob) {
+        					mcmc.chain <- rbind(mcmc.chain, proposed.move)
+        				} else {
+        					mcmc.chain <- rbind(mcmc.chain, mcmc.chain[i,])
+        					}
 					if(!silent) {
 						cat("\r", "MCMC progress:", sprintf("%.4f", i/iterations * 100), "%")
 						}
-			}
-			return(mcmc.chain)
-		}
+    					}
+    				return(mcmc.chain)
+				}
 				
 		if(opt.accept.rate) {
 			cat("optimising acceptance ratio fine-tune")
