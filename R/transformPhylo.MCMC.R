@@ -4,6 +4,8 @@
 #' @param phy An object of class "phylo" (see ape package).
 #' @param model The model of trait evolution (see details).
 #' @param mcmc.iteration Integer - the number of generations for which to run the MCMC chain
+#' @param hiddenSpeciation Logical. If TRUE the psi model will include nodes that are on the 'full.phy' but not the tree pruned of trait data
+#' @param full.phy The full phylogeny containing the species that do not contain trait data so are not included in 'phy'
 #' @param burn.in The proportion of the chain (as given by mcmc.iteration) which to discard as 'burn-in'
 #' @param lowerBound Minimum value for parameter estimates
 #' @param upperBound Maximum value for parameter estimates
@@ -29,7 +31,7 @@
 #' @author Mark Puttick, Gavin Thomas
 #' @export 
 
-transformPhylo.MCMC <- function(y, phy, model, mcmc.iteration=1000, burn.in=0.1, lowerBound = NULL, upperBound = NULL, opt.accept.rate=TRUE, acceptance.sd=NULL, opt.prop=0.25, fine.tune.bound=0.05, fine.tune.n=30) {
+transformPhylo.MCMC <- function(y, phy, model, mcmc.iteration=1000, burn.in=0.1, hiddenSpeciation = TRUE, full.phy=NULL, lowerBound = NULL, upperBound = NULL, opt.accept.rate=TRUE, acceptance.sd=NULL, opt.prop=0.25, fine.tune.bound=0.05, fine.tune.n=30) {
 	
 rtnorm <- function(n, mean, sd, a = -Inf, b = Inf){
 		qnorm(runif(n, pnorm(a, mean, sd), pnorm(b, mean, sd)), mean, sd)
@@ -224,6 +226,25 @@ lowerBound <- bounds["psi", 1]
 }
 if (is.null(upperBound)) {
 upperBound <- bounds["psi", 2]
+}
+
+if (hiddenSpeciation) {
+if (is.null(full.phy)) stop("please provide a full phylogeny")
+full.data.match <- match(full.phy$tip.label, rownames(y))
+tips.no.data <- full.phy$tip.label[which(is.na(full.data.match))]
+phy <- dropTipPartial(full.phy, tips.no.data)
+}
+ 
+phy.bd <- birthdeath(phy)
+mu_over_lambda <- phy.bd[[4]][1]
+lambda_minus_mu <- phy.bd[[4]][2]
+lambda.sp <- as.numeric(lambda_minus_mu / (1 - mu_over_lambda))
+mu.ext <- as.numeric(lambda_minus_mu / (1 / mu_over_lambda - 1))
+		
+if (mu.ext > 0) {
+phy <- sampleHiddenSp(phy, lambda.sp = lambda.sp, mu.ext = mu.ext, useMean=useMean)
+} else {
+phy$hidden.speciation <- NULL
 }
 
 lik.model <- function(pram) {
