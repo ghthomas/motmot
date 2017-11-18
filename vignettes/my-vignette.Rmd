@@ -1,0 +1,339 @@
+---
+title: "motmot"
+author: "Mark Puttick"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+bibliography: myref_small.bib
+vignette: >
+  %\VignetteIndexEntry{Vignette Title}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+Models Of Trait Macroevolution On Trees (MOTMOT) is an R package that allows for testing of models of trait evolution [@Thomas2012]. 
+
+- [Tree transformation](#models-of-trait-evolution) models estimated using Maximum likelihood: [Brownian motion](#brownian-motion), [Pagel's Lambda](pagels-lambda), [Delta](#delta), [Kappa](#kappa), [Ornstein-Uhlenbeck (OU)](#ornstein-uhlenbeck), [Acceleration-Deaceleration (ACDC)](#acdc), and [estimating lambda alongside other models](#estimate-lambda-alongside-models)
+- [Rate heterogeneous models of evolution](#rate-heterogeneous-models-of-evolution). Fit models in which the rate of evolution differs in clades selected [*a priori*](#rate-heterogeneity-selected-a-priori) [@Thomas2006, @OMeara2006], and models with [no *a-priori* shift locations](#rate-heterogeneity-with-no-a-priori-information) [@Thomas2012]
+- [TimeSlice](#time-slice-model) fit models in which all rates change at a specific time(s) by tested all times or those selected by the user
+- [Nested Shift mode](#nested-models-of-evolution) Fit models models in which the ancestral BM rate switches to a 'nested' rate within a monophyletic clade in the phylogeny
+- [Bayesian estimation](#bayesian-estimation-of-tree-transformation-models) of tree transformation models
+
+# Introduction
+
+
+First we will install motmot.2.0 from github
+
+```{r}
+if(!any("devtools" %in% rownames(installed.packages()))) install.packages("devtools")
+library(devtools)
+install_github("ghthomas/motmot", ref="motmot.2.0")
+```
+
+For these examples we will use anolis data available from motmot. A time-calibrated phylogeny of anolis species ("anolis.tree"), and various trait and biogeographical trait data ("anolis.data")
+
+```{r}
+library(motmot.2.0, quietly=T)
+data(anolis.tree)
+data(anolis.data)
+
+names(anolis.data)
+attach(anolis.data)
+anolis.tree
+```
+
+For the first part of the tutorial we will use the continuous trait data: male snout-ventral length 'Male_SVL'. We will construct a matrix of just these data, and check if we have missing data
+
+```{r}
+male.length <- matrix(Male_SVL, dimnames=list(rownames(anolis.data)))
+any(is.na(male.length[,1]))
+```
+
+We do. So we will remove these data from the male.length data, and log the trait data. This can de done using the function 'sortTraitData'
+
+```{r}
+sortedData <- sortTraitData(anolis.tree, male.length)
+phy <- sortedData$phy
+male.length <- sortedData$trait
+```
+
+Finally, we will 'prune' the species from the tree using 'drop.tip' from APE. Do our species from the data and tree now match?
+
+```{r}
+name.check(phy, male.length)
+```
+
+They do. We can now plot our tree and data using the "traitData.plot" function 
+
+```{r plot1, fig.cap = "traitData showing the realtive male snout ventral length at the tips", echo = T, fig.height = 5, fig.width = 5, fig.path='figures/', dev=c('png', 'pdf')}
+traitData.plot(y=male.length, phy)
+```
+
+# Models of trait evolution
+
+We can now test various models of evolution using our trait data.
+
+## Brownian motion
+
+To start we will fit a simple Brownian motion model to the data
+
+```{r}
+bm.ml <- transformPhylo.ML(phy, y=male.length, model="bm")
+bm.ml
+```
+
+## Pagel's lambda
+
+We can also fit models to test Pagel's lambda
+
+```{r}
+lambda.ml <- transformPhylo.ML(phy, y=male.length, model="lambda")
+lambda.ml
+```
+
+We can see from these results the CI of lambda is < 1, but there is still a large phylogenetic signal is these data
+
+A new feature in motmot allows for plotting of the likelihood profile for the branch-transformation parameter, in this case Pagel's lambda
+
+```{r plot2, fig.cap = "profile plot of ML estimation for Pagel's lambda", echo = T, fig.height = 5, fig.width = 5, , fig.path='figures/', dev=c('png', 'pdf')}
+lambda.ml <- transformPhylo.ML(phy, y=male.length, model="lambda", profilePlot=T)
+```
+
+We can now compare the fit of the BM and Lambda models. Lambda has higher likelihood, but it also has more parameters. We can test whether this is a significant improvement. First we will use the chi-squared distribution. The models differ in one degree of freedom: BM has 2 parameters (brownian variance, root state) and lambda has those two plus the value of lambda. We can use the R function pchisq to obtain a p value, and see that lambda is not a superior fit to these male length data
+
+```{r}
+p.value <- 1 - pchisq(lambda.ml$MaximumLikelihood - bm.ml$logLikelihood, 1)
+p.value
+```
+
+However, there is a large Akaike Information Criterion (AICc) difference between the two models: BM has a higher AICc compared to Lambda. The differce (4.724636) is >4 which is tradtionally seen as indication of a superior fit (Burnham and Anderson 2003). 
+
+```{r}
+bm.ml$AICc- lambda.ml$AICc
+```
+
+The parameters, brownian variance, root state, Maximum likelihoods, AIC, and AICc can be obtained for a number of models in motmot. 
+
+## Delta
+
+Delta indicates a slow or increase in the rate of trait evolution through time; a value of 1 is equivalent to Brownian motion, < 1 indicates a slow-down, and > 1 is difficult to interpret (greater change near the present). Here we find a MLE of 1.27 but the CI spans < 1
+
+```{r plot3, fig.cap = "profile plot to estimate delta", echo = T, fig.height = 5, fig.width = 5, , fig.path='figures/', dev=c('png', 'pdf')}
+delta.ml <- transformPhylo.ML(phy, y=male.length, model="delta", profilePlot=T)
+delta.ml
+```
+
+## Kappa
+
+Kappa is used as a measure of punctuated evolution and spans values of 0-1. 1 is equivalent to BM, and 0 indicates trait change occurs at events of speciation. Here the is some evidence of punctuated evolution, but the CI spans a value greater than one (as seen in the warning message)
+
+```{r plot4, fig.cap = "profile plot to estimate kappa", echo = T, fig.height = 5, fig.width = 5, , fig.path='figures/', dev=c('png', 'pdf')}
+kappa.ml <- transformPhylo.ML(phy, y=male.length, model="kappa", profilePlot=T)
+```
+
+## Ornstein-Uhlenbeck
+
+The OU model allows for modelling of attraction to a optimum value (alpha), and psi fits a acceleration-deacceleration model to assess to the relative contributions of speciation and gradual evolution to a trait's evolutionary rate
+
+```{r plot5, fig.cap = "profile plot to estimate alpha", echo = T, fig.height = 5, fig.width = 5, , fig.path='figures/', dev=c('png', 'pdf')}
+ou.ml <- transformPhylo.ML(phy, y=male.length, model="OU", profilePlot=T)
+ou.ml
+```
+
+## ACDC
+
+A new addition to MOTMOT is the ACDC model [@Harmon2010; @Blomberg2003]. This model allows for exponential changes in the rate of evolution in the history of a clade. If the upperBound value is < 0, this is equivalent to the 'Early Burst' model fit in geiger
+
+```{r plot6, fig.cap = "profile plot to estimate the ACDC parameter", echo = T, fig.height = 5, fig.width = 5, fig.path='figures/', dev=c('png', 'pdf')}
+acdc.ml <- transformPhylo.ML(phy, y=male.length, model="ACDC", profilePlot=T)
+acdc.ml
+```
+
+There is little evidence here of exponential decreases or increases in the rate of trait evolution - the acdc exponential parameter is close to 0 (0.007). We can see this is not a significant improvement on BM
+
+```{r}
+p.value.2 <- 1 - pchisq(acdc.ml$MaximumLikelihood - bm.ml$logLikelihood , 1)
+p.value.2
+```
+
+## Estimate lambda alongside models
+
+One way to deal with 'noisy' data is to estimate Pagel's lambda alongside a parameter of interest. In motmot, lambda can be estimated alongside the delta, kappa, OU, psi, and ACDC models. Here we look at example using ACDC. The model is fit with same function. 'transformPhyo.ML', but with the argument 'lambdaEst' set to TRUE
+
+```{r}
+acdc.ml.lambda <- transformPhylo.ML(y=male.length, phy, model="ACDC", lambdaEst=T)
+# original ACDC model
+acdc.ml
+# ACDC model plus lambda
+acdc.ml.lambda
+```
+
+We can see lambda is > 1, and this has affected the parameter estimation (slightly). However, the improvement in the model fit is not significant compared to the ACDC model without lambda, or the null BM model 
+
+```{r}
+# p value of the ACDC and ACDC+lambda models. No significant improvement
+1 - pchisq(acdc.ml.lambda$MaximumLikelihood - acdc.ml$MaximumLikelihood , df=1)
+# p value of the BM and ACDC+lambda model comparison. No significant improvement
+1 - pchisq(acdc.ml.lambda$MaximumLikelihood - bm.ml$logLikelihood, df=2)
+```
+
+# Rate heterogeneous models of evolution
+
+## rate heterogeneity selected *a priori*
+
+MOTMOT can test models of evolution in which pre-defined clades can vary in the rate of evolution. Here we fit a model in which the nodes descending from nodes 183 and 240 have a seperate rate of evolution. We can visualise these nodes on the phylogeny
+
+```{r plot7, fig.cap = "lineages with different rates of evolution", echo = T, fig.height = 5, fig.width = 5, , fig.path='figures/', dev=c('png', 'pdf')}
+plot(phy, show.tip.label=F, no.margin=T, edge.col="grey20")
+nodelabels(c(183, 240), c(183, 240), bg="black", col="white")
+```
+
+We then fit the motmot model, again using the function transformPhylo.ML. We use the argument "model=clade". This fits the non-censored model of O'Meara et al. (2006). 
+
+```{r}
+cladeRate.ml <- transformPhylo.ML(male.length, phy=phy, model="clade", nodeIDs=c(183, 240))
+cladeRate.ml
+```
+
+These results indicate that the two clades tend to have a lower rate of evolution compared to the background rate. However, the CIs indicate these decreases may not be robust
+
+## rate heterogeneity with no *a priori* information
+
+We can also fit rate heterogeneous models without specifying where we expect shifts on the tree. We can use the arguments "model="tm1"" and "model="tm2""; these models fit 'traitMedusa' models in which all nodes are tested for rate increases or decreases. It is possible to exclude small nodes using the argument 'minCladeSize'. As well as allowing clade differences in rate, the "tm2" also allows for branch-based increases or decreases in rate. 
+
+We will fit the "tm2" model that allows for clade- and branch-specific changes in rate. This uses the familiar function 'transformPhylo.ML'. As the 'traitMedusa' is computationally-intensive (fitting models to all nodes, optimising increasing numbers of rates) we will fit the 'tm2' to a subset of the phylogeny and data using the APE function 'extract.clade'
+
+```{r plot8, fig.cap = "the subset of the tree", echo = T, fig.height = 7, fig.width = 7, fig.path='figures/', dev=c('png', 'pdf')}
+plot(phy, show.tip.label=F, no.margin=T, edge.col="grey20")
+nodelabels(182, 182, bg="black", col="white")
+phy.clade <- extract.clade(phy, 182)
+male.length.clade <- as.matrix(male.length[match(phy.clade$tip.label, rownames(male.length)),])
+```
+
+We can now fit the 'tm2' algorithm. The output shows the log-likelihood, AIC, AICc, rate type (branch of clade), for the best-fitting model at each stage. This starts with the BM model, and then one shift model, two shift model, etc., 
+
+```{r}
+# not run
+# tm1.ml <- transformPhylo.ML(y=male.length.clade, phy=phy.clade, model="tm1", minCladeSize=2, nSplits=3)
+# trait.medusa.tm1.summary <- traitMedusaSummary(tm1.ml, cutoff=2, AICc=T)
+tm2.ml <- transformPhylo.ML(y=male.length.clade, phy=phy.clade, model="tm2", minCladeSize=2, nSplits=3)
+```
+
+We can now summarise the results of these data using 'traitMedusaSummary' and plotting the shifts on the phylogeny using 'plotPhylo.motmot'. These results show an increase at node 45 that we can visualise on the phylogeny. 
+
+```{r plot9, fig.cap = "the subset of the tree", echo = T, fig.height = 5, fig.width = 5, fig.path='figures/', dev=c('png', 'pdf')}
+trait.medusa.tm2.summary <- traitMedusaSummary(tm2.ml, cutoff=2, AICc=T)
+trait.medusa.tm2.summary
+colour_motmot <- plotPhylo.motmot(phy=phy.clade, traitMedusaObject=trait.medusa.tm2.summary, reconType = "rates", type = "fan", cex=0.5, edge.width=2)
+```
+
+Thomas and Freckleton (2012) showed the tm2 algortihm has a high type-one error rate. One way to ameriolate this is to estimate the level a one shift is supported when we know BM is the true model. For example, we could simulate 1000 BM datasets on the tree, estimate a single shift using the tm2 algortihm, and calculating the difference between the AICcs for each BM and one shift model. We can these use this difference to estimate the AICc 'penalty' the is needed to reduce the tm2 type-one error rate to 0.05. We could use this penalty in the 'cutoff' argument of the traitMedusaSummary argument. 
+
+This is shown but not run in the code below
+
+```{r}
+# not run
+# sim.bm <- transformPhylo.sim(phy=phy.clade, n=1000, model="bm")
+# aic.cut.off <- apply(sim.bm, 2, function(x) {
+	# bm.test <- transformPhylo.ML(y=as.matrix(x), phy=phy.clade, model="tm2", minCladeSize=2, nSplits=1)
+	# bm.test[[1]][,"AICc"]
+	# })
+# tm2.cut.off <- quantile(aic.cut.off[1,] - aic.cut.off[2,], 0.95)
+```
+
+# Time-slice model 
+
+A new addition to motmot is a Maximum likelihood model that allows for heterogeneous rates in different times of evolution. These models are seperate from the models that allow for heterogeneous rates among lineages, as modelled by the 'traitMedusa' algorithms.
+
+The 'timeSlice' model is implemented using the 'transformPhylo.ML' function, using the argument model = 'timeSlice'. The function allows for two seperate models of evolution. In one, it is possible to test shifts in evolution at times selected *a priori*. Alternatively, the fit of models can be tested at a range of different times, and the function will return the best-fitting model
+
+
+First we will test for a shift in the rate of evolution 10 million years ago. 
+
+```{r}
+timeSlice.10.ml <- transformPhylo.ML(y=male.length.clade, phy=phy.clade, model="timeSlice", splitTime=c(10))
+```
+
+We can use the function 'timeSliceSummary' to plot and summarise the results. The output summarises the best model according to AICc values. This function automatically plots the original tree showing the location of shift(s), and the colours show the relative rates in each time slice. The second plot below shows the same tree and colours, but with the branch lengths scaled to the ML optimised rates
+
+```{r plot10, fig.cap = "timeSlice plot", echo = T, fig.height = 5, fig.width = 5, fig.path='figures/', dev=c('png', 'pdf')}
+outputSummary <- timeSliceSummary(timeSlice.10.ml, cutoff=0.001, cex.tip=0.5, phylo.width=2, colour.ramp=c("blue", "red"))
+```
+
+We can also see other summarise information, such as the CI for each rate estimate. 
+
+```{r}
+outputSummary$RatesCI
+```
+
+Rather than testing the overall fit of each model, we can fit models to all times. The function automatically tests for all 1 Ma shifts between the age of the tree - 10 Ma, and the present + 10 Ma. We can specify a number of shifts we would like to test for. Here we will test for up to 3 shifts. The model will test one shift, save it, search for a second, save those two, etc...
+
+Here will modify the boundary age argument so all split times are tested between 65-5 Myrs, using the 'boundaryAge' argument. As we are not tested set times we need to set the number of splits to test using 'nSplits' - we will allow up to 3 splits
+
+```{r}
+timeSlice.ml <- transformPhylo.ML(y=male.length.clade, phy=phy.clade, model="timeSlice", nSplits=3, boundaryAge=5)
+```
+
+And summarise the results. We can selected the cutoff AICc improvement needed to justify selecting the next model. Here we use the arbitary cut-off value of 1. We could test this formally by estimating the correct AICc value needed to reduced type-error > 5% by using BM simulated data (an example using the tm2 is shown above)
+
+```{r plot11, fig.cap = "timeSlice plot", echo = T, fig.height = 5, fig.width = 5, fig.path='figures/', dev=c('png', 'pdf')}
+outputSummary <- timeSliceSummary(timeSlice.ml, cutoff=1, cex.tip=0.5, phylo.width=2, colour.ramp=c("blue", "red"))
+```
+
+The output looks odd as the middle time period has be collapsed to zero
+
+
+# Nested models of evolution
+
+We can also tested models of nested evolution in which an ancestral model of BM evolution changes to a alternative model (EB, OU, kappa, delta, psi) within the phylogeny (Puttick, In Review)
+
+Here we can show an example of BM -> OU and BM -> ACDC at node 44 of the phylogeny. However, neither of these is significantly better than BM
+
+```{r}
+bm.model <- transformPhylo.ML(male.length.clade, phy=phy.clade, model="bm")
+nested.acdc <- transformPhylo.ML(male.length.clade, phy=phy.clade, model="ACDC", nodeIDs=c(44))
+nested.ou <- transformPhylo.ML(male.length.clade, phy=phy.clade, model="OU", nodeIDs=c(44))
+
+1 - pchisq(nested.acdc$MaximumLikelihood - bm.model$logLikelihood, 1)
+1 - pchisq(nested.ou$MaximumLikelihood - bm.model$logLikelihood, 1)
+```
+
+# Bayesian estimation of tree transformation models
+
+The function 'transformPhylo.MCMC' allows for the estimation of model parameters using Bayesian statistics. Models of lambda, delta, kappa, OU, ACDC, and psi can currently be modelled using transformPhylo.MCMC
+
+The model allows for a pre-optimisation step. The model we test 30 (default) different deviations for the acceptance proposal distribution in order for the model to achieve an acceptance of around 0.44. This is done by default in the model but can be turned off by setting 'opt.accept.rate=FALSE'
+
+We will run an MCMC chain of 2000 generations to estimate Pagel's lambda and discarding the first 10% ('200 generations ('burn.in = 0.1'). All the models use a 'uniform' prior for each of the parameters. For lambda, this is a uniform distribution between 0 and 1, meaning we think all potential values are equally likely
+
+```{r}
+set.seed(20) # set seed so run will be identical - for example use only
+lambda.mcmc <- transformPhylo.MCMC(y=male.length.clade, phy=phy.clade, model="lambda", mcmc.iteration=2000, burn.in=0.1)
+```
+
+We can know check the posterior estimate of lambda and convergence of the model. The median and 95 Highest Posterior Density (HPD) is output by the model. Some convergene diagnostics are output as standard: Effective Sample Size (ESS) and acceptance rate. We aim for an ESS of at least 200 and an acceptance rate around 0.44
+
+```{r}
+lambda.mcmc[1:4]
+```
+
+Our lambda median value is 0.77 but there is a large 95% HPD (0.48-0.95). The ESS and acceptance rate look ok. We can also plot the trace from the MCMC chain 
+
+```{r plot12, fig.cap = "MCMC trace for Pagel's lambda", echo = T, fig.height = 5, fig.width = 5, fig.path='figures/', dev=c('png', 'pdf')}
+plot(lambda.mcmc$mcmc.chain, type="l", ylim=c(0, 1), xlab="generations", ylab="lambda", las=1)
+```
+
+We would hope this is flatish trace around the stable posterior distribution - it looks ok (if not great)
+
+References
+
+
+
+
+
+
+
+
+
+
+
+
+

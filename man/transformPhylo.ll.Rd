@@ -6,7 +6,7 @@
 \usage{
 transformPhylo.ll(y = NULL, phy, model = NULL, meserr = NULL,
   kappa = NULL, lambda = NULL, delta = NULL, alpha = NULL, psi = NULL,
-  a = NULL, nodeIDs = NULL, rateType = NULL, branchRates = NULL,
+  lambda.sp = NULL, nodeIDs = NULL, rateType = NULL, branchRates = NULL,
   cladeRates = NULL, timeRates = NULL, splitTime = NULL,
   branchLabels = NULL, acdcRate = NULL, covPIC = TRUE)
 }
@@ -29,6 +29,8 @@ transformPhylo.ll(y = NULL, phy, model = NULL, meserr = NULL,
 
 \item{psi}{Value of psi transform.}
 
+\item{lambda.sp}{Speciation rate estimate for the tree.}
+
 \item{nodeIDs}{Integer - ancestral nodes of clades.}
 
 \item{rateType}{If model="clade", a vector specifying if rate shift occurs in a clade ("clade") or on the single branch leading to a clade ("branch").}
@@ -37,9 +39,7 @@ transformPhylo.ll(y = NULL, phy, model = NULL, meserr = NULL,
 
 \item{cladeRates}{Numeric vector specifying telative rates for clades.}
 
-\item{branchLabels}{Necessary for multiPsi....TO ADD}
-
-\item{la}{Speciation rate estimate for the tree}
+\item{branchLabels}{Branches on which different psi parameters are estimated in the "multipsi" model.}
 }
 \value{
 brownianVariance Brownian variance (or covariance for multiple traits) given the data and phylogeny
@@ -97,9 +97,11 @@ transformPhylo.ll(anolisSVL, phy=tree, model="psi", psi=1)
 \references{
 Felsenstein J. 1973. Maximum-likelihood estimation of evolutionary trees from continuous characters. Am. J. Hum. Genet. 25, 471-492.
 Felsenstein J. 1985. Phylogenies and the comparative method. American Naturalist 125, 1-15.
-Freckleton RP & Jetz W. 2009. Space versus phylogeny: disentangling phylogenetic and spatial signals in comparative data. Proc. Roy. Soc. B 276, 21-30. 
-Ingram T. 2010. Speciation along a depth gradient in a marine adaptive radiation. Proceeding of the Royal Society B. In press.
-Mooers AO, Vamosi S, & Schluter D. 1999. Using phylogenies to test macroevolutionary models of trait evolution: sexual selection and speciation in Cranes (Gruinae). American Naturalist 154, 249-259.
+Freckleton RP & Jetz W. 2009. Space versus phylogeny: disentangling phylogenetic and spatial signals in comparative data. Proc. Roy. Soc. B 276, 21-30.
+
+Ingram T. 2011. Speciation along a depth gradient in a marine adaptive radiation. Proc. Roy. Soc. B. 278, 613-618.
+
+Ingram T,  Harrison AD, Mahler L, Castaneda MdR, Glor RE, Herrel A, Stuart YE, and Losos JB. 2016. Comparative tests of the role of dewlap size in Anolis lizard speciation. Proc. Roy. Soc. B. 283, 20162199. #' Mooers AO, Vamosi S, & Schluter D. 1999. Using phylogenies to test macroevolutionary models of trait evolution: sexual selection and speciation in Cranes (Gruinae). American Naturalist 154, 249-259.
 O'Meara BC, Ane C, Sanderson MJ & Wainwright PC. 2006. Testing for different rates of continuous trait evolution using likelihood. Evolution 60, 922-933
 Pagel M. 1997. Inferring evolutionary processes from phylogenies. Zoologica Scripta 26, 331-348.
 Pagel M. 1999 Inferring the historical patterns of biological evolution. Nature 401, 877-884.

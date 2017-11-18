@@ -7,11 +7,11 @@
 transformPhylo.ML(y, phy, model = NULL, modelCIs = TRUE, nodeIDs = NULL,
   rateType = NULL, minCladeSize = 1, nSplits = 2, splitTime = NULL,
   boundaryAge = 10, testAge = 1, restrictNode = NULL, lambdaEst = FALSE,
-  acdcScalar = FALSE, la = NULL, branchLabels = NULL,
-  profilePlot = FALSE, lowerBound = NULL, upperBound = NULL,
-  covPIC = TRUE, n.cores = 1, tol = NULL, meserr = NULL,
-  controlList = c(fnscale = -1, maxit = 100, factr = 1e-07, pgtol = 0, type =
-  2, lmm = 5), returnPhy = FALSE)
+  acdcScalar = FALSE, branchLabels = NULL, hiddenSpeciation = TRUE,
+  full.phy = NULL, useMean = FALSE, profilePlot = FALSE,
+  lowerBound = NULL, upperBound = NULL, covPIC = TRUE, n.cores = 1,
+  tol = NULL, meserr = NULL, controlList = c(fnscale = -1, maxit = 100,
+  factr = 1e-07, pgtol = 0, type = 2, lmm = 5), returnPhy = FALSE)
 }
 \arguments{
 \item{y}{A matrix of trait values.}
@@ -38,15 +38,19 @@ transformPhylo.ML(y, phy, model = NULL, modelCIs = TRUE, nodeIDs = NULL,
 
 \item{restrictNode}{List defining monophyletic groups within which no further rate shifts are searched.}
 
-\item{lambdaEst}{Logical.  Estimate lambda alongside parameter estimates to reduce data noise. Only applicable for models "kappa", "delta", "OU", "psi", and "ACDC". Default=FALSE.}
+\item{lambdaEst}{Logical.  Estimate lambda alongside parameter estimates to reduce data noise. Only applicable for models "kappa", "delta", "OU", "psi", "multispi", and "ACDC". Default=FALSE.}
 
 \item{acdcScalar}{Logical.  For nested EB rate model, simultaneously estimated a rate scalar alongside EB model. Default=FALSE.}
 
-\item{la}{Speciation rate estimate for the tree}
+\item{branchLabels}{Branches on which different psi parameters are estimated in the "multipsi" model}
 
-\item{branchLabels}{Necessary for multiPsi....TO ADD}
+\item{hiddenSpeciation}{Logical. If TRUE the psi model will include nodes that are on the 'full.phy' but not the tree pruned of trait data}
 
-\item{profilePlot}{Logical.  For the single parameter models "kappa", "lambda", "delta", "OU", "psi", and "ACDC", plot the profile of the likelihood.}
+\item{full.phy}{The full phylogeny containing the species that do not contain trait data so are not included in 'phy'}
+
+\item{useMean}{Logical. Use the branch-based estimates of extinction of mean (TRUE, default) for the "psi" and "multispi" models only applicable if "hiddenSpeciation" = TRUE}
+
+\item{profilePlot}{Logical.  For the single parameter models "kappa", "lambda", "delta", "OU", "psi", "multipsi", and "ACDC", plot the profile of the likelihood.}
 
 \item{lowerBound}{Minimum value for parameter estimates}
 
@@ -65,7 +69,7 @@ traitMedusaObject A list in which the first element contains a matrix summarisin
 Fits likelihood models for various models of continuous character evolution. Model fitting is based on maximum-likelihood evaluation using phylogenetically independent contrasts. This is exactly equivalent to, but substantially faster than, GLS approaches.
 }
 \details{
-This function finds the maximum likelihood parameter values for continuous character evolution. For "kappa", "delta", "OU", "psi", and "ACDC" it is possible to fit a 'nested' model of evolution in which the ancestral rate of BM swicthes to a different node, as specified by nodeIDs. The function returns the maximum-likelihood parameter estimates for the following models.
+This function finds the maximum likelihood parameter values for continuous character evolution. For "kappa", "delta", "OU", "multipsi", and "ACDC" it is possible to fit a 'nested' model of evolution in which the ancestral rate of BM swicthes to a different node, as specified by nodeIDs or branchLabels for multipsi. The function returns the maximum-likelihood parameter estimates for the following models.
 \itemize{
 \item {model="bm"} {Brownian motion (constant rates random walk).}
 \item {model="kappa"} {fits Pagel's kappa by raising all branch lengths to the power kappa. As kappa approaches zero, trait change becomes focused at branching events. For complete phylogenies, if kappa approaches zero this infers speciational trait change. Default bounds from ~0 - 1.}
@@ -73,8 +77,8 @@ This function finds the maximum likelihood parameter values for continuous chara
 \item {model="delta"} {fits Pagel's delta by raising all node depths to the power delta. If delta <1, trait evolution is concentrated early in the tree whereas if delta >1 trait evolution is concentrated towards the tips. Values of delta above one can be difficult to fit reliably. If a nodeIDs is supplied, the model will fit a delta model nested within a clade, with a BM fit to the rest of the tree. Default bounds from ~0 - 5.}
 \item {model="OU"} {fits an Ornstein-Uhlenbeck model - a random walk with a central tendency proportional to alpha. High values of alpha can be interpreted as evidence of evolutionary constraints, stabilising selection or weak phylogenetic signal. It is often difficult to distinguish among these possibilities. If a nodeIDs is supplied, the model will fit a OU model nested within a clade, with a BM fit to the rest of the tree. Default bounds from ~0 - 10.}
 \item {model="ACDC"} {fits a model to in which rates can exponentially increased or decrease through time (Blomberg et al. 2003). If the upper bound is < 0, the model is equivalent to the 'Early Burst' model of Harmon et al. 2010. If a nodeIDs is supplied, the model will fit a ACDC model nested within a clade, with a BM fit to the rest of the tree. Default rate parameter bounds from ln(1e-10) ~ ln(20) divided by the root age. Note this process starts on the stem branch leading to the MRCA of the common node, unlike the other methods that start at the common node.}
-\item {model="psi"} {fits a acceleration-deacceleration model to assess to the relative contributions of speciation and gradual evolution to a trait's evolutionary rate (Ingram 2010).}
-\item {model="multiPsi"} {SOMETHING}
+\item {model="psi"} {fits a acceleration-deacceleration model to assess to the relative contributions of speciation and gradual evolution to a trait's evolutionary rate (Ingram 2010). Note that the algorithm will automatically estimate speciation and extinction estimates, and will incorporate estimates of 'hidden' speciation if death estimates are greater than 0. }
+\item {model="multiPsi"} {fits a acceleration-deacceleration model to assess to the relative contributions of speciation and gradual evolution to a trait's evolutionary rate but allows seperate values of psi fitted to seperate branches (Ingram 2010; Ingram et al. 2016). Note that the algorithm will automatically estimate speciation and extinction estimates, and will incorporate estimates of 'hidden' speciation if death estimates are greater than 0.}
 \item {model="free"} {fits Mooers et al's free model where each branch has its own rate of trait evolution. This can be a useful exploratory analysis but it is slow due to the number of parameters, particularly for large trees. Default rate parameter bounds from ~0 - 200.}
 \item {model="clade"} {fits a model where particular clades are a priori hypothesised to have different rates of trait evolution (see O'Meara et al. 2006; Thomas et al. 2006, 2009). Clades are specified using nodeIDs and are defined as the mrca node. Default rate parameter bounds from ~0 - 200.}
 \item {model="tm1"} {fits "clade" models without any a priori assertion of the location of phenotypic diversification rate shifts. It uses the same AIC approach as the runMedusa function in the geiger package (runMedusa tests for shifts in the rate of lineage diversification). The algorithm first fits a constant-rate Brownian model to the data, it then works iteratively through the phylogeny fitting a two-rate model at each node in turn. Each two-rate model is compared to the constant rate model and the best two-rate model is retained. Keeping the location of this rate shift intact, it then repeats the procedure for a three-rate model and so on. The maximum number of rate shifts can be specified a priori using nSplits. Limits can be applied to the size (species richness) of clades on which to infer new rate shifts using minCladeSize. This can be useful to enable large trees to be handled but should be used cautiously since specifiying a large minimum clade size may result in biologically interesting nested rate shifts being missed. Equally, very small clade sizes may provide poor estimates of rate that may not be informative. Limits on the search can also be placed using restrictNode. This requires a list where each element of the list is a vector of tip names that define monophyletic groups. Rate shifts will not be searched for within any of the defined groups. Default rate parameter bounds from ~0 - 1000.}
@@ -141,7 +145,9 @@ Freckleton RP & Jetz W. 2009. Space versus phylogeny: disentangling phylogenetic
 
 Harmon LJ et al. 2010. Early bursts of body size and shape evolution are rare in comparative data. Evolution 57, 717-745.
 
-Ingram T. 2010. Speciation along a depth gradient in a marine adaptive radiation. Proceeding of the Royal Society B. In press.
+Ingram T. 2011. Speciation along a depth gradient in a marine adaptive radiation. Proc. Roy. Soc. B. 278, 613-618.
+
+Ingram T,  Harrison AD, Mahler L, Castaneda MdR, Glor RE, Herrel A, Stuart YE, and Losos JB. 2016. Comparative tests of the role of dewlap size in Anolis lizard speciation. Proc. Roy. Soc. B. 283, 20162199.
 
 Mooers AO, Vamosi S, & Schluter D. 1999. Using phylogenies to test macroevolutionary models of trait evolution: sexual selection and speciation in Cranes (Gruinae). American Naturalist 154, 249-259.
 

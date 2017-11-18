@@ -9,8 +9,8 @@
 #' @param delta Value of delta transform.
 #' @param alpha Value of alpha (OU) transform.
 #' @param psi Value of psi transform.
-#' @param la Speciation rate estimate for the tree
-#' @param branchLabels Necessary for multiPsi....TO ADD
+#' @param lambda.sp Speciation rate estimate for the tree.
+#' @param branchLabels Branches on which different psi parameters are estimated in the "multipsi" model.
 #' @param nodeIDs Integer - ancestral nodes of clades.
 #' @param rateType If model="clade", a vector specifying if rate shift occurs in a clade ("clade") or on the single branch leading to a clade ("branch").
 #' @param branchRates Numeric vector specifying relative rates for individual branches
@@ -30,8 +30,8 @@
 #' @references Felsenstein J. 1973. Maximum-likelihood estimation of evolutionary trees from continuous characters. Am. J. Hum. Genet. 25, 471-492.
 #' Felsenstein J. 1985. Phylogenies and the comparative method. American Naturalist 125, 1-15.
 #' Freckleton RP & Jetz W. 2009. Space versus phylogeny: disentangling phylogenetic and spatial signals in comparative data. Proc. Roy. Soc. B 276, 21-30. 
-#' Ingram T. 2010. Speciation along a depth gradient in a marine adaptive radiation. Proceeding of the Royal Society B. In press.
-#' Mooers AO, Vamosi S, & Schluter D. 1999. Using phylogenies to test macroevolutionary models of trait evolution: sexual selection and speciation in Cranes (Gruinae). American Naturalist 154, 249-259.
+#' @references Ingram T. 2011. Speciation along a depth gradient in a marine adaptive radiation. Proc. Roy. Soc. B. 278, 613-618.
+#' @references Ingram T,  Harrison AD, Mahler L, Castaneda MdR, Glor RE, Herrel A, Stuart YE, and Losos JB. 2016. Comparative tests of the role of dewlap size in Anolis lizard speciation. Proc. Roy. Soc. B. 283, 20162199. #' Mooers AO, Vamosi S, & Schluter D. 1999. Using phylogenies to test macroevolutionary models of trait evolution: sexual selection and speciation in Cranes (Gruinae). American Naturalist 154, 249-259.
 #' O'Meara BC, Ane C, Sanderson MJ & Wainwright PC. 2006. Testing for different rates of continuous trait evolution using likelihood. Evolution 60, 922-933
 #' Pagel M. 1997. Inferring evolutionary processes from phylogenies. Zoologica Scripta 26, 331-348.
 #' Pagel M. 1999 Inferring the historical patterns of biological evolution. Nature 401, 877-884.
@@ -72,7 +72,7 @@
 #' transformPhylo.ll(anolisSVL, phy=tree, model="psi", psi=1)
 #' @export
 
-transformPhylo.ll <- function(y=NULL, phy, model=NULL, meserr=NULL, kappa=NULL, lambda=NULL, delta=NULL, alpha=NULL, psi=NULL, a = NULL, nodeIDs=NULL, rateType=NULL, branchRates=NULL, cladeRates=NULL, timeRates=NULL, splitTime=NULL, branchLabels = NULL, acdcRate=NULL,  covPIC = TRUE) {
+transformPhylo.ll <- function(y=NULL, phy, model=NULL, meserr=NULL, kappa=NULL, lambda=NULL, delta=NULL, alpha=NULL, psi=NULL, lambda.sp = NULL, nodeIDs=NULL, rateType=NULL, branchRates=NULL, cladeRates=NULL, timeRates=NULL, splitTime=NULL, branchLabels = NULL, acdcRate=NULL,  covPIC = TRUE) {
 	
 	switch(model,		  
 		   
@@ -105,11 +105,11 @@ transformPhylo.ll <- function(y=NULL, phy, model=NULL, meserr=NULL, kappa=NULL, 
 		   },
 		   
 		   "psi" = {
-		   transformPhy <- transformPhylo(phy=phy, model="psi", psi=psi, meserr = meserr, y=y, la=la)
+		   transformPhy <- transformPhylo(phy=phy, model="psi", psi=psi, meserr = meserr, y=y, lambda.sp=lambda.sp)
 		   },
 		   
 		   "multipsi" = {
-        	transformPhy <- transformPhylo(phy = phy, branchLabels = branchLabels, model = "multipsi", psi = psi, meserr = meserr, y = y, la = la)
+        	transformPhy <- transformPhylo(phy = phy, branchLabels = branchLabels, model = "multipsi", psi = psi, meserr = meserr, y = y, lambda.sp = lambda.sp)
 		   },
 		   
 		   "timeSlice" = {
