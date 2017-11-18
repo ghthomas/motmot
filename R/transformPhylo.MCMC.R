@@ -333,7 +333,8 @@ rownames(chain) <- NULL
 names(output.mcmc) <- c("median", "95.HPD", "ESS", "acceptance.rate", "mcmc.chain")
 print(output.mcmc[1:4])
 invisible(return(output.mcmc))
-}				return(sum(psi.prior))
+}
+return(sum(psi.prior))
 				}
 				
 				if(is.null(acceptance.sd)) {
@@ -347,90 +348,3 @@ invisible(return(output.mcmc))
 				
 			name.param <- c("psi")
 		}
-		
-		model.posterior <- function(pram) return (lik.model(pram) + prior.uniform(pram))		
-		
-		motmot.mcmc <- function(input.value, iterations, stn.dev, silent=FALSE)  {
-		
-				propose.mcmc <- function(pram) {
-					return(rtnorm(1, pram, sd=stn.dev, lowerBound, upperBound))
-				}
-					
-			mcmc.chain <- matrix(input.value, nrow=1)
-    				for (i in 1:iterations) {
-        				proposed.move <- propose.mcmc(mcmc.chain[i,])
-        				chain.prob <- exp(model.posterior(proposed.move) - model.posterior(mcmc.chain[i,]))
-        				if (runif(1) < chain.prob) {
-        					mcmc.chain <- rbind(mcmc.chain, proposed.move)
-        				} else {
-        					mcmc.chain <- rbind(mcmc.chain, mcmc.chain[i,])
-        					}
-					if(!silent) {
-						cat("\r", "MCMC progress:", sprintf("%.4f", i/iterations * 100), "%")
-						}
-    					}
-    				return(mcmc.chain)
-				}
-				
-		if(opt.accept.rate) {
-			cat("optimising acceptance ratio fine-tune")
-			cat("\n", " ")
-			cat("running")
-			count <- 1
-			stn.dev.2 <- stn.dev
-			old.ratio <- 10		
-			best.current <- 0
-			opt.mcmc <- mcmc.iteration * opt.prop
-			opt.mcmc.burn <- ceiling(opt.mcmc * burn.in)
-					
-			opt.done <- FALSE
-			while(opt.done == FALSE) {
-				chain <- motmot.mcmc(input.value, opt.mcmc, stn.dev.2, silent=TRUE)
-				acceptance <- 1 - mean(duplicated(chain[-(1:opt.mcmc.burn),]))		
-				diff.to.accept <- acceptance - 0.44
-				new.ratio <- abs(acceptance - 0.44)
-				cat("\r", "acceptance attempt", signif(acceptance, 3), "best acceptance", signif(best.current, 3), "best SD", signif(stn.dev, 3))
-				if(new.ratio < old.ratio) {
-					stn.dev <- stn.dev.2
-					old.ratio <- new.ratio
-					best.current <- acceptance
-					}					
-				if(abs(acceptance - 0.44) < fine.tune.bound ) {
-					opt.done <- TRUE
-					cat("\n", "finished fine.tune")
-					}
-				count <- count + 1
-				if(count > fine.tune.n) {
-					cat("\n", "finished fine.tune")
-					opt.done <- TRUE
-					}
-				stn.dev.2 <- rtnorm(1, stn.dev, sd.fine.tune, lowerBound, upperBound)
-				}		
-			}			
-		cat("\n", " ")		
-		chain <- motmot.mcmc(input.value, mcmc.iteration, stn.dev=stn.dev)
-		burnIn <- ceiling(mcmc.iteration * burn.in)
-		acceptance.1 <- 1 - mean(duplicated(chain[-(1:burnIn), 1]))
-		post.burn.in <- chain[-c(1:burnIn), ]
-		
-		if(dim(chain)[2] == 1) {
-			ess.mcmc <- effectiveSize(post.burn.in)
-			median.mcmc <- median(post.burn.in)
-			hpd.mcmc <- quantile(post.burn.in, c(0.025, 0.975))
-			names(ess.mcmc) <- names(median.mcmc) <- name.param
-			names(hpd.mcmc) <- c("lower 95% HPD", "upper 95% HPD")
-		} else {
-			ess.mcmc <- apply(post.burn.in, 2, effectiveSize)
-			median.mcmc <- apply(chain[-c(1:burnIn), ], 2, median)
-			hpd.mcmc <- apply(chain[-c(1:burnIn), ], 2, function(x) quantile(x, c(0.025, 0.975)))
-			names(ess.mcmc) <- names(median.mcmc) <- name.param
-			colnames(hpd.mcmc) <- name.param
-		}
-		
-		cat("\n")
-		output.mcmc <- list(median.mcmc, hpd.mcmc, ess.mcmc, acceptance.1, chain)
-		rownames(chain) <- NULL
-		names(output.mcmc) <- c("median", "95.HPD", "ESS", "acceptance.rate", "mcmc.chain")
-		print(output.mcmc[1:4])
-		invisible(return(output.mcmc))
-	}
