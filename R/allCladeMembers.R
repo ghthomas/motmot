@@ -1,3 +1,9 @@
+#' allCladeMembers (internal function)
+#'
+#' This is an internal function to generate an allCladeMembersMatrix
+#' @param phy phylogeny in ape phylo format
+#' @return cladeMembersMatrix
+#' @author Gavin Thomas
 #' @export
 
 allCladeMembers <- function(phy) {

@@ -17,20 +17,21 @@
 #' @examples data(anolis.tree)
 #' data(anolis.data)
 #'
-#'# anolis.data is not matrix and contains missing data so put together matrix of # relevant traits (here female and male snout vent lengths) and remove species 
-#'# with missing data from the matrix and phylogeny
-#'anolisSVL <- data.matrix(anolis.data)[,c(5,6)]
-#'anolisSVL[,1] <- log(anolisSVL[,1])
-#'anolisSVL[,2] <- log(anolisSVL[,2])
+#' # anolis.data is not matrix and contains missing data so put together matrix of
+#' # relevant traits (here female and male snout vent lengths) and remove species 
+#' # with missing data from the matrix and phylogeny
+#' anolisSVL <- data.matrix(anolis.data)[,c(5,6)]
+#' anolisSVL[,1] <- log(anolisSVL[,1])
+#' anolisSVL[,2] <- log(anolisSVL[,2])
 #'
-#'tree <- drop.tip(anolis.tree, names(attr(na.omit(anolisSVL), "na.action")))
-#'anolisSVL <- na.omit(anolisSVL)
+#' tree <- drop.tip(anolis.tree, names(attr(na.omit(anolisSVL), "na.action")))
+#' anolisSVL <- na.omit(anolisSVL)
 #'
-#'# Identify rate shifts and print and plot results
-#'# Not run
-#'#anolisSVL_MEDUSA <- transformPhylo.ML(anolisSVL, phy=tree, model="tm1", minCladeSize=20, nSplits=3)
+#' # Identify rate shifts and print and plot results
+#' # Not run
+#' #anolisSVL_MEDUSA <- transformPhylo.ML(anolisSVL, phy=tree, model="tm1", minCladeSize=20, nSplits=3)
 #'
-#'#anolisSVL_MEDUSA_out <- traitMedusaSummary(anolisSVL_MEDUSA)
+#' #anolisSVL_MEDUSA_out <- traitMedusaSummary(anolisSVL_MEDUSA)
 #'@export
 
 
@@ -63,7 +64,7 @@ traitMedusaSummary <- function (traitMedusaObject=NULL, cutoff=4, AICc=TRUE, low
 	
 	if (bestModel$node==0) { 
 		out$optimalTree <- phy 
-		out$ModelFit <- bestModelOut
+		out$ModelFit <- bestModel
 		out$Rates <- "Single rate"
 		} else {
 	

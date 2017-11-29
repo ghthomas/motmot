@@ -2,17 +2,18 @@ Package: motmot.2.0
 Type: Package
 Title: Models of Trait Macroevolution on Trees
 Version: 1.1.2
-Depends: R (>= 2.10.0), ape (>= 3.0-7), mvtnorm, MASS, caper, parallel, coda
-Date: 2017-10-03
+Depends: R (>= 2.10.0)
+Imports: ape, mvtnorm, MASS, caper, parallel, coda, stats
+Date: 2017-11-28
 Author: Gavin Thomas, Mark Puttick, Rob Freckleton
 Maintainer: Mark Puttick <marknputtick@gmail.com>
-Description: motmot provides functions for fitting models of trait evolution
+Description: Package motmot provides functions for fitting models of trait evolution
         on phylogenies for continuous traits. The majority of functions
         are based around tests of variation in the rates of trait evolution. 
 License: GPL (>= 2)
 Repository: github
 URL: http://gavinhthomas.wordpress.com/motmot/
 RoxygenNote: 6.0.1
-Suggests: knitr,
-    rmarkdown
+LazyData: true
+Suggests: knitr, rmarkdown
 VignetteBuilder: knitr

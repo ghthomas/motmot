@@ -5,9 +5,10 @@
 \title{Bayesian MCMC for models of trait evolution}
 \usage{
 transformPhylo.MCMC(y, phy, model, mcmc.iteration = 1000, burn.in = 0.1,
-  lowerBound = NULL, upperBound = NULL, opt.accept.rate = TRUE,
-  acceptance.sd = NULL, opt.prop = 0.25, fine.tune.bound = 0.05,
-  fine.tune.n = 30)
+  hiddenSpeciation = TRUE, full.phy = NULL, lowerBound = NULL,
+  upperBound = NULL, opt.accept.rate = TRUE, acceptance.sd = NULL,
+  opt.prop = 0.25, fine.tune.bound = 0.05, fine.tune.n = 30,
+  useMean = FALSE)
 }
 \arguments{
 \item{y}{A matrix of trait values.}
@@ -20,6 +21,10 @@ transformPhylo.MCMC(y, phy, model, mcmc.iteration = 1000, burn.in = 0.1,
 
 \item{burn.in}{The proportion of the chain (as given by mcmc.iteration) which to discard as 'burn-in'}
 
+\item{hiddenSpeciation}{Logical. If TRUE the psi model will include nodes that are on the 'full.phy' but not the tree pruned of trait data}
+
+\item{full.phy}{The full phylogeny containing the species that do not contain trait data so are not included in 'phy'}
+
 \item{lowerBound}{Minimum value for parameter estimates}
 
 \item{upperBound}{Maximum value for parameter estimates}
@@ -28,11 +33,13 @@ transformPhylo.MCMC(y, phy, model, mcmc.iteration = 1000, burn.in = 0.1,
 
 \item{acceptance.sd}{Numeric. The starting standard deviation for the proposal distribution}
 
+\item{opt.prop}{The proportion of the mcmc.iteration with which to optimise the acceptance rate.}
+
+\item{fine.tune.bound}{The distance (+/-) from the optimal acceptance rate of 0.44 at which the fine-tune algorithm will stop. Default = 0.05.}
+
 \item{fine.tune.n}{The number of iterations with which to optimise the acceptance rate.}
 
-\item{opt.prop.}{The proportion of the mcmc.iteration with which to optimise the acceptance rate.}
-
-\item{fine.tune.bound.}{The distance (+/-) from the optimal acceptance rate of 0.44 at which the fine-tune algorithm will stop. Default = 0.05.}
+\item{useMean}{Logical. Use the branch-based estimates of extinction of mean (TRUE, default) for the "psi" and "multispi" models only applicable if "hiddenSpeciation" = TRUE}
 }
 \value{
 median The median estimate of the posterior for the parameter

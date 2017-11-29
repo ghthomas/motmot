@@ -5,14 +5,15 @@
 #' @param model The model of trait evolution (see details).
 #' @param mcmc.iteration Integer - the number of generations for which to run the MCMC chain
 #' @param hiddenSpeciation Logical. If TRUE the psi model will include nodes that are on the 'full.phy' but not the tree pruned of trait data
+#' @param useMean Logical. Use the branch-based estimates of extinction of mean (TRUE, default) for the "psi" and "multispi" models only applicable if "hiddenSpeciation" = TRUE
 #' @param full.phy The full phylogeny containing the species that do not contain trait data so are not included in 'phy'
 #' @param burn.in The proportion of the chain (as given by mcmc.iteration) which to discard as 'burn-in'
 #' @param lowerBound Minimum value for parameter estimates
 #' @param upperBound Maximum value for parameter estimates
 #' @param opt.accept.rate Logical. Perform a pre-run optimisation to achieve an acceptance rate close to 0.44?
 #' @param acceptance.sd Numeric. The starting standard deviation for the proposal distribution
-#' @param opt.prop. The proportion of the mcmc.iteration with which to optimise the acceptance rate.
-#' @param fine.tune.bound. The distance (+/-) from the optimal acceptance rate of 0.44 at which the fine-tune algorithm will stop. Default = 0.05.
+#' @param opt.prop The proportion of the mcmc.iteration with which to optimise the acceptance rate.
+#' @param fine.tune.bound The distance (+/-) from the optimal acceptance rate of 0.44 at which the fine-tune algorithm will stop. Default = 0.05.
 #' @param fine.tune.n The number of iterations with which to optimise the acceptance rate. 
 #' @details fine.tune.n The method estimates posterior probabilities using a Metropolis-Hastings MCMC approach. To aide convergence, the model will attempt to reach an acceptable proposal ratio (~0.44) when opt.accept.rate=TRUE. These initial fine-tune repititions only save the standard deviation for the truncated normal distribution that is used for the proposal mechanism. The chain is discarded. Posterior probabilites and MCMC diagnostics come from the seperate output chain that commences after this fine-tune procedure. The MCMC model will estimate the posterior probability for the following models. 
 #' \itemize{
@@ -31,18 +32,8 @@
 #' @author Mark Puttick, Gavin Thomas
 #' @export 
 
-transformPhylo.MCMC <- function(y, phy, model, mcmc.iteration=1000, burn.in=0.1, hiddenSpeciation = TRUE, full.phy=NULL, lowerBound = NULL, upperBound = NULL, opt.accept.rate=TRUE, acceptance.sd=NULL, opt.prop=0.25, fine.tune.bound=0.05, fine.tune.n=30) {
-	
-rtnorm <- function(n, mean, sd, a = -Inf, b = Inf){
-		qnorm(runif(n, pnorm(a, mean, sd), pnorm(b, mean, sd)), mean, sd)
-	}
-	
-		bounds <- matrix(c(1e-08, 1, 1e-08, 1, 1e-08, 5, 1e-08, 20, 0, 1, 1e-08, 10, 1e-10, 100000), 7, 2, byrow = TRUE)
-	rownames(bounds) <- c("kappa", "lambda", "delta", "alpha", "psi", "rate", "acdcRate")
+transformPhylo.MCMC <- function(y, phy, model, mcmc.iteration=1000, burn.in=0.1, hiddenSpeciation = TRUE, full.phy=NULL, lowerBound = NULL, upperBound = NULL, opt.accept.rate=TRUE, acceptance.sd=NULL, opt.prop=0.25, fine.tune.bound=0.05, fine.tune.n=30, useMean = FALSE) {
 
-		if(model == "lambda") {
-			
-			transformPhylo.MCMC <- function(y, phy, model, mcmc.iteration=1000, burn.in=0.1, lowerBound = NULL, upperBound = NULL, opt.accept.rate=TRUE, acceptance.sd=NULL, opt.prop=0.25, fine.tune.bound=0.05, fine.tune.n=30) {
 
 rtnorm <- function(n, mean, sd, a = -Inf, b = Inf){
 qnorm(runif(n, pnorm(a, mean, sd), pnorm(b, mean, sd)), mean, sd)
@@ -355,17 +346,3 @@ names(output.mcmc) <- c("median", "95.HPD", "ESS", "acceptance.rate", "mcmc.chai
 print(output.mcmc[1:4])
 invisible(return(output.mcmc))
 }
-return(sum(psi.prior))
-				}
-				
-				if(is.null(acceptance.sd)) {
-				stn.dev <- suppressWarnings(diff(range(transformPhylo.ML(y, phy, model="psi")$psi, na.rm=T)))
-				if(stn.dev == 0) stn.dev <- 1
-				sd.fine.tune <- 1
-				} else {
-				stn.dev <- acceptance.sd
-				sd.fine.tune <- 1
-				}	
-				
-			name.param <- c("psi")
-		}

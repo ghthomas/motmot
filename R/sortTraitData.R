@@ -2,8 +2,7 @@
 #' @description Plots a phylogeny with lines representing the value of a continuous trait
 #' @param y A matrix of trait values with taxon names as rownames. Missing values should be NA
 #' @param phy An object of class "phylo" or "multiPhylo" (see ape package).
-#' @param phy An object of class "phylo" or "multiPhylo" (see ape package).
-
+#' @param log.trait Logical. If TRUE, data are log-transformed
 #' @return phy Tree with missing data pruned
 #' @return trait Rearranged data with missing species removed
 #' @author Mark Puttick
@@ -18,7 +17,10 @@
 #' male.length <- data.sorted[[2]]
 #' @export
 
-sortTraitData <- function(phy, trait.data, log.trait=TRUE) {
+sortTraitData <- function(phy, y, log.trait=TRUE) {
+	
+	
+	trait.data <- y
 	
 	if(class(phy) == "multiPhylo") {
 		tree <- phy

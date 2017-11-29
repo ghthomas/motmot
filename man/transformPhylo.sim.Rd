@@ -6,7 +6,7 @@
 \usage{
 transformPhylo.sim(phy, n = 1, x = NULL, model = NULL, kappa = NULL,
   lambda = NULL, delta = NULL, alpha = NULL, psi = NULL,
-  acdcRate = NULL, la = NULL, nodeIDs = NULL, rateType = NULL,
+  acdcRate = NULL, lambda.sp = NULL, nodeIDs = NULL, rateType = NULL,
   cladeRates = NULL, branchRates = NULL, rate = NULL,
   group.means = NULL, splitTime = NULL, timeRates = NULL,
   branchLabels = NULL)
@@ -28,7 +28,11 @@ transformPhylo.sim(phy, n = 1, x = NULL, model = NULL, kappa = NULL,
 
 \item{alpha}{Value of alpha (OU) transform.}
 
-\item{psi}{Value of psi transform.}
+\item{psi}{Value of psi transform.  Note that 'original nodes' from the full phylogeny can be included as an element on the phylogeny (e.g., phy$orig.node) as well as estimates of 'hidden' speciation (e.g., phy$hidden.speciation) if estimates of extinction (mu) are > 0.}
+
+\item{acdcRate}{Value of ACDC transform.}
+
+\item{lambda.sp}{Estimate of speciation (lambda) for the psi models}
 
 \item{nodeIDs}{Integer - ancestral nodes of clades.}
 
@@ -45,6 +49,8 @@ transformPhylo.sim(phy, n = 1, x = NULL, model = NULL, kappa = NULL,
 \item{splitTime}{A split time (measured from the present, or most recent species) at which a shift in the rate occurs for the "timeSlice" model}
 
 \item{timeRates}{The rates (from ancient to recent) for the timeSlice model}
+
+\item{branchLabels}{Branches on which different psi parameters are estimated in the "multipsi" model.}
 }
 \value{
 Returns a matrix of simulated dated with taxon names as rownames (number of columns=n).
@@ -62,7 +68,8 @@ sim.dat1 <- transformPhylo.sim(phy=anolis.tree, n=10, model="kappa", kappa=0.1)
 # Simulate 10 sets of data where rates and means differ between to the categories defined by "x"
 x <- anolis.data$geo_ecomorph
 names(x) <-  rownames(anolis.data)
-sim.dat2 <- transformPhylo.sim(phy=anolis.tree, n=10, x=x, model="mixedRate", rate=c(1,1,2,4), group.means=c(0,5,0,0))
+sim.dat2 <- transformPhylo.sim(phy=anolis.tree, n=10, x=x, model="mixedRate", rate=c(1,1,2,4),
+group.means=c(0,5,0,0))
 }
 \references{
 Ricklefs RE. 2006. Time, species, and the generation of trait variation in clades. Systematic Biology 55, 151-159.

@@ -9,16 +9,16 @@
 #' @param alpha Value of alpha (OU) transform.
 #' @param psi Value of psi transform.
 #' @param acdcRate Value of ACDC transform.
+#' @param lambda.sp Estimate of speciation (lambda) for the psi models
 #' @param nodeIDs Integer - ancestral nodes of clades.
 #' @param splitTime A split time (measured from the present, or most recent species) at which a shift in the rate occurs for the "timeSlice" model
 #' @param timeRates The rates (from ancient to recent) for the timeSlice model
-#' @param acdcScalar Logical.  For nested EB rate model, simultaneously estimated a rate scalar alongside EB model. Not  Default=FALSE.
 #' @param rateType If model="clade", a vector specifying if rate shift occurs in a clade ("clade") or on the single branch leading to a clade ("branch").
 #' @param branchRates Numeric vector specifying relative rates for individual branches
 #' @param cladeRates Numeric vector specifying telative rates for clades.
-#' @param cladeMembersObj Matrix of clade membership
+#' @param branchLabels A vector of length equal to the number of internal branches, signifying the which "multiPsi" class it belongs to
 #' @param meserr A vector (or matrix) of measurement error for each tip. This is only applicable to univariate analyses.
-#' @param sigmaScale Scalar for measurement error.
+#' @param sigmaScale If meserr is included, a scaling factor for the amount of error that is added
 #' @details Transforms the branch lengths of a phylo object according to one of the following models:
 #' \itemize{
 #'  \item {model="bm"}- Brownian motion (constant rates random walk)
@@ -47,7 +47,7 @@
 #' anolis.treeDelta <- transformPhylo(phy=anolis.tree, model="delta", delta=0.5)
 #' @export
 
-transformPhylo <- function (phy, model = NULL, y = NULL, meserr=NULL, kappa = NULL, lambda = NULL, delta = NULL, alpha = NULL, psi = NULL, lambda.sp = NULL, nodeIDs = NULL, rateType = NULL, branchRates = NULL, cladeRates = NULL,  splitTime = NULL, timeRates = NULL, acdcRate=NULL,  branchLabels = NULL) 
+transformPhylo <- function (phy, model = NULL, y = NULL, meserr=NULL, sigmaScale=NULL, kappa = NULL, lambda = NULL, delta = NULL, alpha = NULL, psi = NULL, lambda.sp = NULL, nodeIDs = NULL, rateType = NULL, branchRates = NULL, cladeRates = NULL,  splitTime = NULL, timeRates = NULL, acdcRate=NULL,  branchLabels = NULL) 
  {
 
     n <- length(phy$tip.label)

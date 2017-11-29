@@ -8,6 +8,8 @@ RatePhylo.allCI(rateData, MLrate = NULL, fixed = NULL, rateMIN = 0.001,
   rateMAX = 50, common.mean = FALSE, lambda.est = TRUE)
 }
 \arguments{
+\item{rateData}{an object of class "rateData"}
+
 \item{MLrate}{a vector of relative rate parameters. The length of the vector is equal to the number of rates being estimated. If \code{rate=NULL} then rates are equal. Normally these will be the maximum likelihood rate estimates.}
 
 \item{fixed}{A vector stating whether each parameter should be allowed to vary (either \code{FALSE} which results in a start value of 1, or a numeric start value) or should be fixed (\code{TRUE}).}
@@ -47,26 +49,31 @@ rateMatrix = anolis.rateMatrix, phy=NULL, data=anolis.data, log.y=TRUE)
 # default is to allow each group to take a different mean. 
 
 # Not run
-#anole.ML <- optim.likRatePhylo(rateData=anolis.rateData, rate=NULL, #fixed=c(FALSE,FALSE,FALSE, FALSE),
+#anole.ML <- optim.likRatePhylo(rateData=anolis.rateData, rate=NULL,
+#fixed=c(FALSE,FALSE,FALSE, FALSE),
 #common.mean=FALSE) # ML estimates
 
 # Confidence intervals for each parameter in turn
 # Not run
-#RatePhylo.CI(rateData=anolis.rateData, MLrate = anole.ML$MLRate, fixed=c(FALSE, #TRUE, TRUE, TRUE), 
-#rateMIN = 0.001, rateMAX = 50, common.mean = FALSE)
+# RatePhylo.CI(rateData=anolis.rateData, MLrate = anole.ML$MLRate, 
+# fixed=c(FALSE, #TRUE, TRUE, TRUE), rateMIN = 0.001, rateMAX = 50, 
+# common.mean = FALSE)
 
-#RatePhylo.CI(rateData=anolis.rateData, MLrate = anole.ML$MLRate, fixed=c(TRUE, #FALSE, TRUE, TRUE), 
-#rateMIN = 0.001, rateMAX = 50, common.mean = FALSE)
+# RatePhylo.CI(rateData=anolis.rateData, MLrate = anole.ML$MLRate,
+# fixed=c(TRUE, #FALSE, TRUE, TRUE), rateMIN = 0.001, rateMAX = 50,
+# common.mean = FALSE)
 
-#RatePhylo.CI(rateData=anolis.rateData, MLrate = anole.ML$MLRate, fixed=c(TRUE, #TRUE, FALSE, TRUE), 
-#rateMIN = 0.001, rateMAX = 50, common.mean = FALSE)
+# RatePhylo.CI(rateData=anolis.rateData, MLrate = anole.ML$MLRate,
+# fixed=c(TRUE, #TRUE, FALSE, TRUE), rateMIN = 0.001, rateMAX = 50,
+# common.mean = FALSE)
 
-#RatePhylo.CI(rateData=anolis.rateData, MLrate = anole.ML$MLRate, fixed=c(TRUE, #TRUE, FALSE, TRUE), 
-#rateMIN = 0.001, rateMAX = 50, common.mean = FALSE)
+# RatePhylo.CI(rateData=anolis.rateData, MLrate = anole.ML$MLRate,
+# fixed=c(TRUE, #TRUE, FALSE, TRUE), rateMIN = 0.001, rateMAX = 50,
+# common.mean = FALSE)
 
 # All confidence intervals together
-#RatePhylo.allCI(rateData=anolis.rateData, MLrate = anole.ML$MLRate, fixed = #NULL, rateMIN = 0.001, 
-#rateMAX = 50, common.mean = FALSE) 
+# RatePhylo.allCI(rateData=anolis.rateData, MLrate = anole.ML$MLRate,
+# fixed = #NULL, rateMIN = 0.001, rateMAX = 50, common.mean = FALSE) 
 }
 \references{
 Thomas GH, Freckleton RP, & Szekely T. 2006. Comparative analyses of the influence of developmental mode on phenotypic diversification rates in shorebirds. Proceedings of the Royal Society B 273, 1619-1624.

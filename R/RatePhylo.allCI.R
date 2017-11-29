@@ -1,6 +1,7 @@
 #' @title Confidence intervals for rate parameters
 #' @description Calculates approximate confidence intervals for all rate parameters. CIs are esimated for one rate parameters while fixing others at a given value (usually the maximum likelihood estimate).
 #'@description These are reliable (given the asympotic assumptions of the chi-square distribution) if only two groups are being compared but should be regarded only as a rough approximation for =>3 different rate categories. If the rates are correlated the CIs may be underestimated. 
+#' @param rateData an object of class "rateData"
 #' @param MLrate a vector of relative rate parameters. The length of the vector is equal to the number of rates being estimated. If \code{rate=NULL} then rates are equal. Normally these will be the maximum likelihood rate estimates.
 #' @param fixed A vector stating whether each parameter should be allowed to vary (either \code{FALSE} which results in a start value of 1, or a numeric start value) or should be fixed (\code{TRUE}).
 #' @param rateMIN Minimum value for the rate parameters
@@ -29,26 +30,31 @@
 #' # default is to allow each group to take a different mean. 
 #' 
 #' # Not run
-#' #anole.ML <- optim.likRatePhylo(rateData=anolis.rateData, rate=NULL, #fixed=c(FALSE,FALSE,FALSE, FALSE),
+#' #anole.ML <- optim.likRatePhylo(rateData=anolis.rateData, rate=NULL,
+#' #fixed=c(FALSE,FALSE,FALSE, FALSE),
 #' #common.mean=FALSE) # ML estimates
 #' 
 #' # Confidence intervals for each parameter in turn
 #' # Not run
-#' #RatePhylo.CI(rateData=anolis.rateData, MLrate = anole.ML$MLRate, fixed=c(FALSE, #TRUE, TRUE, TRUE), 
-#' #rateMIN = 0.001, rateMAX = 50, common.mean = FALSE)
+#' # RatePhylo.CI(rateData=anolis.rateData, MLrate = anole.ML$MLRate, 
+#' # fixed=c(FALSE, #TRUE, TRUE, TRUE), rateMIN = 0.001, rateMAX = 50, 
+#' # common.mean = FALSE)
 #' 
-#' #RatePhylo.CI(rateData=anolis.rateData, MLrate = anole.ML$MLRate, fixed=c(TRUE, #FALSE, TRUE, TRUE), 
-#' #rateMIN = 0.001, rateMAX = 50, common.mean = FALSE)
+#' # RatePhylo.CI(rateData=anolis.rateData, MLrate = anole.ML$MLRate,
+#' # fixed=c(TRUE, #FALSE, TRUE, TRUE), rateMIN = 0.001, rateMAX = 50,
+#' # common.mean = FALSE)
 #' 
-#' #RatePhylo.CI(rateData=anolis.rateData, MLrate = anole.ML$MLRate, fixed=c(TRUE, #TRUE, FALSE, TRUE), 
-#' #rateMIN = 0.001, rateMAX = 50, common.mean = FALSE)
+#' # RatePhylo.CI(rateData=anolis.rateData, MLrate = anole.ML$MLRate,
+#' # fixed=c(TRUE, #TRUE, FALSE, TRUE), rateMIN = 0.001, rateMAX = 50,
+#' # common.mean = FALSE)
 #' 
-#' #RatePhylo.CI(rateData=anolis.rateData, MLrate = anole.ML$MLRate, fixed=c(TRUE, #TRUE, FALSE, TRUE), 
-#' #rateMIN = 0.001, rateMAX = 50, common.mean = FALSE)
+#' # RatePhylo.CI(rateData=anolis.rateData, MLrate = anole.ML$MLRate,
+#' # fixed=c(TRUE, #TRUE, FALSE, TRUE), rateMIN = 0.001, rateMAX = 50,
+#' # common.mean = FALSE)
 #' 
 #' # All confidence intervals together
-#' #RatePhylo.allCI(rateData=anolis.rateData, MLrate = anole.ML$MLRate, fixed = #NULL, rateMIN = 0.001, 
-#' #rateMAX = 50, common.mean = FALSE) 
+#' # RatePhylo.allCI(rateData=anolis.rateData, MLrate = anole.ML$MLRate,
+#' # fixed = #NULL, rateMIN = 0.001, rateMAX = 50, common.mean = FALSE) 
 #' @export
 
 RatePhylo.allCI <-

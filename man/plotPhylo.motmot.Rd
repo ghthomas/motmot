@@ -45,6 +45,8 @@ plotPhylo.motmot(phy, x = NULL, traitMedusaObject = NULL,
 
 \item{no.margin}{a logical. If \code{TRUE}, the margins are set to zero and the plot uses all the space of the device (note that this was the behaviour of \code{plot.phylo} up to version 0.2-1 of `ape' with no way to modify it by the user, at least easily).}
 
+\item{root.edge}{a logical indicating whether to draw the root edge (defaults to FALSE); this has no effect if `use.edge.length = FALSE' or if `type = "unrooted"'.}
+
 \item{label.offset}{a numeric giving the space between the nodes and the tips of the phylogeny and their corresponding labels. This option has no effect if \code{type = "unrooted"}.}
 
 \item{underscore}{a logical specifying whether the underscores in tip labels should be written as spaces (the default) or left as are (if\code{TRUE}).}
@@ -62,8 +64,6 @@ plotPhylo.motmot(phy, x = NULL, traitMedusaObject = NULL,
 \item{palette}{Defines the colour scheme with four options: hotspot.colors (red to blue), heat.colors (yellow to red), cool.colors (blues), combi.colors (yellows to reds and blues)}
 
 \item{adj}{a}{numeric specifying the justification of the text strings of the labels: 0 (left-justification), 0.5 (centering), or 1 (right-justification). This option has no effect if \code{type ="unrooted"}. If \code{NULL} (the default) the value is set with respect of \code{direction} (see details).}
-
-\item{root.edgea}{logical indicating whether to draw the root edge (defaults to FALSE); this has no effect if `use.edge.length = FALSE' or if `type = "unrooted"'.}
 }
 \value{
 Returns a data frame of colours used in plot along with rate (or ancestral state) range for each colour.
@@ -77,7 +77,8 @@ Plots trees with colours based on rates of trait evolution. Also provides simple
 data(anolis.tree)
 data(anolis.data)
 
-# anolis.data is not matrix and contains missing data so put together matrix of # relevant traits (here female and male snout vent lengths) and remove species 
+# anolis.data is not matrix and contains missing data so put together matrix of 
+# relevant traits (here female and male snout vent lengths) and remove species 
 # with missing data from the matrix and phylogeny
 anolisSVL <- data.matrix(anolis.data)[,c(5,6)]
 anolisSVL[,1] <- log(anolisSVL[,1])
@@ -86,17 +87,21 @@ anolisSVL[,2] <- log(anolisSVL[,2])
 tree <- drop.tip(anolis.tree, names(attr(na.omit(anolisSVL), "na.action")))
 anolisSVL <- na.omit(anolisSVL)
 
-# Identify rate shifts and print and plot results with upto three rate shifts and minimum clade size of 20.
+# Identify rate shifts and print and plot results with upto three rate shifts 
+# and minimum clade size of 20.
 # Not run
-# anolisSVL_MEDUSA <- transformPhylo.ML(anolisSVL, phy=tree, model="tm1", minCladeSize=10, nSplits=2)
+# anolisSVL_MEDUSA <- transformPhylo.ML(anolisSVL, phy=tree, model="tm1",
+# minCladeSize=10, nSplits=2)
 
 # anolisSVL_MEDUSA_out <- traitMedusaSummary(anolisSVL_MEDUSA, cutoff=3, AICc=FALSE)
 
 # Plot rate shifts
-# colours <- plotPhylo.motmot(phy=tree, traitMedusaObject = anolisSVL_MEDUSA_out,  reconType = "rates", type = "fan", cex=0.6, edge.width=3)
+# colours <- plotPhylo.motmot(phy=tree, traitMedusaObject = anolisSVL_MEDUSA_out,
+# reconType = "rates", type = "fan", cex=0.6, edge.width=3)
 
 # Plot pic ancestral state reconstruction for female SVL
-# colours <- plotPhylo.motmot(phy=tree, x=anolisSVL[,1], palette="hotspot.colors", edge.width=4, cex=0.8, show.tip.label=TRUE, adj=0.5, label.offset=2, reconType="picReconstruction")
+# colours <- plotPhylo.motmot(phy=tree, x=anolisSVL[,1], palette="hotspot.colors", edge.width=4,
+# cex=0.8, show.tip.label=TRUE, adj=0.5, label.offset=2, reconType="picReconstruction")
 }
 \author{
 Gavin Thomas

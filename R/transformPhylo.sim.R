@@ -8,11 +8,14 @@
 #' @param lambda Value of lambda transform.
 #' @param delta Value of delta transform.
 #' @param alpha Value of alpha (OU) transform.
-#' @param psi Value of psi transform.
+#' @param psi Value of psi transform.  Note that 'original nodes' from the full phylogeny can be included as an element on the phylogeny (e.g., phy$orig.node) as well as estimates of 'hidden' speciation (e.g., phy$hidden.speciation) if estimates of extinction (mu) are > 0.
+#' @param lambda.sp Estimate of speciation (lambda) for the psi models
 #' @param splitTime A split time (measured from the present, or most recent species) at which a shift in the rate occurs for the "timeSlice" model
 #' @param timeRates The rates (from ancient to recent) for the timeSlice model
 #' @param nodeIDs Integer - ancestral nodes of clades.
 #' @param rateType If model="clade", a vector specifying if rate shift occurs in a clade ("clade") or on the single branch leading to a clade ("branch").
+#' @param acdcRate Value of ACDC transform.
+#' @param branchLabels Branches on which different psi parameters are estimated in the "multipsi" model.
 #' @param branchRates Numeric vector specifying relative rates for individual branches
 #' @param cladeRates Numeric vector specifying telative rates for clades.
 #' @param rate a vector of relative rate parameters. The length of the vector is equal to the number of rates being estimated. 
@@ -31,10 +34,11 @@
 #' # Simulate 10 sets of data where rates and means differ between to the categories defined by "x"
 #' x <- anolis.data$geo_ecomorph
 #' names(x) <-  rownames(anolis.data)
-#' sim.dat2 <- transformPhylo.sim(phy=anolis.tree, n=10, x=x, model="mixedRate", rate=c(1,1,2,4), group.means=c(0,5,0,0))
+#' sim.dat2 <- transformPhylo.sim(phy=anolis.tree, n=10, x=x, model="mixedRate", rate=c(1,1,2,4),
+#' group.means=c(0,5,0,0))
 #' @export
 
-transformPhylo.sim <- function(phy, n=1, x=NULL, model=NULL, kappa=NULL, lambda=NULL, delta=NULL, alpha=NULL, psi=NULL, acdcRate=NULL, la = NULL, nodeIDs=NULL, rateType=NULL, cladeRates=NULL, branchRates=NULL, rate=NULL, group.means=NULL, splitTime=NULL, timeRates=NULL, branchLabels = NULL) {
+transformPhylo.sim <- function(phy, n=1, x=NULL, model=NULL, kappa=NULL, lambda=NULL, delta=NULL, alpha=NULL, psi=NULL, acdcRate=NULL, lambda.sp = NULL, nodeIDs=NULL, rateType=NULL, cladeRates=NULL, branchRates=NULL, rate=NULL, group.means=NULL, splitTime=NULL, timeRates=NULL, branchLabels = NULL) {
 	
 	switch(model,		  
 		   
@@ -101,14 +105,14 @@ transformPhylo.sim <- function(phy, n=1, x=NULL, model=NULL, kappa=NULL, lambda=
 					rownames(ydum) <- rownames(phyMat)
 					},
 		   "psi" = {
-					transformPhy <- transformPhylo(phy = phy, model = "psi", psi = psi, la = la, branchLabels = branchLabels)
+					transformPhy <- transformPhylo(phy = phy, model = "psi", psi = psi, lambda.sp = lambda.sp)
 					phyMat <- VCV.array(transformPhy)
 					attr(phyMat, "class") <- "matrix"
 					ydum <- as.matrix(t(rmvnorm(n, sigma = phyMat)))
 					rownames(ydum) <- rownames(phyMat)
 					},
 			"multipsi" = {
-       				transformPhy <- transformPhylo(phy = phy, model = "multipsi", psi = psi, la = la, branchLabels = branchLabels)
+       				transformPhy <- transformPhylo(phy = phy, model = "multipsi", psi = psi, lambda.sp = lambda.sp, branchLabels = branchLabels)
        				phyMat <- VCV.array(transformPhy)
        				attr(phyMat, "class") <- "matrix"
         			ydum <- as.matrix(t(rmvnorm(n, sigma = phyMat)))

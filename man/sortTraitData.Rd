@@ -4,14 +4,14 @@
 \alias{sortTraitData}
 \title{Sort data and remove missing entries for tree and trait data}
 \usage{
-sortTraitData(phy, trait.data, log.trait = TRUE)
+sortTraitData(phy, y, log.trait = TRUE)
 }
 \arguments{
 \item{phy}{An object of class "phylo" or "multiPhylo" (see ape package).}
 
 \item{y}{A matrix of trait values with taxon names as rownames. Missing values should be NA}
 
-\item{phy}{An object of class "phylo" or "multiPhylo" (see ape package).}
+\item{log.trait}{Logical. If TRUE, data are log-transformed}
 }
 \value{
 phy Tree with missing data pruned

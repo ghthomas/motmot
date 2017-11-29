@@ -1,17 +1,22 @@
 #' @title Identify shifts in the rate of trait diversification through time
 #' @description Summarises phenotypic rate variation on phylogenies through 
-#' @param traitMedusaObject Output of a timeSlice analysis in transformPhylo.ML
+#' @param timeSliceObject Output of a timeSlice analysis in transformPhylo.ML
 #' @param cutoff Cutoff value for differences in AIC scores when comparing models. More complex models with an AIC score more than this number of units lower than simpler models are retained (as per runMedusa in the geiger package).
 #' @param AICc If true, AICc is used instead of AIC.
 #' @param lowerBound Minimum value for parameter estimates.
 #' @param upperBound Maximum value for parameter estimates.
+#' @param plot.phylo Logical. If TRUE, the phylogeny is plotted
+#' @param cex.tip The character size of tip labels
+#' @param tip.offset the distance tip labels should be printed from pendant edges
+#' @param phylo.width The width of edges on the phylogeny
+#' @param tip.colour Colour of species' tip labels
+#' @param colour.ramp The colours signifying different rates from low (first colour) to high (second colour)
 #' @details This functions summarises the output of a "timeSlice" model in transformPhylo.ML (see below). The best overall model is chosen based on AIC (or AICc if AICc=TRUE). The cut-off point for improvement in AIC score between successively more complex models can be defined using cutoff. The default cutoff is 4 but this is somewhat arbitrary and a "good" cut-off may well vary between data sets so it may well be worth exploring different cutoffs.
 #' @return ModelFit Summary of the best optimal rate shift model.
 #' @return Rates Summary of the rate parameters from the best rate shift model.
 #' @return optimalTree A phylo object with branch lengths scaled relative to rate.
 #' @references To Add
 #' @author Mark Puttick
-#' @examples To ADD
 #' @export
 
 timeSliceSummary <- function(timeSliceObject, cutoff=4, AICc=TRUE, lowerBound=1e-8, upperBound=1000, plot.phylo=TRUE, cex.tip=1, tip.offset=1, phylo.width=1, tip.colour="grey50", colour.ramp=c("blue", "red")) {

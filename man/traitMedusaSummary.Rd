@@ -36,7 +36,8 @@ Summarises fits of "medusa" models ("clade" models generated without any a prior
 data(anolis.tree)
 data(anolis.data)
 
-# anolis.data is not matrix and contains missing data so put together matrix of # relevant traits (here female and male snout vent lengths) and remove species 
+# anolis.data is not matrix and contains missing data so put together matrix of
+# relevant traits (here female and male snout vent lengths) and remove species 
 # with missing data from the matrix and phylogeny
 anolisSVL <- data.matrix(anolis.data)[,c(5,6)]
 anolisSVL[,1] <- log(anolisSVL[,1])

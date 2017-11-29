@@ -17,7 +17,7 @@
 #' @param adj}{a numeric specifying the justification of the text strings of the labels: 0 (left-justification), 0.5 (centering), or 1 (right-justification). This option has no effect if \code{type ="unrooted"}. If \code{NULL} (the default) the value is set with respect of \code{direction} (see details).
 #' @param srt a numeric giving how much the labels are rotated in degrees (negative values are allowed resulting in clock-like rotation); the value has an effect respectively to the value of \code{direction} (see Examples). This option has no effect if \code{type = "unrooted"}.
 #' @param no.margin a logical. If \code{TRUE}, the margins are set to zero and the plot uses all the space of the device (note that this was the behaviour of \code{plot.phylo} up to version 0.2-1 of `ape' with no way to modify it by the user, at least easily).
-#' @param root.edgea logical indicating whether to draw the root edge (defaults to FALSE); this has no effect if `use.edge.length = FALSE' or if `type = "unrooted"'.
+#' @param root.edge a logical indicating whether to draw the root edge (defaults to FALSE); this has no effect if `use.edge.length = FALSE' or if `type = "unrooted"'.
 #' @param label.offset a numeric giving the space between the nodes and the tips of the phylogeny and their corresponding labels. This option has no effect if \code{type = "unrooted"}.
 #' @param underscore a logical specifying whether the underscores in tip labels should be written as spaces (the default) or left as are (if\code{TRUE}).
 #' @param x.lim a numeric vector of length one or two giving the limit(s) of the x-axis. If \code{NULL}, this is computed with respect to various parameters such as the string lengths of the labels and the branch lengths. If a single value is given, this is taken as the upper limit.
@@ -32,7 +32,8 @@
 #' data(anolis.tree)
 #' data(anolis.data)
 #' 
-#' # anolis.data is not matrix and contains missing data so put together matrix of # relevant traits (here female and male snout vent lengths) and remove species 
+#' # anolis.data is not matrix and contains missing data so put together matrix of 
+#' # relevant traits (here female and male snout vent lengths) and remove species 
 #' # with missing data from the matrix and phylogeny
 #' anolisSVL <- data.matrix(anolis.data)[,c(5,6)]
 #' anolisSVL[,1] <- log(anolisSVL[,1])
@@ -41,17 +42,21 @@
 #' tree <- drop.tip(anolis.tree, names(attr(na.omit(anolisSVL), "na.action")))
 #' anolisSVL <- na.omit(anolisSVL)
 #' 
-#' # Identify rate shifts and print and plot results with upto three rate shifts and minimum clade size of 20.
+#' # Identify rate shifts and print and plot results with upto three rate shifts 
+#' # and minimum clade size of 20.
 #' # Not run
-#' # anolisSVL_MEDUSA <- transformPhylo.ML(anolisSVL, phy=tree, model="tm1", minCladeSize=10, nSplits=2)
+#' # anolisSVL_MEDUSA <- transformPhylo.ML(anolisSVL, phy=tree, model="tm1",
+#' # minCladeSize=10, nSplits=2)
 #' 
 #' # anolisSVL_MEDUSA_out <- traitMedusaSummary(anolisSVL_MEDUSA, cutoff=3, AICc=FALSE)
 #' 
 #' # Plot rate shifts
-#' # colours <- plotPhylo.motmot(phy=tree, traitMedusaObject = anolisSVL_MEDUSA_out,  reconType = "rates", type = "fan", cex=0.6, edge.width=3)
+#' # colours <- plotPhylo.motmot(phy=tree, traitMedusaObject = anolisSVL_MEDUSA_out,
+#' # reconType = "rates", type = "fan", cex=0.6, edge.width=3)
 #' 
 #' # Plot pic ancestral state reconstruction for female SVL
-#' # colours <- plotPhylo.motmot(phy=tree, x=anolisSVL[,1], palette="hotspot.colors", edge.width=4, cex=0.8, show.tip.label=TRUE, adj=0.5, label.offset=2, reconType="picReconstruction")
+#' # colours <- plotPhylo.motmot(phy=tree, x=anolisSVL[,1], palette="hotspot.colors", edge.width=4,
+#' # cex=0.8, show.tip.label=TRUE, adj=0.5, label.offset=2, reconType="picReconstruction")
 #' @export
 
 plotPhylo.motmot <- function(phy, x=NULL, traitMedusaObject=NULL, reconType="rates", type = "phylogram", use.edge.length = TRUE, 

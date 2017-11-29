@@ -14,13 +14,13 @@ contemporaryPhy(phy, maxBin, minBin, reScale = 0, allTraits,
 
 \item{minBin}{the final age (younger time in myr from present) of the time bin in which lineages are preserved}
 
+\item{reScale}{if the most recent tip is not from the present, the age needed to add so the phylogeny is in 'real time'}
+
 \item{allTraits}{a vector of trait data corresponding to the phy$edge object. The trait data represent tip and internal node data for the phylogeny}
 
-\item{rescale}{if the most recent tip is not from the present, the age needed to add so the phylogeny is in 'real time'}
+\item{closest.min}{Logical. Should new tip values for lineages that span the bin be taken from the node nearest the 'minBin' age (closest.min=TRUE, default) or the 'maxBin' age (closest.min=FALSE)}
 
-\item{closest.min.}{Logical. Should new tip values for lineages that span the bin be taken from the node nearest the 'minBin' age (closest.min=TRUE, default) or the 'maxBin' age (closest.min=FALSE)}
-
-\item{traits.from.tip.}{Logical. Should tip values for pendant edges in the bin be taken from the original tip value or the reconstructed node value (if it is closer than the tip value)}
+\item{traits.from.tip}{Logical. Should tip values for pendant edges in the bin be taken from the original tip value or the reconstructed node value (if it is closer than the tip value)}
 }
 \value{
 the pruned phylogeny. The object 'descedants' refers to the lineages the branch in the time bin gave rise to before it was pruned. If traits are included a vector of trait values representing species at the tips.

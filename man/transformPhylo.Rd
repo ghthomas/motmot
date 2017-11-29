@@ -4,11 +4,12 @@
 \alias{transformPhylo}
 \title{Phylogenetic tree transformations}
 \usage{
-transformPhylo(phy, model = NULL, y = NULL, meserr = NULL, kappa = NULL,
-  lambda = NULL, delta = NULL, alpha = NULL, psi = NULL,
-  lambda.sp = NULL, nodeIDs = NULL, rateType = NULL, branchRates = NULL,
-  cladeRates = NULL, splitTime = NULL, timeRates = NULL,
-  acdcRate = NULL, branchLabels = NULL)
+transformPhylo(phy, model = NULL, y = NULL, meserr = NULL,
+  sigmaScale = NULL, kappa = NULL, lambda = NULL, delta = NULL,
+  alpha = NULL, psi = NULL, lambda.sp = NULL, nodeIDs = NULL,
+  rateType = NULL, branchRates = NULL, cladeRates = NULL,
+  splitTime = NULL, timeRates = NULL, acdcRate = NULL,
+  branchLabels = NULL)
 }
 \arguments{
 \item{phy}{An object of class "phylo" (see ape package).}
@@ -19,6 +20,8 @@ transformPhylo(phy, model = NULL, y = NULL, meserr = NULL, kappa = NULL,
 
 \item{meserr}{A vector (or matrix) of measurement error for each tip. This is only applicable to univariate analyses.}
 
+\item{sigmaScale}{If meserr is included, a scaling factor for the amount of error that is added}
+
 \item{kappa}{Value of kappa transform.}
 
 \item{lambda}{Value of lambda transform.}
@@ -28,6 +31,8 @@ transformPhylo(phy, model = NULL, y = NULL, meserr = NULL, kappa = NULL,
 \item{alpha}{Value of alpha (OU) transform.}
 
 \item{psi}{Value of psi transform.}
+
+\item{lambda.sp}{Estimate of speciation (lambda) for the psi models}
 
 \item{nodeIDs}{Integer - ancestral nodes of clades.}
 
@@ -43,11 +48,7 @@ transformPhylo(phy, model = NULL, y = NULL, meserr = NULL, kappa = NULL,
 
 \item{acdcRate}{Value of ACDC transform.}
 
-\item{acdcScalar}{Logical.  For nested EB rate model, simultaneously estimated a rate scalar alongside EB model. Not  Default=FALSE.}
-
-\item{cladeMembersObj}{Matrix of clade membership}
-
-\item{sigmaScale}{Scalar for measurement error.}
+\item{branchLabels}{A vector of length equal to the number of internal branches, signifying the which "multiPsi" class it belongs to}
 }
 \value{
 phy  A phylo object

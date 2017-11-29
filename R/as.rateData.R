@@ -5,11 +5,13 @@
 #' \code{as.rateMatrix} calls the "ape" function \code{vcv.phylo} multiple times and this can be slow for large phylogenies. It will often be more efficient to use \code{as.rateMatrix} first to create a "rateMatrix" object to pass to \code{as.rateData}, particularly if there are many response traits of interest to be fitted to the same phylogeny and set of reconstructed ancestral states.
 #' @param y The response variable - typically a continuous trait. Specified as a column name or index
 #' @param x The explanatory (discrete) variable used to define the hypothesised rate categories. Specified as a column name or index.
+#' @param rateMatrix A "rateMatrix" object or NULL
 #' @param phy An object of class "phylo" (see ape package).
 #' @param data A data frame containing (minimally) the x and y variables as columns with species names as rownames.
 #' @param meserr.col Column name or index containing measurement error for species means.
 #' @param meserr.propn Single value specifying the proportional measurement to be applied across all species.
 #' @param log.y Logical, natural log transform response variable.
+#' @param report_prune Logical. Prints a list of dropped species if TRUE
 #' @return rateData An object of class "rateData" which is a list containing the response (y) and explanatory (x) variable along with a list of variance-covaraince matrices.
 #' @references Thomas GH, Meiri S, & Phillimore AB. 2009. Body size diversification in Anolis: novel environments and island effects. Evolution 63, 2017-2030.
 #' @author Gavin Thomas

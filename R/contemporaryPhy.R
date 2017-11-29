@@ -4,10 +4,10 @@
 #' @param phy An object of class "phylo" (see ape package).
 #' @param maxBin the start age (older time in myr from present) of the time bin in which lineages are preserved
 #' @param minBin the final age (younger time in myr from present) of the time bin in which lineages are preserved
-#' @param rescale if the most recent tip is not from the present, the age needed to add so the phylogeny is in 'real time'
+#' @param reScale if the most recent tip is not from the present, the age needed to add so the phylogeny is in 'real time'
 #' @param allTraits a vector of trait data corresponding to the phy$edge object. The trait data represent tip and internal node data for the phylogeny
-#' @param closest.min. Logical. Should new tip values for lineages that span the bin be taken from the node nearest the 'minBin' age (closest.min=TRUE, default) or the 'maxBin' age (closest.min=FALSE)
-#' @param traits.from.tip. Logical. Should tip values for pendant edges in the bin be taken from the original tip value or the reconstructed node value (if it is closer than the tip value)
+#' @param closest.min Logical. Should new tip values for lineages that span the bin be taken from the node nearest the 'minBin' age (closest.min=TRUE, default) or the 'maxBin' age (closest.min=FALSE)
+#' @param traits.from.tip Logical. Should tip values for pendant edges in the bin be taken from the original tip value or the reconstructed node value (if it is closer than the tip value)
 #' @return the pruned phylogeny. The object 'descedants' refers to the lineages the branch in the time bin gave rise to before it was pruned. If traits are included a vector of trait values representing species at the tips.
 #' @references Puttick, M. N., Kriwet, J., Wen, W., Hu, S., Thomas, G. H., & Benton, M. J. (2017). Body length of bony fishes was not a selective factor during the biggest mass extinction of all time. Palaeontology, 60, 727-741.
 #' @author Mark Puttick

@@ -56,9 +56,17 @@ transformPhylo.ML(y, phy, model = NULL, modelCIs = TRUE, nodeIDs = NULL,
 
 \item{upperBound}{Maximum value for parameter estimates}
 
+\item{covPIC}{Logical. For multivariate analyses, allow for co-variance between traits rates (TRUE) or no covariance in trait rates (FALSE). If FALSE, only the trait variances not co-variances are used.}
+
+\item{n.cores}{Integer. Set number of computing cores when running model="traitMedusa" (tm1 and tm2 models)}
+
+\item{tol}{Tolerance (minimum branch length) to exclude branches from trait MEDUSA search. Primarily intended to prevent inference of rate shifts at randomly resolved polytomies.}
+
 \item{meserr}{A vector (or matrix) of measurement error for each tip. This is only applicable to univariate analyses.}
 
 \item{controlList}{List. Specify fine-tune parameters for the optim likelihood search}
+
+\item{returnPhy}{Logical. In TRUE the phylogeny with branch lengths transformed by the ML model parameters is returned}
 }
 \value{
 Returns the maximum log-likelihood and parameter estimates (with 95 percent confidence intervals if specified). If model="bm" instead returns the Brownian (co)variance and log-likelihood.
@@ -95,7 +103,8 @@ Confidence intervals are based on the assumption of an asymptotic Chi-square dis
 data(anolis.tree)
 data(anolis.data)
 
-# anolis.data is not matrix and contains missing data so put together matrix of # relevant traits (here female and male snout vent lengths) and remove species 
+# anolis.data is not matrix and contains missing data so put together matrix of
+# relevant traits (here female and male snout vent lengths) and remove species 
 # with missing data from the matrix and phylogeny
 anolisSVL <- data.matrix(anolis.data)[,c(5,6)]
 anolisSVL[,1] <- log(anolisSVL[,1])
@@ -110,7 +119,8 @@ transformPhylo.ML(anolisSVL, phy=tree, model="bm")
 # Pagel's kappa
 transformPhylo.ML(anolisSVL, phy=tree, model="kappa")
 
-# The upper confidence interval for kappa is outside the bounds so try increasing the upper bound
+# The upper confidence interval for kappa is outside the bounds so try increasing
+# the upper bound
 
 transformPhylo.ML(anolisSVL, phy=tree, model="kappa", upperBound=1.5)
 
@@ -120,17 +130,23 @@ transformPhylo.ML(anolisSVL, phy=tree, model="delta")
 transformPhylo.ML(anolisSVL, phy=tree, model="OU")
 transformPhylo.ML(anolisSVL, phy=tree, model="psi")
 
-# Test for different rates in different clades - here with 2 hypothesised unusual rates compared to the background
+# Test for different rates in different clades - here with 2 hypothesised
+# unusual rates compared to the background
 # This fits the non-censored model of O'Meara et al. (2006)
 transformPhylo.ML(anolisSVL, phy=tree, model="clade", nodeIDs=c(178, 199))
 
-# Identify rate shifts and print and plot results with upto three rate shifts and minimum clade size of 20.
+# Identify rate shifts and print and plot results with upto three rate shifts
+# and minimum clade size of 20.
 # Not run
-#anolisSVL_MEDUSA <- transformPhylo.ML(anolisSVL, phy=tree, model="tm1", #minCladeSize=10, nSplits=2)
+#anolisSVL_MEDUSA <- transformPhylo.ML(anolisSVL, phy=tree, model="tm1",
+#minCladeSize=10, nSplits=2)
 
-#anolisSVL_MEDUSA_out <- traitMedusaSummary(anolisSVL_MEDUSA, cutoff=3, #AICc=FALSE)
+#anolisSVL_MEDUSA_out <- traitMedusaSummary(anolisSVL_MEDUSA, cutoff=3,
+#AICc=FALSE)
 
-#colours <- plotPhylo.motmot(phy=tree, traitMedusaObject=anolisSVL_MEDUSA_out,  #reconType = "rates", type = "fan", cex=0.6, edge.width=3)
+#colours <- plotPhylo.motmot(phy=tree, traitMedusaObject=anolisSVL_MEDUSA_out,  
+#reconType = "rates",
+# type = "fan", cex=0.6, edge.width=3)
 }
 \references{
 Alfaro ME, Santini F, Brock CD, Alamillo H, Dornburg A, Carnevale G, Rabosky D & Harmon LJ. 2009. Nine exceptional radiations plus high turnover explain species diversity in jawed vertebrates. PNAS 106, 13410-13414.

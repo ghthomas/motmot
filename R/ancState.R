@@ -1,3 +1,9 @@
+#' Extimate ancestral state (internal function)
+#'
+#' This is an internal function to estimate the character value at the root node
+#' @param phy a phylogeny in APE phylo format
+#' @param y A matrix of trait data corresponding to species in phy
+#' @author Gavin Thomas
 #' @export
 
 ancState <- function (phy, y) {

@@ -25,7 +25,12 @@
 #' anolis.rateData <- as.rateData(y="Female_SVL", x="geo_ecomorph", 
 #' rateMatrix = anolis.rateMatrix, phy=NULL, data=anolis.data, log.y=TRUE)
 #' 
-#' ## Calculate phylogenetic mean, variance, log likelihood for a model where the first rate category (small islands) takes position one in the rate vector, group 1 (large island trunk crown and trunk ground) takes position 2 and so on. The rates in the first and last categories are equal (both 1) whereas the rate in the second category is twice as fast (2) and the rate in the third category is ten times slower. Means are allowed to differ. 
+#' ## Calculate phylogenetic mean, variance, log likelihood for a model where the first 
+# rate category (small islands) takes position one in the rate vector, group 1
+# (large island trunk crown and trunk ground) takes position 2 and so on.
+# The rates in the first and last categories are equal (both 1) whereas the rate in the
+# second category is twice as fast (2) and the rate in the third category is ten times slower.
+# Means are allowed to differ. 
 #' 
 #' # mean only
 #' phyloMean(rateData=anolis.rateData, rate = c(1,2,0.1,1), common.mean = FALSE)

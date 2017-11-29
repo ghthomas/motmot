@@ -14,8 +14,11 @@
 #' @param nodeIDs Integer - ancestral nodes of clades.
 #' @param rateType If model="clade", a vector specifying if rate shift occurs in a clade ("clade") or on the single branch leading to a clade ("branch").
 #' @param branchRates Numeric vector specifying relative rates for individual branches
+#' @param timeRates The rates (from ancient to recent) for the timeSlice model
+#' @param splitTime A split time (measured from the present, or most recent species) at which a shift in the rate occurs for the "timeSlice" model
+#' @param acdcRate Value of ACDC transform.
 #' @param cladeRates Numeric vector specifying telative rates for clades.
-# '@param covPIC Logical. For multivariate analyses, allow for co-variance between traits rates (TRUE) or no covariance in trait rates (FALSE). If FALSE, only the trait variances not co-variances are used.
+#' @param covPIC Logical. For multivariate analyses, allow for co-variance between traits rates (TRUE) or no covariance in trait rates (FALSE). If FALSE, only the trait variances not co-variances are used.
 #' @details This function fits likelihood models (see below) for continuous character evolution where the parameter values are set a priori. The function returns the log-likihood and the Brownian variance (or variance covariance matrix).
 #' model="bm"- Brownian motion (constant rates random walk)
 #' model="kappa" - fits Pagel's kappa by raising all branch lengths to the power kappa. As kappa approaches zero, trait change becomes focused at branching events. For complete phylogenies, if kappa approaches zero this infers speciational trait change. 
@@ -42,7 +45,8 @@
 #' data(anolis.tree)
 #' data(anolis.data)
 #' 
-#' # anolis.data is not matrix and contains missing data so put together matrix of # relevant traits (here female and male snout vent lengths) and remove species 
+#' # anolis.data is not matrix and contains missing data so put together matrix of
+#' # relevant traits (here female and male snout vent lengths) and remove species 
 #' # with missing data from the matrix and phylogeny
 #' anolisSVL <- data.matrix(anolis.data)[,c(5,6)]
 #' anolisSVL[,1] <- log(anolisSVL[,1])

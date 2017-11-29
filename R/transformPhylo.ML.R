@@ -21,10 +21,11 @@
 #' @param profilePlot Logical.  For the single parameter models "kappa", "lambda", "delta", "OU", "psi", "multipsi", and "ACDC", plot the profile of the likelihood.
 #' @param lowerBound Minimum value for parameter estimates
 #' @param upperBound Maximum value for parameter estimates
-# '@param tol Tolerance (minimum branch length) to exclude branches from trait MEDUSA search. Primarily intended to prevent inference of rate shifts at randomly resolved polytomies.
-# '@param covPIC Logical. For multivariate analyses, allow for co-variance between traits rates (TRUE) or no covariance in trait rates (FALSE). If FALSE, only the trait variances not co-variances are used.
+#' @param returnPhy Logical. In TRUE the phylogeny with branch lengths transformed by the ML model parameters is returned
+#' @param tol Tolerance (minimum branch length) to exclude branches from trait MEDUSA search. Primarily intended to prevent inference of rate shifts at randomly resolved polytomies.
+#' @param covPIC Logical. For multivariate analyses, allow for co-variance between traits rates (TRUE) or no covariance in trait rates (FALSE). If FALSE, only the trait variances not co-variances are used.
 #' @param meserr A vector (or matrix) of measurement error for each tip. This is only applicable to univariate analyses.
-# '@param n.cores Integer. Set number of computing cores when running model="traitMedusa" (tm1 and tm2 models)
+#' @param n.cores Integer. Set number of computing cores when running model="traitMedusa" (tm1 and tm2 models)
 #' @param controlList List. Specify fine-tune parameters for the optim likelihood search
 #' @details This function finds the maximum likelihood parameter values for continuous character evolution. For "kappa", "delta", "OU", "multipsi", and "ACDC" it is possible to fit a 'nested' model of evolution in which the ancestral rate of BM swicthes to a different node, as specified by nodeIDs or branchLabels for multipsi. The function returns the maximum-likelihood parameter estimates for the following models.
 #' \itemize{
@@ -60,13 +61,24 @@
 #' @references Pagel M. 1999 Inferring the historical patterns of biological evolution. Nature 401, 877-884.
 #' @references Thomas GH, Meiri S, & Phillimore AB. 2009. Body size diversification in Anolis: novel environments and island effects. Evolution 63, 2017-2030.
 #' @author Gavin Thomas, Mark Puttick
+#' @import ape
+#' @import MASS
+#' @import caper
+#' @import stats
+#' @import mvtnorm
+#' @import parallel
+#' @import coda
+#' @import graphics
+#' @import grDevices
+#' @import utils
 #' @examples
 #' 
 #' # Data and phylogeny
 #' data(anolis.tree)
 #' data(anolis.data)
 #' 
-#' # anolis.data is not matrix and contains missing data so put together matrix of # relevant traits (here female and male snout vent lengths) and remove species 
+#' # anolis.data is not matrix and contains missing data so put together matrix of
+#' # relevant traits (here female and male snout vent lengths) and remove species 
 #' # with missing data from the matrix and phylogeny
 #' anolisSVL <- data.matrix(anolis.data)[,c(5,6)]
 #' anolisSVL[,1] <- log(anolisSVL[,1])
@@ -81,7 +93,8 @@
 #' # Pagel's kappa
 #' transformPhylo.ML(anolisSVL, phy=tree, model="kappa")
 #' 
-#' # The upper confidence interval for kappa is outside the bounds so try increasing the upper bound
+#' # The upper confidence interval for kappa is outside the bounds so try increasing
+#' # the upper bound
 #' 
 #' transformPhylo.ML(anolisSVL, phy=tree, model="kappa", upperBound=1.5)
 #' 
@@ -91,17 +104,23 @@
 #' transformPhylo.ML(anolisSVL, phy=tree, model="OU")
 #' transformPhylo.ML(anolisSVL, phy=tree, model="psi")
 #' 
-#' # Test for different rates in different clades - here with 2 hypothesised unusual rates compared to the background
+#' # Test for different rates in different clades - here with 2 hypothesised
+#' # unusual rates compared to the background
 #' # This fits the non-censored model of O'Meara et al. (2006)
 #' transformPhylo.ML(anolisSVL, phy=tree, model="clade", nodeIDs=c(178, 199))
 #' 
-#' # Identify rate shifts and print and plot results with upto three rate shifts and minimum clade size of 20.
+#' # Identify rate shifts and print and plot results with upto three rate shifts
+#' # and minimum clade size of 20.
 #' # Not run
-#' #anolisSVL_MEDUSA <- transformPhylo.ML(anolisSVL, phy=tree, model="tm1", #minCladeSize=10, nSplits=2)
+#' #anolisSVL_MEDUSA <- transformPhylo.ML(anolisSVL, phy=tree, model="tm1",
+#' #minCladeSize=10, nSplits=2)
 #' 
-#' #anolisSVL_MEDUSA_out <- traitMedusaSummary(anolisSVL_MEDUSA, cutoff=3, #AICc=FALSE)
+#' #anolisSVL_MEDUSA_out <- traitMedusaSummary(anolisSVL_MEDUSA, cutoff=3,
+#' #AICc=FALSE)
 #' 
-#' #colours <- plotPhylo.motmot(phy=tree, traitMedusaObject=anolisSVL_MEDUSA_out,  #reconType = "rates", type = "fan", cex=0.6, edge.width=3)
+#' #colours <- plotPhylo.motmot(phy=tree, traitMedusaObject=anolisSVL_MEDUSA_out,  
+#' #reconType = "rates",
+#' # type = "fan", cex=0.6, edge.width=3)
 #' @export
 
 transformPhylo.ML <- function (y, phy, model = NULL, modelCIs = TRUE, nodeIDs = NULL, rateType = NULL, minCladeSize = 1, nSplits = 2, splitTime = NULL, boundaryAge = 10, testAge = 1, restrictNode = NULL, lambdaEst = FALSE, acdcScalar = FALSE,  branchLabels = NULL, hiddenSpeciation = TRUE, full.phy=NULL, useMean = FALSE, profilePlot = FALSE, lowerBound = NULL, upperBound = NULL, covPIC = TRUE, n.cores = 1, tol = NULL, meserr=NULL, controlList = c(fnscale = -1, maxit = 100, factr = 1e-7, pgtol = 0, type = 2, lmm = 5),returnPhy = FALSE) {
@@ -112,6 +131,7 @@ transformPhylo.ML <- function (y, phy, model = NULL, modelCIs = TRUE, nodeIDs = 
     
     aic.fun <- function(likelihood, k) return(-2 * likelihood + 2 * k)
     aicc.fun <- function(likelihood, k, n) return(-2 * likelihood + 2 * k + ((2 * k * (k + 1)) / (n - k - 1)))
+    x <- NULL
     
     if (acdcScalar && !is.null(nodeIDs))
       upperBound <- -1e6
@@ -134,9 +154,9 @@ transformPhylo.ML <- function (y, phy, model = NULL, modelCIs = TRUE, nodeIDs = 
       
       kappa = {
         if (is.null(nodeIDs)) {
-          node <- Ntip(phy) + 1
+          nodeIDs <- Ntip(phy) + 1
         } else {
-          node <- nodeIDs
+          nodeIDs <- nodeIDs
         }
         
         kappa <- 1
@@ -159,7 +179,7 @@ transformPhylo.ML <- function (y, phy, model = NULL, modelCIs = TRUE, nodeIDs = 
           }
           kappa <- param[1]
           lambdaPhy <- transformPhylo(y = y, phy = phy, lambda = lambda, model = "lambda", meserr = meserr)
-          return(transformPhylo.ll(y = y, phy = lambdaPhy, kappa = kappa, node = nodeIDs, model = "kappa", meserr = meserr, covPIC = covPIC)[[2]])
+          return(transformPhylo.ll(y = y, phy = lambdaPhy, kappa = kappa, nodeIDs = nodeIDs, model = "kappa", meserr = meserr, covPIC = covPIC)[[2]])
         }
         
         vo <- optim(kappa, var.funkappa, method = "L-BFGS-B", lower = lowerBound, upper = upperBound, control = controlList)
@@ -289,9 +309,9 @@ transformPhylo.ML <- function (y, phy, model = NULL, modelCIs = TRUE, nodeIDs = 
       
       delta = {
         if (is.null(nodeIDs))
-          node <- Ntip(phy) + 1
+          nodeIDs <- Ntip(phy) + 1
         else
-          node <- nodeIDs
+          nodeIDs <- nodeIDs
         delta <- 1
         if (lambdaEst)
           delta[2] <- 1
@@ -313,7 +333,7 @@ transformPhylo.ML <- function (y, phy, model = NULL, modelCIs = TRUE, nodeIDs = 
             lambda <- param[2]
           delta <- param[1]
           lambdaPhy <- transformPhylo(y = y, phy = phy, lambda = lambda, model = "lambda", meserr = meserr)
-          return(transformPhylo.ll(y = y, phy = lambdaPhy, delta = delta, nodeIDs = node, model = "delta", meserr = meserr, covPIC = covPIC)[[2]])
+          return(transformPhylo.ll(y = y, phy = lambdaPhy, delta = delta, nodeIDs = nodeIDs, model = "delta", meserr = meserr, covPIC = covPIC)[[2]])
         }
  		vo <- optim(delta, var.fundelta, method = "L-BFGS-B", lower = lowerBound, upper = upperBound, control = controlList)
         if (lambdaEst)
@@ -324,7 +344,7 @@ transformPhylo.ML <- function (y, phy, model = NULL, modelCIs = TRUE, nodeIDs = 
         
         if (modelCIs == TRUE) {
           delta.fun <- function(param, chiSq = TRUE) {
-            ll <- transformPhylo.ll(y = y, phy = lambdaPhy, delta = param, model = "delta", nodeIDs = node, meserr = meserr, covPIC = covPIC)$logLikelihood
+            ll <- transformPhylo.ll(y = y, phy = lambdaPhy, delta = param, model = "delta", nodeIDs = nodeIDs, meserr = meserr, covPIC = covPIC)$logLikelihood
             if (chiSq) return(ll - vo$value + 1.92) else return(ll)
           }
           if (delta.fun(lowerBound[1]) < 0)
@@ -375,9 +395,9 @@ transformPhylo.ML <- function (y, phy, model = NULL, modelCIs = TRUE, nodeIDs = 
       
       OU = {
         if (is.null(nodeIDs))
-          node <- Ntip(phy) + 1
+          nodeIDs <- Ntip(phy) + 1
         else
-          node <- nodeIDs
+          nodeIDs <- nodeIDs
         alpha <- c(1e-8, 0.01, 0.1, 1, 5, 10)
         if (lambdaEst)
           alpha[7] <- 1
@@ -397,19 +417,19 @@ transformPhylo.ML <- function (y, phy, model = NULL, modelCIs = TRUE, nodeIDs = 
             lambda <- param[2]
           alpha <- param[1]
           lambdaPhy <- transformPhylo(y = y, phy = phy, lambda = lambda, model = "lambda", meserr = meserr)
-          return(transformPhylo.ll(y = y, phy = phy, alpha = alpha, nodeIDs = node, model = "OU", meserr = meserr, covPIC = covPIC)[[2]])
+          return(transformPhylo.ll(y = y, phy = phy, alpha = alpha, nodeIDs = nodeIDs, model = "OU", meserr = meserr, covPIC = covPIC)[[2]])
         }
         
         if (lambdaEst) {
-          multiStarts <- lapply(alpha[-7], function(x)
-              optim(c(x, 1), var.funOU, method = "L-BFGS-B", lower = lowerBound, upper = upperBound, control = controlList))
+          multiStarts <- lapply(alpha[-7], function(x_multi)
+              optim(c(x_multi, 1), var.funOU, method = "L-BFGS-B", lower = lowerBound, upper = upperBound, control = controlList))
         } else {
-          multiStarts <- lapply(alpha, function(x)
-              optim(x, var.funOU, method = "L-BFGS-B", lower = lowerBound, upper = upperBound, control = controlList))
+          multiStarts <- lapply(alpha, function(x_multi)
+              optim(x_multi, var.funOU, method = "L-BFGS-B", lower = lowerBound, upper = upperBound, control = controlList))
         }
         
-        paramOU <- unlist(lapply(multiStarts, function(x) x[1]))
-        likOU <- unlist(lapply(multiStarts, function(x) x[2]))
+        paramOU <- unlist(lapply(multiStarts, function(x_par) x_par[1]))
+        likOU <- unlist(lapply(multiStarts, function(x_lik) x_lik[2]))
         if (any(c(sd(paramOU), sd(likOU)) > 1e-3)) print("Warning - different start values produces different OU likelihoods")
         vo <- multiStarts[[which.max(likOU)]]
 		if (lambdaEst)
@@ -420,7 +440,7 @@ transformPhylo.ML <- function (y, phy, model = NULL, modelCIs = TRUE, nodeIDs = 
         
         if (modelCIs == TRUE) {
           ou.fun <- function(param, chiSq = TRUE) {
-            ll <- transformPhylo.ll(y, lambdaPhy, model = "OU", alpha = param, nodeIDs = node, meserr = meserr, covPIC = covPIC)$logLikelihood
+            ll <- transformPhylo.ll(y, lambdaPhy, model = "OU", alpha = param, nodeIDs = nodeIDs, meserr = meserr, covPIC = covPIC)$logLikelihood
             if (chiSq) return(ll - vo$value + 1.92) else return(ll)
           	}
           if (ou.fun(lowerBound[1]) < 0)
@@ -475,9 +495,9 @@ transformPhylo.ML <- function (y, phy, model = NULL, modelCIs = TRUE, nodeIDs = 
         if (lambdaEst)
           acdcRate <- c(acdcRate, 1)
         if (is.null(nodeIDs))
-          node <- Ntip(phy) + 1
+          nodeIDs <- Ntip(phy) + 1
         else
-          node <- nodeIDs
+          nodeIDs <- nodeIDs
         rootBranchingTime <- nodeTimes(phy)[1, 1]
         if (is.null(lowerBound)) {
           lowerBound <- log(bounds["acdcRate", 1]) / rootBranchingTime
@@ -500,14 +520,14 @@ transformPhylo.ML <- function (y, phy, model = NULL, modelCIs = TRUE, nodeIDs = 
             acdc.est <- param[1]
             scalarRate <- param[2]
             lambdaPhy <- transformPhylo(y = y, phy = phy, lambda = lambda, model = "lambda", meserr = meserr)
-            return(transformPhylo.ll(lambdaPhy, acdcRate = acdc.est, nodeIDs = node, model = "ACDC", y = y, cladeRates = scalarRate, imeserr = meserr, covPIC = covPIC)[[2]])
+            return(transformPhylo.ll(lambdaPhy, acdcRate = acdc.est, nodeIDs = nodeIDs, model = "ACDC", y = y, cladeRates = scalarRate, meserr = meserr, covPIC = covPIC)[[2]])
           }
         } else {
           var.funACDC <- function(param) {
             if (lambdaEst) lambda <- param[2] else lambda <- 1
             acdc.est <- param[1]
             lambdaPhy <- transformPhylo(y = y, phy = phy, lambda = lambda, model = "lambda", meserr = meserr)
-            return(transformPhylo.ll(lambdaPhy, acdcRate = acdc.est, nodeIDs = node, model = "ACDC", y = y, cladeRates = 1, meserr = meserr, covPIC = covPIC)[[2]])
+            return(transformPhylo.ll(lambdaPhy, acdcRate = acdc.est, nodeIDs = nodeIDs, model = "ACDC", y = y, cladeRates = 1, meserr = meserr, covPIC = covPIC)[[2]])
           }
         }
         vo <- optim(acdcRate, var.funACDC, method = "L-BFGS-B", lower = lowerBound, upper = upperBound, control = controlList)
@@ -517,7 +537,7 @@ transformPhylo.ML <- function (y, phy, model = NULL, modelCIs = TRUE, nodeIDs = 
         if (acdcScalar) cladeRateEst = vo$par[2] else cladeRateEst <- 1
         if (modelCIs) {
           ACDC.fun <- function(param, chiSq = TRUE) {
-            ll <- transformPhylo.ll(y, lambdaPhy, acdcRate = param, nodeIDs = node, model = "ACDC", cladeRates = cladeRateEst, meserr = meserr, covPIC = covPIC)$logLikelihood
+            ll <- transformPhylo.ll(y, lambdaPhy, acdcRate = param, nodeIDs = nodeIDs, model = "ACDC", cladeRates = cladeRateEst, meserr = meserr, covPIC = covPIC)$logLikelihood
             if (chiSq) return(ll - vo$value + 1.92) else return(ll)
           }
           if (ACDC.fun(lowerBound[1]) < 0)
@@ -552,7 +572,7 @@ transformPhylo.ML <- function (y, phy, model = NULL, modelCIs = TRUE, nodeIDs = 
         }
         if (acdcScalar) out$scalar <- scaleClade <- vo$par[2] else scaleClade <- 1
           
-        acdcPhy <- transformPhylo( y = y, phy = lambdaPhy, model = "ACDC", acdcRate = vo$par[1], nodeIDs = node, cladeRates = scaleClade, meserr = meserr)  
+        acdcPhy <- transformPhylo( y = y, phy = lambdaPhy, model = "ACDC", acdcRate = vo$par[1], nodeIDs = nodeIDs, cladeRates = scaleClade, meserr = meserr)  
         out$brownianVariance <- likTraitPhylo(phy=acdcPhy, y=y, covPIC = covPIC)$brownianVariance
         out$root.state <- ancState(phy=acdcPhy, y=y)
         param <- length(vo$par) + 2
@@ -581,7 +601,8 @@ transformPhylo.ML <- function (y, phy, model = NULL, modelCIs = TRUE, nodeIDs = 
             upperBound[2] <- bounds["lambda", 2]
         }
         
-        	if (hiddenSpeciation) {
+        if (hiddenSpeciation) {
+        	if (is.null(full.phy)) stop("please provide a full phylogeny")
         	full.data.match <- match(full.phy$tip.label, rownames(y))
         	tips.no.data <- full.phy$tip.label[which(is.na(full.data.match))]
         	phy <- dropTipPartial(full.phy, tips.no.data)
@@ -673,6 +694,7 @@ transformPhylo.ML <- function (y, phy, model = NULL, modelCIs = TRUE, nodeIDs = 
         }
         
 		if (hiddenSpeciation) {
+			if (is.null(full.phy)) stop("please provide a full phylogeny")
         	full.data.match <- match(full.phy$tip.label, rownames(y))
         	tips.no.data <- full.phy$tip.label[which(is.na(full.data.match))]
         	phy <- dropTipPartial(full.phy, tips.no.data)
@@ -773,7 +795,7 @@ transformPhylo.ML <- function (y, phy, model = NULL, modelCIs = TRUE, nodeIDs = 
         phy2 <- phy
         phy2$edge.length <- phy$edge.length * vo$par
         out <- vector(mode = "list", length = 3)
-        output.par <- likTraitPhylo(y=y, phy=freePhy, covPIC = covPIC)
+        output.par <- likTraitPhylo(y=y, phy=phy2, covPIC = covPIC)
         out$MaximumLikelihood <- output.par$logLikelihood
         out$brownianVariance <- output.par$brownianVariance
         out$Rates <- vo$par
@@ -913,10 +935,10 @@ transformPhylo.ML <- function (y, phy, model = NULL, modelCIs = TRUE, nodeIDs = 
 						currentNodeIDs <- c(bestNodes, i)
 						}
 					cladeRates <- rep(1, length(currentNodeIDs))
-					var.funclade <- function(cladeRates) {
+					var.funclade.tm1 <- function(cladeRates) {
 					return(transformPhylo.ll(y, phy, nodeIDs = currentNodeIDs, rateType = rep("clade", length(currentNodeIDs)), cladeRates = cladeRates, model = "clade", meserr = meserr, covPIC = covPIC)[[2]])
 					}
-					currentCladeModel <- optim(cladeRates, var.funclade, method = "L-BFGS-B", lower = lowerBound, upper = upperBound, control = controlList)
+					currentCladeModel <- optim(cladeRates, var.funclade.tm1, method = "L-BFGS-B", lower = lowerBound, upper = upperBound, control = controlList)
 					fullModelOut[[k]] <- rbind(fullModelOut[[k]], c(node = as.integer(i), shiftPos = 1, ML = currentCladeModel$value, currentCladeModel$par))
 					currentModel <- currentCladeModel
 					shiftPos = 1
@@ -1010,17 +1032,17 @@ transformPhylo.ML <- function (y, phy, model = NULL, modelCIs = TRUE, nodeIDs = 
 				if (k == 1) currentNodeIDs <- NULL else currentNodeIDs <- na.omit(as.numeric(bestModel[, 1]))
 				if (k == 1) currentRateType <- NULL else currentRateType <- na.omit(bestModel[, 2])
 
-				foo2 <- function(x, k, currentNodeIDs=currentNodeIDs, currentRateType=currentRateType) {
-					currentNodeIDs <- c(currentNodeIDs, x[,2])
-					currentRateType <- c(currentRateType, x[,1])
+				foo2 <- function(x_foo, k, currentNodeIDs=currentNodeIDs, currentRateType=currentRateType) {
+					currentNodeIDs <- c(currentNodeIDs, x_foo[,2])
+					currentRateType <- c(currentRateType, x_foo[,1])
 					cladeRates <- rep(1, length(currentNodeIDs))
-					var.funclade <- function(cladeRates) return(transformPhylo.ll(y, phy, nodeIDs = currentNodeIDs, rateType = currentRateType, cladeRates = cladeRates, model = "clade", meserr = meserr, covPIC = covPIC)[[2]])
-					currentCladeModel <- optim(cladeRates, var.funclade, method = "L-BFGS-B", lower = lowerBound, upper = upperBound, control = controlList)
-					if (x[,1] == "clade") shiftPos <- 1
-					if (x[,1] == "branch") shiftPos <- 2
+					var.funclade.tm2 <- function(cladeRates) return(transformPhylo.ll(y, phy, nodeIDs = currentNodeIDs, rateType = currentRateType, cladeRates = cladeRates, model = "clade", meserr = meserr, covPIC = covPIC)[[2]])
+					currentCladeModel <- optim(cladeRates, var.funclade.tm2, method = "L-BFGS-B", lower = lowerBound, upper = upperBound, control = controlList)
+					if (x_foo[,1] == "clade") shiftPos <- 1
+					if (x_foo[,1] == "branch") shiftPos <- 2
 					currentModel <- currentCladeModel
 					param <- k * 2 + 1
-					currentModel <- list(currentModel, x[2], cladeMembers)
+					currentModel <- list(currentModel, x_foo[2], cladeMembers)
 					currentML <- currentModel[[1]]$value
 					AIC <- aic.fun(currentModel[[1]]$value, param)
 					AICc <- aicc.fun(currentModel[[1]]$value, param, n)
@@ -1075,12 +1097,12 @@ transformPhylo.ML <- function (y, phy, model = NULL, modelCIs = TRUE, nodeIDs = 
           vo.out <- list()
           
           for (q in 1:nSplits) {
-            all.models <- sapply(splitTime , function(x) {
-              splitTimeInt <- sort(c(x, fixed.time))
+            all.models <- sapply(splitTime , function(x_times) {
+              splitTimeInt <- sort(c(x_times, fixed.time))
               nSplitInt.n <- length(splitTimeInt) + 1
               rateVec <- rep(1, nSplitInt.n)
-              var.funfree <- function(rate.vec) transformPhylo.ll(y, phy, timeRates = rate.vec, splitTime = splitTimeInt, model = "timeSlice", meserr = meserr, covPIC = covPIC)[[2]]
-              vo <- optim(rateVec, var.funfree, method = "L-BFGS-B", lower = lowerBound, upper = upperBound, control = controlList)
+              var.timeslice <- function(rate.vec) transformPhylo.ll(y, phy, timeRates = rate.vec, splitTime = splitTimeInt, model = "timeSlice", meserr = meserr, covPIC = covPIC)[[2]]
+              vo <- optim(rateVec, var.timeslice, method = "L-BFGS-B", lower = lowerBound, upper = upperBound, control = controlList)
               c(vo$par, vo$value)
             })
             best.model.n <- which.max(all.models[3, ])
@@ -1108,9 +1130,9 @@ transformPhylo.ML <- function (y, phy, model = NULL, modelCIs = TRUE, nodeIDs = 
               print(output.mat[q + 1,])
             }
             rateVec <- rep(1, length(rates))
-            var.funfree <- function(rate.vec)
+            var.timeslice <- function(rate.vec)
                 transformPhylo.ll(y, phy, timeRates = rate.vec, splitTime = fixed.time, model = "timeSlice", meserr = meserr, covPIC = covPIC)[[2]]
-            vo.out[[q]] <- optim(rateVec, var.funfree, method = "L-BFGS-B", lower = lowerBound, upper = upperBound, control = controlList)
+            vo.out[[q]] <- optim(rateVec, var.timeslice, method = "L-BFGS-B", lower = lowerBound, upper = upperBound, control = controlList)
           }
         } else {
           nSplits <- length(splitTime) + 1
@@ -1129,8 +1151,8 @@ transformPhylo.ML <- function (y, phy, model = NULL, modelCIs = TRUE, nodeIDs = 
           output.mat[1, 1:5] <- c(log.lik, aic, aicc, as.numeric(bm.model[[1]]), anc.state)
           print("BM model")
           print(output.mat[1, 1:5])
-          var.funfree <- function(rate.vec) transformPhylo.ll(y, phy, timeRates = rate.vec, splitTime = splitTime, model = "timeSlice")[[2]]
-          vo.out <- optim(rateVec, var.funfree, method = "L-BFGS-B", lower = lowerBound, upper = upperBound, control = controlList)
+          var.timeslice <- function(rate.vec) transformPhylo.ll(y, phy, timeRates = rate.vec, splitTime = splitTime, model = "timeSlice")[[2]]
+          vo.out <- optim(rateVec, var.timeslice, method = "L-BFGS-B", lower = lowerBound, upper = upperBound, control = controlList)
           log.lik <- vo.out$value
           rates <- vo.out$par
           param <- length(rates) + 2

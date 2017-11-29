@@ -12,6 +12,8 @@ as.rateData(y, x, rateMatrix = NULL, phy = NULL, data, meserr.col = NULL,
 
 \item{x}{The explanatory (discrete) variable used to define the hypothesised rate categories. Specified as a column name or index.}
 
+\item{rateMatrix}{A "rateMatrix" object or NULL}
+
 \item{phy}{An object of class "phylo" (see ape package).}
 
 \item{data}{A data frame containing (minimally) the x and y variables as columns with species names as rownames.}
@@ -21,6 +23,8 @@ as.rateData(y, x, rateMatrix = NULL, phy = NULL, data, meserr.col = NULL,
 \item{meserr.propn}{Single value specifying the proportional measurement to be applied across all species.}
 
 \item{log.y}{Logical, natural log transform response variable.}
+
+\item{report_prune}{Logical. Prints a list of dropped species if TRUE}
 }
 \value{
 rateData An object of class "rateData" which is a list containing the response (y) and explanatory (x) variable along with a list of variance-covaraince matrices.

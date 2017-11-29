@@ -39,7 +39,15 @@ transformPhylo.ll(y = NULL, phy, model = NULL, meserr = NULL,
 
 \item{cladeRates}{Numeric vector specifying telative rates for clades.}
 
+\item{timeRates}{The rates (from ancient to recent) for the timeSlice model}
+
+\item{splitTime}{A split time (measured from the present, or most recent species) at which a shift in the rate occurs for the "timeSlice" model}
+
 \item{branchLabels}{Branches on which different psi parameters are estimated in the "multipsi" model.}
+
+\item{acdcRate}{Value of ACDC transform.}
+
+\item{covPIC}{Logical. For multivariate analyses, allow for co-variance between traits rates (TRUE) or no covariance in trait rates (FALSE). If FALSE, only the trait variances not co-variances are used.}
 }
 \value{
 brownianVariance Brownian variance (or covariance for multiple traits) given the data and phylogeny
@@ -65,7 +73,8 @@ Data and phylogeny
 data(anolis.tree)
 data(anolis.data)
 
-# anolis.data is not matrix and contains missing data so put together matrix of # relevant traits (here female and male snout vent lengths) and remove species 
+# anolis.data is not matrix and contains missing data so put together matrix of
+# relevant traits (here female and male snout vent lengths) and remove species 
 # with missing data from the matrix and phylogeny
 anolisSVL <- data.matrix(anolis.data)[,c(5,6)]
 anolisSVL[,1] <- log(anolisSVL[,1])
